@@ -30,7 +30,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => 'required|string|in:admin,guru,siswa',
+            'role' => 'required|string|in:admin,guru,siswa,staf_keuangan,staf_administrasi',
         ]);
 
         User::create([
@@ -52,7 +52,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:'.User::class.',email,'.$user->id,
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
-            'role' => 'required|string|in:admin,guru,siswa',
+            'role' => 'required|string|in:admin,guru,siswa,staf_keuangan,staf_administrasi',
         ]);
 
         $user->name = $request->name;

@@ -6,11 +6,9 @@ use App\Models\Guru;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
-class GuruImport implements ToCollection, WithHeadingRow, WithValidation
+class GuruImport implements ToCollection, WithHeadingRow
 {
     private $successCount = 0;
     private $errorCount = 0;
@@ -18,10 +16,20 @@ class GuruImport implements ToCollection, WithHeadingRow, WithValidation
 
     public function collection(Collection $rows)
     {
-        foreach ($rows as $row) {
+        foreach ($rows as $index => $row) {
             try {
+                $rowArray = $row->toArray();
+                
+                // Skip baris kosong
+                $nip = $rowArray['nip'] ?? null;
+                $nama = $rowArray['nama'] ?? null;
+                
+                if (empty($nip) && empty($nama)) {
+                    continue;
+                }
+
                 // Validasi data row
-                $validator = Validator::make($row->toArray(), [
+                $validator = Validator::make($rowArray, [
                     'nip' => 'required|unique:guru,nip',
                     'nama' => 'required',
                     'jenis_kelamin' => 'required|in:L,P',
@@ -31,7 +39,9 @@ class GuruImport implements ToCollection, WithHeadingRow, WithValidation
                 if ($validator->fails()) {
                     $this->errorCount++;
                     $this->errors[] = [
-                        'row' => $row,
+                        'row' => $index + 2, // +2 karena index 0 + header row
+                        'nip' => $nip,
+                        'nama' => $nama,
                         'errors' => $validator->errors()->all()
                     ];
                     continue;
@@ -39,19 +49,19 @@ class GuruImport implements ToCollection, WithHeadingRow, WithValidation
 
                 // Format data
                 $data = [
-                    'nip' => $row['nip'] ?? null,
-                    'nama' => $row['nama'] ?? null,
-                    'bidang_studi' => $row['bidang_studi'] ?? null,
-                    'jenis_kelamin' => $row['jenis_kelamin'] ?? 'L',
-                    'tempat_lahir' => $row['tempat_lahir'] ?? null,
-                    'tanggal_lahir' => $this->parseDate($row['tanggal_lahir'] ?? null),
-                    'alamat' => $row['alamat'] ?? null,
-                    'email' => $row['email'] ?? null,
-                    'no_telepon' => $row['no_telepon'] ?? null,
-                    'status_kepegawaian' => $row['status_kepegawaian'] ?? null,
-                    'status_aktif' => $row['status_aktif'] ?? 'Aktif',
-                    'pendidikan_terakhir' => $row['pendidikan_terakhir'] ?? null,
-                    'tanggal_mulai_bekerja' => $this->parseDate($row['tanggal_mulai_bekerja'] ?? null),
+                    'nip' => $rowArray['nip'] ?? null,
+                    'nama' => $rowArray['nama'] ?? null,
+                    'bidang_studi' => $rowArray['bidang_studi'] ?? null,
+                    'jenis_kelamin' => $rowArray['jenis_kelamin'] ?? 'L',
+                    'tempat_lahir' => $rowArray['tempat_lahir'] ?? null,
+                    'tanggal_lahir' => $this->parseDate($rowArray['tanggal_lahir'] ?? null),
+                    'alamat' => $rowArray['alamat'] ?? null,
+                    'email' => $rowArray['email'] ?? null,
+                    'no_telepon' => $rowArray['no_telepon'] ?? null,
+                    'status_kepegawaian' => $rowArray['status_kepegawaian'] ?? null,
+                    'status_aktif' => $rowArray['status_aktif'] ?? 'Aktif',
+                    'pendidikan_terakhir' => $rowArray['pendidikan_terakhir'] ?? null,
+                    'tanggal_mulai_bekerja' => $this->parseDate($rowArray['tanggal_mulai_bekerja'] ?? null),
                 ];
 
                 // Create guru
@@ -61,21 +71,13 @@ class GuruImport implements ToCollection, WithHeadingRow, WithValidation
             } catch (\Exception $e) {
                 $this->errorCount++;
                 $this->errors[] = [
-                    'row' => $row,
+                    'row' => $index + 2,
+                    'nip' => $rowArray['nip'] ?? null,
+                    'nama' => $rowArray['nama'] ?? null,
                     'errors' => [$e->getMessage()]
                 ];
             }
         }
-    }
-
-    public function rules(): array
-    {
-        return [
-            '*.nip' => 'required|unique:guru,nip',
-            '*.nama' => 'required',
-            '*.jenis_kelamin' => 'required|in:L,P',
-            '*.status_aktif' => 'required|in:Aktif,Non-Aktif,Cuti,Pensiun',
-        ];
     }
 
     private function parseDate($date)

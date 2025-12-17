@@ -22,9 +22,18 @@
   <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap/css/bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/plugins/feather/feather.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/plugins/icons/flags/flags.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/fontawesome.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome/css/all.min.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+  <style>
+    .navbar .dropdown-toggle::after {
+      font-family: 'feather' !important;
+      content: "\e92e" !important;
+      border: 0 !important;
+      font-weight: normal !important;
+      vertical-align: middle;
+      margin-left: 5px;
+    }
+  </style>
   
   @vite(['resources/js/app.js', 'resources/css/app.css'])
   @inertiaHead

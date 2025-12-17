@@ -152,6 +152,69 @@
     font-size: 0.875rem;
 }
 
+/* Table Modern (HTML Table) */
+.table-modern {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-modern thead {
+    background: #3d5ee1;
+}
+
+.table-modern thead th {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 14px 12px;
+    border: none;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.table-modern thead th:first-child {
+    padding-left: 16px;
+}
+
+.table-modern thead th:last-child {
+    padding-right: 16px;
+}
+
+.table-modern tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table-modern tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.table-modern tbody tr.row-selected {
+    background-color: #eef2ff;
+}
+
+.table-modern tbody td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    font-size: 14px;
+    color: #334155;
+}
+
+.table-modern tbody td:first-child {
+    padding-left: 16px;
+}
+
+.table-modern tbody td:last-child {
+    padding-right: 16px;
+}
+
+.table-modern tbody tr:last-child td {
+    border-bottom: none;
+}
+
 /* Modern Data Table Customization */
 .modern-data-table {
     --easy-table-header-font-size: 13px;

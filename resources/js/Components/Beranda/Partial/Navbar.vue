@@ -14,19 +14,19 @@
         <div class="mobile-menu-right">
           <div class="search-btn">
             <button type="button" class="nav-right-link search-box-outer" @click="toggleSearch">
-              <i class="far fa-search"></i>
+              <i class="feather-search"></i>
             </button>
           </div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main_nav"
             aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-mobile-icon"><i class="far fa-bars"></i></span>
+            <span class="navbar-toggler-mobile-icon"><i class="feather-menu"></i></span>
           </button>
         </div>
         
         <div class="collapse navbar-collapse" id="main_nav">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <Link class="nav-link" :class="{ active: $page.url === '/' }" href="/">Home</Link>
+              <Link class="nav-link" :class="{ active: $page.url === '/' }" href="/">Beranda</Link>
             </li>
 
             <li class="nav-item mega-menu dropdown">
@@ -74,7 +74,7 @@
                         <h5>Layanan & Sumber</h5>
                         <ul class="mega-menu-item">
                           <li><Link class="dropdown-item" href="#">Berita & Pengumuman</Link></li>
-                          <li><Link class="dropdown-item" href="#">Galeri Foto/Video</Link></li>
+                          <li><Link class="dropdown-item" href="/gallery">Gallery Foto/Video</Link></li>
                           <li><Link class="dropdown-item" href="publications.html">Unduhan</Link></li>
                           <li class="dropdown-submenu">
                             <a class="dropdown-item dropdown-toggle" href="#">Aplikasi</a>
@@ -135,14 +135,14 @@
             </li>
             
             <li class="nav-item">
-              <Link class="nav-link" :class="{ active: $page.url === '/berita' }" href="/berita">Berita & Informasi</Link>
+              <Link class="nav-link" :class="{ active: $page.url === '/berita' }" href="/berita">Berita</Link>
             </li>
           </ul>
           
           <div class="nav-right">
             <div class="search-btn">
               <button type="button" class="nav-right-link search-box-outer" @click="toggleSearch">
-                <i class="fa fa-search"></i>
+                <i class="feather-search"></i>
               </button>
             </div>
             <div class="nav-right-btn">

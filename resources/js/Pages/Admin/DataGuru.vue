@@ -162,238 +162,122 @@
                     </div>
                 </div>
                 <div class="card-body p-0">
-                    <EasyDataTable
-                        :headers="headers"
-                        :items="tableData"
-                        :loading="loading"
-                        buttons-pagination
-                        :rows-per-page="guru.per_page || 10"
-                        alternating
-                        border-cell
-                        table-class-name="modern-data-table"
-                        header-text-direction="center"
-                        body-text-direction="center"
-                    >
-                        <!-- No Column -->
-                        <template #item-no="{ no }">
-                            <div class="table-index">
-                                {{ no }}
-                            </div>
-                        </template>
-
-                        <!-- Checkbox Column untuk multi select -->
-                        <template #item-select="item">
-                            <div class="text-center">
-                                <input
-                                    type="checkbox"
-                                    class="form-check-input"
-                                    :value="item.id"
-                                    v-model="selectedTeachers"
-                                    :id="'teacher-' + item.id"
-                                />
-                            </div>
-                        </template>
-
-                        <!-- Nama Column -->
-                        <template #item-nama="item">
-                            <div class="teacher-name">
-                                <div class="fw-semibold">{{ item.nama }}</div>
-                                <small class="text-muted">{{ item.nip }}</small>
-                            </div>
-                        </template>
-
-                        <!-- Bidang Studi Column -->
-                        <template #item-bidang_studi="item">
-                            <span class="badge bidang-badge">{{
-                                item.bidang_studi || "-"
-                            }}</span>
-                        </template>
-
-                        <!-- Jenis Kelamin Column -->
-                        <template #item-jenis_kelamin="item">
-                            <div
-                                class="gender-badge"
-                                :class="
-                                    item.jenis_kelamin === 'L'
-                                        ? 'male'
-                                        : 'female'
-                                "
-                            >
-                                <i
-                                    :class="
-                                        item.jenis_kelamin === 'L'
-                                            ? 'fas fa-mars'
-                                            : 'fas fa-venus'
-                                    "
-                                ></i>
-                                <span>{{
-                                    item.jenis_kelamin === "L" ? "L" : "P"
-                                }}</span>
-                            </div>
-                        </template>
-
-                        <!-- Tanggal Lahir Column -->
-                        <template #item-tanggal_lahir="item">
-                            <div class="fw-medium">
-                                {{ formatShortDate(item.tanggal_lahir) }}
-                            </div>
-                        </template>
-
-                        <!-- No. Telp Column -->
-                        <template #item-no_telepon="item">
-                            <div class="phone-number">
-                                <i class="fas fa-phone me-1 text-muted"></i>
-                                {{ item.no_telepon || "-" }}
-                            </div>
-                        </template>
-
-                        <!-- Status Kepegawaian Column -->
-                        <template #item-status_kepegawaian="item">
-                            <span
-                                class="status-badge"
-                                :class="
-                                    getKepegawaianClass(
-                                        item.status_kepegawaian
-                                    )
-                                "
-                            >
-                                {{ item.status_kepegawaian || "-" }}
-                            </span>
-                        </template>
-
-                        <!-- Status Aktif Column -->
-                        <template #item-status_aktif="item">
-                            <span
-                                class="status-badge"
-                                :class="getAktifClass(item.status_aktif)"
-                            >
-                                <i
-                                    :class="
-                                        getAktifIcon(item.status_aktif) + ' me-1'
-                                    "
-                                ></i>
-                                {{ item.status_aktif }}
-                            </span>
-                        </template>
-
-                        <!-- Actions Column -->
-                        <template #item-actions="item">
-                            <div class="action-buttons">
-                                <button
-                                    class="btn btn-action btn-view"
-                                    @click="viewTeacherDetail(item)"
-                                    title="Detail"
-                                >
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button
-                                    class="btn btn-action btn-edit"
-                                    @click="editTeacher(item)"
-                                    title="Edit"
-                                >
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button
-                                    class="btn btn-action btn-delete"
-                                    @click.stop.prevent="confirmDelete(item)"
-                                    title="Hapus"
-                                    type="button"
-                                >
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </template>
-
-                        <!-- Empty State -->
-                        <template #empty-message>
-                            <div class="empty-state text-center py-5">
-                                <div class="empty-icon mb-3">
-                                    <i
-                                        class="fas fa-chalkboard-teacher fa-4x text-light"
-                                    ></i>
-                                </div>
-                                <h5 class="mb-2">Tidak ada data guru</h5>
-                                <p class="text-muted mb-4">
-                                    Belum ada data guru yang tersedia
-                                </p>
-                                <button
-                                    @click="showAddModal = true"
-                                    class="btn btn-primary"
-                                >
-                                    <i class="fas fa-plus me-1"></i>Tambah Guru
-                                </button>
-                            </div>
-                        </template>
-                    </EasyDataTable>
+                    <div class="table-responsive">
+                        <table class="table table-modern mb-0">
+                            <thead>
+                                <tr>
+                                    <th width="50">
+                                        <input type="checkbox" class="form-check-input" @change="toggleSelectAll" :checked="isAllSelected">
+                                    </th>
+                                    <th width="60">No</th>
+                                    <th>Nama / NIP</th>
+                                    <th>Bidang Studi</th>
+                                    <th>L/P</th>
+                                    <th>Tgl Lahir</th>
+                                    <th>No. Telp</th>
+                                    <th>Status</th>
+                                    <th>Keaktifan</th>
+                                    <th width="140">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-if="tableData.length === 0">
+                                    <td colspan="10" class="text-center py-5">
+                                        <div class="empty-state">
+                                            <div class="empty-icon mb-3">
+                                                <i class="fas fa-chalkboard-teacher fa-3x text-muted"></i>
+                                            </div>
+                                            <h5 class="mb-2">Tidak ada data guru</h5>
+                                            <p class="text-muted mb-4">Belum ada data guru yang tersedia</p>
+                                            <button @click="showAddModal = true" class="btn btn-primary">
+                                                <i class="fas fa-plus me-1"></i>Tambah Guru
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr v-for="(item, index) in tableData" :key="item.id" :class="{ 'row-selected': selectedTeachers.includes(item.id) }">
+                                    <td>
+                                        <input type="checkbox" class="form-check-input" :value="item.id" v-model="selectedTeachers">
+                                    </td>
+                                    <td class="text-center fw-medium text-muted">{{ guru.from + index }}</td>
+                                    <td>
+                                        <div class="fw-semibold">{{ item.nama }}</div>
+                                        <small class="text-muted">{{ item.nip }}</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bidang-badge">{{ item.bidang_studi || '-' }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="gender-badge" :class="item.jenis_kelamin === 'L' ? 'male' : 'female'">
+                                            <i :class="item.jenis_kelamin === 'L' ? 'fas fa-mars' : 'fas fa-venus'"></i>
+                                            {{ item.jenis_kelamin }}
+                                        </div>
+                                    </td>
+                                    <td class="text-center">{{ formatShortDate(item.tanggal_lahir) }}</td>
+                                    <td class="text-center">
+                                        <span class="phone-number">{{ item.no_telepon || '-' }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="status-badge" :class="getKepegawaianClass(item.status_kepegawaian)">
+                                            {{ item.status_kepegawaian || '-' }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="status-badge" :class="getAktifClass(item.status_aktif)">
+                                            <i :class="getAktifIcon(item.status_aktif) + ' me-1'"></i>
+                                            {{ item.status_aktif }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-action btn-view" @click="viewTeacherDetail(item)" title="Detail">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-action btn-edit" @click="editTeacher(item)" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-action btn-delete" @click.stop.prevent="confirmDelete(item)" title="Hapus" type="button">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
                     <!-- Pagination -->
                     <div class="p-3 border-top">
-                        <div
-                            class="d-flex justify-content-between align-items-center"
-                        >
-                            <div>
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-muted small">Tampilkan</span>
+                                    <select class="form-select form-select-sm" style="width: 70px;" v-model="perPage" @change="changePerPage">
+                                        <option :value="10">10</option>
+                                        <option :value="25">25</option>
+                                        <option :value="50">50</option>
+                                        <option :value="100">100</option>
+                                    </select>
+                                    <span class="text-muted small">data</span>
+                                </div>
                                 <small class="text-muted">
-                                    Menampilkan {{ guru.from }} sampai
-                                    {{ guru.to }} dari {{ guru.total }} data
+                                    Menampilkan {{ guru.from || 0 }} - {{ guru.to || 0 }} dari {{ guru.total || 0 }}
                                 </small>
                             </div>
                             <div>
                                 <nav>
                                     <ul class="pagination pagination-sm mb-0">
-                                        <!-- PREV -->
-                                        <li
-                                            class="page-item"
-                                            :class="{
-                                                disabled: !guru.prev_page_url,
-                                            }"
-                                        >
-                                            <Link
-                                                class="page-link"
-                                                :href="guru.prev_page_url || ''"
-                                                preserve-state
-                                                preserve-scroll
-                                            >
-                                                <i
-                                                    class="fas fa-chevron-left"
-                                                ></i>
+                                        <li class="page-item" :class="{ disabled: !guru.prev_page_url }">
+                                            <Link class="page-link" :href="guru.prev_page_url || ''" preserve-state preserve-scroll>
+                                                <i class="fas fa-chevron-left"></i>
                                             </Link>
                                         </li>
-
-                                        <!-- NUMBER LINKS -->
-                                        <li
-                                            v-for="page in guru.links"
-                                            :key="page.label"
-                                            class="page-item"
-                                            :class="{
-                                                active: page.active,
-                                                disabled: page.url === null,
-                                            }"
-                                        >
-                                            <Link
-                                                class="page-link"
-                                                :href="page.url || ''"
-                                                v-html="page.label"
-                                                preserve-state
-                                                preserve-scroll
-                                            ></Link>
+                                        <li v-for="page in guru.links" :key="page.label" class="page-item" :class="{ active: page.active, disabled: page.url === null }">
+                                            <Link class="page-link" :href="page.url || ''" v-html="page.label" preserve-state preserve-scroll></Link>
                                         </li>
-
-                                        <!-- NEXT -->
-                                        <li
-                                            class="page-item"
-                                            :class="{
-                                                disabled: !guru.next_page_url,
-                                            }"
-                                        >
-                                            <Link
-                                                class="page-link"
-                                                :href="guru.next_page_url || ''"
-                                                preserve-state
-                                                preserve-scroll
-                                            >
-                                                <i
-                                                    class="fas fa-chevron-right"
-                                                ></i>
+                                        <li class="page-item" :class="{ disabled: !guru.next_page_url }">
+                                            <Link class="page-link" :href="guru.next_page_url || ''" preserve-state preserve-scroll>
+                                                <i class="fas fa-chevron-right"></i>
                                             </Link>
                                         </li>
                                     </ul>
@@ -766,76 +650,77 @@
                                             <i class="fas fa-file-excel fa-3x text-success"></i>
                                         </div>
                                         <h4>Import Data Excel</h4>
-                                        <p class="text-muted">
+                                        <p class="text-muted mb-2">
                                             Upload file Excel untuk menambahkan banyak data sekaligus
                                         </p>
+                                        <button type="button" @click="downloadTemplate" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-download me-1"></i> Download Template
+                                        </button>
                                     </div>
 
                                     <div class="import-guide mb-4">
                                         <div class="card bg-light border-0 p-3">
                                             <h6 class="mb-2">
-                                                <i class="fas fa-info-circle me-2"></i>Petunjuk Import:
+                                                <i class="fas fa-info-circle me-2 text-primary"></i>Petunjuk Import:
                                             </h6>
                                             <ul class="small text-muted mb-0 ps-3">
                                                 <li>Gunakan template Excel yang disediakan</li>
                                                 <li>Pastikan format kolom sesuai (NIP, Nama, dll)</li>
                                                 <li>NIP harus unik untuk setiap guru</li>
                                             </ul>
-                                            <div class="mt-3">
-                                                <button
-                                                    type="button"
-                                                    @click="downloadTemplate"
-                                                    class="btn btn-sm btn-outline-primary"
-                                                >
-                                                    <i class="fas fa-download me-1"></i>Download Template
-                                                </button>
-                                            </div>
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
-                                        <div class="upload-zone text-center p-4 border rounded dashed">
-                                            <input
-                                                type="file"
-                                                class="d-none"
-                                                ref="fileInput"
-                                                accept=".xlsx, .xls"
-                                                @change="handleFileChange"
-                                            />
-                                            <div v-if="!importForm.file">
-                                                <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
-                                                <p class="text-muted mb-2">Drag file here or click to upload</p>
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-sm btn-outline-primary"
-                                                    @click="$refs.fileInput.click()"
-                                                >
-                                                    Pilih File
+                                    <div
+                                        class="upload-zone"
+                                        @click="triggerFileInput"
+                                        @dragover.prevent
+                                        @dragenter.prevent
+                                        @dragleave.prevent
+                                        @drop.prevent="handleFileDrop"
+                                    >
+                                        <input
+                                            type="file"
+                                            ref="fileInputImport"
+                                            @change="handleFileSelect"
+                                            accept=".xlsx,.xls,.csv"
+                                            hidden
+                                        />
+
+                                        <div class="upload-content text-center">
+                                            <i class="fas fa-cloud-upload-alt fa-2x text-primary mb-3"></i>
+                                            <h5>Klik atau drag file Excel ke sini</h5>
+                                            <p class="text-muted mb-3">Format: .xlsx, .xls, .csv (Maks. 5MB)</p>
+                                            <button type="button" class="btn btn-outline-primary">
+                                                <i class="fas fa-folder-open me-2"></i>Pilih File
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div v-if="importFile" class="mt-4">
+                                        <div class="file-preview">
+                                            <div class="file-info">
+                                                <i class="fas fa-file-excel text-success me-3"></i>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1">{{ importFile.name }}</h6>
+                                                    <p class="text-muted mb-0">{{ formatFileSize(importFile.size) }}</p>
+                                                </div>
+                                                <button type="button" @click="removeImportFile" class="btn btn-link text-danger">
+                                                    <i class="fas fa-times"></i>
                                                 </button>
                                             </div>
-                                            <div v-else class="file-preview">
-                                                <div class="d-flex align-items-center justify-content-between">
-                                                    <div class="d-flex align-items-center">
-                                                        <i class="fas fa-file-excel text-success fa-2x me-3"></i>
-                                                        <div class="text-start">
-                                                            <h6 class="mb-0">{{ importForm.file.name }}</h6>
-                                                            <small class="text-muted">
-                                                                {{ (importForm.file.size / 1024).toFixed(2) }} KB
-                                                            </small>
-                                                        </div>
-                                                    </div>
-                                                    <button
-                                                        type="button"
-                                                        class="btn btn-sm btn-link text-danger"
-                                                        @click="importForm.file = null"
-                                                    >
-                                                        <i class="fas fa-times"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
                                         </div>
-                                        <div v-if="importForm.errors.file" class="text-danger small mt-1">
-                                            {{ importForm.errors.file }}
+
+                                        <div class="text-center mt-3">
+                                            <button
+                                                type="button"
+                                                @click="processImport"
+                                                class="btn btn-success"
+                                                :disabled="importing"
+                                            >
+                                                <i class="fas fa-upload me-2"></i>
+                                                {{ importing ? 'Mengimport...' : 'Import Data' }}
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -868,19 +753,6 @@
                                         ? "Update Data"
                                         : "Simpan Data"
                                 }}
-                            </button>
-                            <button
-                                v-if="activeTab === 'import'"
-                                type="button"
-                                class="btn btn-primary"
-                                @click="importGuru"
-                                :disabled="importing || !importForm.file"
-                            >
-                                <i
-                                    class="fas"
-                                    :class="importing ? 'fa-spinner fa-spin' : 'fa-upload'"
-                                ></i>
-                                {{ importing ? 'Mengimport...' : 'Import Data' }}
                             </button>
                         </div>
                     </form>
@@ -1567,14 +1439,40 @@ const tableData = computed(() => {
     }
     
     const page = props.guru.current_page || 1;
-    const perPage = props.guru.per_page || 10;
-    const start = (page - 1) * perPage;
+    const perPageVal = props.guru.per_page || 10;
+    const start = (page - 1) * perPageVal;
     
     return props.guru.data.map((item, index) => ({
         ...item,
         no: start + index + 1
     }));
 });
+
+// Per page untuk pagination
+const perPage = ref(props.guru?.per_page || 10);
+
+const changePerPage = () => {
+    router.get("/admin/guru", { ...filters, per_page: perPage.value }, {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true,
+    });
+};
+
+// Computed untuk check apakah semua terpilih
+const isAllSelected = computed(() => {
+    if (tableData.value.length === 0) return false;
+    return tableData.value.every(item => selectedTeachers.value.includes(item.id));
+});
+
+// Toggle select all
+const toggleSelectAll = (event) => {
+    if (event.target.checked) {
+        selectedTeachers.value = tableData.value.map(item => item.id);
+    } else {
+        selectedTeachers.value = [];
+    }
+};
 
 // Debounce untuk search
 let searchTimeout = null;
@@ -1804,6 +1702,107 @@ const importGuru = () => {
 
 const downloadTemplate = () => {
     window.location.href = "/admin/guru/download-template";
+};
+
+// Import file ref
+const importFile = ref(null);
+const fileInputImport = ref(null);
+
+// Import functions untuk UI baru
+const triggerFileInput = () => {
+    if (fileInputImport.value) {
+        fileInputImport.value.click();
+    }
+};
+
+const handleFileSelect = (event) => {
+    const files = event.target.files;
+    if (files.length > 0) {
+        importFile.value = files[0];
+    }
+};
+
+const handleFileDrop = (event) => {
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+        importFile.value = files[0];
+    }
+};
+
+const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
+
+const removeImportFile = () => {
+    importFile.value = null;
+    if (fileInputImport.value) {
+        fileInputImport.value.value = '';
+    }
+};
+
+const processImport = () => {
+    if (!importFile.value) {
+        showWarning("Peringatan!", "Pilih file terlebih dahulu!");
+        return;
+    }
+    
+    importing.value = true;
+    
+    const formData = new FormData();
+    formData.append('file', importFile.value);
+    
+    router.post('/admin/guru/import', formData, {
+        forceFormData: true,
+        preserveScroll: true,
+        onSuccess: (page) => {
+            importing.value = false;
+            importFile.value = null;
+            if (fileInputImport.value) {
+                fileInputImport.value.value = '';
+            }
+            activeTab.value = 'manual';
+            showAddModal.value = false;
+            
+            // Cek hasil import dari flash session
+            const importResult = page.props.flash?.importResult;
+            if (importResult) {
+                const { successCount, errorCount, errors } = importResult;
+                
+                if (successCount > 0 && errorCount === 0) {
+                    showSuccess("Import Berhasil!", `${successCount} data guru berhasil diimport`);
+                } else if (successCount > 0 && errorCount > 0) {
+                    showWarning("Import Selesai", `${successCount} berhasil, ${errorCount} gagal`);
+                    if (errors && errors.length > 0) {
+                        console.log("Detail error:", errors);
+                    }
+                } else if (successCount === 0 && errorCount > 0) {
+                    showError("Import Gagal!", `Semua ${errorCount} data gagal diimport. Periksa format file.`);
+                } else {
+                    showWarning("Tidak Ada Data", "Tidak ada data yang diimport");
+                }
+            } else if (page.props.flash?.success) {
+                // Flash success message handled by watcher
+            }
+            
+            // Reload data
+            router.reload({ only: ['guru'] });
+        },
+        onError: (errors) => {
+            importing.value = false;
+            console.log("Import errors:", errors);
+            
+            // Tampilkan error message yang lebih spesifik
+            if (errors.file) {
+                showError("Gagal!", errors.file);
+            } else {
+                showError("Gagal!", "Format file tidak valid. Gunakan template yang disediakan.");
+            }
+        },
+    });
 };
 
 // Teacher CRUD Operations

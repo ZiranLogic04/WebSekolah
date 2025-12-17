@@ -40,8 +40,11 @@ class SiswaController extends Controller
             $query->where('jenis_kelamin', $request->jenis_kelamin);
         }
         
+        // Support per_page dari frontend
+        $perPage = $request->input('per_page', 10);
+        
         $siswa = $query->orderBy('created_at', 'desc')
-            ->paginate(10)
+            ->paginate($perPage)
             ->withQueryString();
 
         $kelasList = Kelas::orderBy('nama')->pluck('nama');
@@ -145,23 +148,44 @@ class SiswaController extends Controller
             ->with('success', count($request->ids) . ' data siswa berhasil diperbarui');
     }
     public function import(Request $request)
-{
-    $request->validate([
-        'file' => 'required|mimes:xlsx,xls,csv'
-    ]);
-
-    try {
-        Excel::import(new SiswaImport, $request->file('file'));
-
-        return redirect()->back()->with([
-            'success' => 'Import data siswa berhasil!'
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:5120'
         ]);
-    } catch (\Exception $e) {
-        return redirect()->back()->with([
-            'error' => 'Terjadi kesalahan saat import: ' . $e->getMessage()
-        ]);
+
+        try {
+            $import = new SiswaImport;
+            Excel::import($import, $request->file('file'));
+            
+            $successCount = $import->getSuccessCount();
+            $errorCount = $import->getErrorCount();
+            $errors = $import->getErrors();
+            
+            // Tentukan flash message berdasarkan hasil
+            $redirect = redirect()->back()
+                ->with('importResult', [
+                    'successCount' => $successCount,
+                    'errorCount' => $errorCount,
+                    'errors' => $errors,
+                ]);
+            
+            if ($successCount > 0 && $errorCount === 0) {
+                $redirect->with('success', "Berhasil mengimport {$successCount} data siswa");
+            } elseif ($successCount > 0 && $errorCount > 0) {
+                $redirect->with('warning', "Import selesai: {$successCount} berhasil, {$errorCount} gagal");
+            } elseif ($successCount === 0 && $errorCount > 0) {
+                $redirect->with('error', "Import gagal: semua {$errorCount} data tidak valid");
+            } else {
+                $redirect->with('warning', "Tidak ada data yang diimport");
+            }
+            
+            return $redirect;
+                
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat import: ' . $e->getMessage());
+        }
     }
-}
     public function downloadTemplate()
     {
         return Excel::download(new \App\Exports\SiswaTemplateExport, 'template_siswa.xlsx');

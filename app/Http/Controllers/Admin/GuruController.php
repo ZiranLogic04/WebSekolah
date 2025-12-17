@@ -245,13 +245,29 @@ class GuruController extends Controller
             $import = new GuruImport;
             Excel::import($import, $request->file('file'));
             
-            return redirect()->route('admin.guru.index')
-                ->with('success', "Berhasil mengimport data guru")
+            $successCount = $import->getSuccessCount();
+            $errorCount = $import->getErrorCount();
+            $errors = $import->getErrors();
+            
+            // Tentukan flash message berdasarkan hasil
+            $redirect = redirect()->route('guru.index')
                 ->with('importResult', [
-                    'successCount' => $import->getSuccessCount(),
-                    'errorCount' => $import->getErrorCount(),
-                    'errors' => $import->getErrors(),
+                    'successCount' => $successCount,
+                    'errorCount' => $errorCount,
+                    'errors' => $errors,
                 ]);
+            
+            if ($successCount > 0 && $errorCount === 0) {
+                $redirect->with('success', "Berhasil mengimport {$successCount} data guru");
+            } elseif ($successCount > 0 && $errorCount > 0) {
+                $redirect->with('warning', "Import selesai: {$successCount} berhasil, {$errorCount} gagal");
+            } elseif ($successCount === 0 && $errorCount > 0) {
+                $redirect->with('error', "Import gagal: semua {$errorCount} data tidak valid");
+            } else {
+                $redirect->with('warning', "Tidak ada data yang diimport");
+            }
+            
+            return $redirect;
                 
         } catch (\Exception $e) {
             return redirect()->back()

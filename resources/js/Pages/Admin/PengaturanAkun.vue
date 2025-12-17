@@ -77,11 +77,7 @@ watch(() => page.props.flash, (flash) => {
                 <div class="col-md-12">
                     <div class="profile-header">
                         <div class="row align-items-center">
-                            <div class="col-auto profile-image">
-                                <a href="#">
-                                    <img class="rounded-circle" alt="User Image" src="/assets/img/profiles/avatar-01.jpg">
-                                </a>
-                            </div>
+
                             <div class="col ms-md-n2 profile-user-info">
                                 <h4 class="user-name mb-0">{{ currentUser.name }}</h4>
                                 <h6 class="text-muted">{{ currentUser.email }}</h6>

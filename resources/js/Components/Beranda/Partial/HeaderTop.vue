@@ -6,16 +6,16 @@
         <div class="header-top-left">
           <div class="header-top-social">
             <span>Follow Us: </span>
-            <a :href="$page.props.lembaga?.facebook || '#'" target="_blank" aria-label="Facebook" v-if="$page.props.lembaga?.facebook">
+            <a href="https://www.facebook.com/" target="_blank" aria-label="Facebook">
               <i class="fab fa-facebook-f"></i>
             </a>
-            <a :href="$page.props.lembaga?.instagram || '#'" target="_blank" aria-label="Instagram" v-if="$page.props.lembaga?.instagram">
+            <a href="https://www.instagram.com/" target="_blank" aria-label="Instagram">
               <i class="fab fa-instagram"></i>
             </a>
-            <a :href="$page.props.lembaga?.twitter || '#'" target="_blank" aria-label="X" v-if="$page.props.lembaga?.twitter">
+            <a href="https://x.com/" target="_blank" aria-label="X">
               <i class="fab fa-twitter"></i>
             </a>
-            <a :href="'https://wa.me/' + ($page.props.lembaga?.whatsapp || '').replace(/[^0-9]/g, '')" target="_blank" aria-label="WhatsApp" v-if="$page.props.lembaga?.whatsapp">
+            <a href="#" target="_blank" aria-label="WhatsApp">
               <i class="fab fa-whatsapp"></i>
             </a>
           </div>
@@ -62,19 +62,28 @@
 // Komponen tidak memerlukan logic tambahan untuk sekarang
 </script>
 
-<style scoped>
-/* Tambahkan styling sesuai kebutuhan */
-.truncate {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 200px;
-  display: inline-block;
+<style>
+/* Force styling for social icons to ensure visibility */
+.header-top-social span {
+    color: #ffffff;
+    font-weight: 500;
 }
 
-@media (max-width: 768px) {
-  .truncate {
-    max-width: 150px;
-  }
+.header-top-social a {
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+    color: #ffffff;
+    font-size: 16px;
+    background: #116E63; /* var(--theme-color) */
+    text-align: center;
+    margin-left: 5px;
+    border-radius: 50%;
+    transition: all .5s ease-in-out;
+    display: inline-block;
+}
+
+.header-top-social a:hover {
+    color: #FDA31B; /* var(--theme-color2) */
 }
 </style>

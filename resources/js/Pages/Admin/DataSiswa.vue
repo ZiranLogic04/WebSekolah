@@ -171,165 +171,99 @@
                     </div>
                 </div>
                 <div class="card-body p-0">
-                    <EasyDataTable
-                        :headers="headers"
-                        :items="tableData"
-                        :loading="loading"
-                        buttons-pagination
-                        :rows-per-page="siswa.per_page || 10"
-                        
-                        alternating
-                        border-cell
-                        table-class-name="modern-data-table"
-                        header-text-direction="center"
-                        body-text-direction="center"
-                    >
-                        <!-- No Column -->
-                        <template #item-no="{ no }">
-        <div class="table-index">
-            {{ no }}
-        </div>
-    </template>
-
-                        <!-- Checkbox Column untuk multi select -->
-                        <template #item-select="item">
-                            <div class="text-center">
-                                <input
-                                    type="checkbox"
-                                    class="form-check-input"
-                                    :value="item.id"
-                                    v-model="selectedStudents"
-                                    :id="'student-' + item.id"
-                                />
-                            </div>
-                        </template>
-
-                        <!-- Nama Column tanpa avatar dan info tambahan -->
-                        <template #item-nama="{ nama }">
-                            <div class="student-name">
-                                <div class="fw-semibold">{{ nama }}</div>
-                            </div>
-                        </template>
-
-                        <!-- Kelas Column -->
-                        <template #item-kelas="item">
-                            <span class="badge kelas-badge">{{
-                                item.kelas
-                            }}</span>
-                        </template>
-
-                        <!-- Jenis Kelamin Column -->
-                        <template #item-jenis_kelamin="item">
-                            <div
-                                class="gender-badge"
-                                :class="
-                                    item.jenis_kelamin === 'L'
-                                        ? 'male'
-                                        : 'female'
-                                "
-                            >
-                                <i
-                                    :class="
-                                        item.jenis_kelamin === 'L'
-                                            ? 'fas fa-mars'
-                                            : 'fas fa-venus'
-                                    "
-                                ></i>
-                                <span>{{
-                                    item.jenis_kelamin === "L" ? "L" : "P"
-                                }}</span>
-                            </div>
-                        </template>
-
-                        <!-- Tanggal Lahir Column -->
-                        <template #item-tanggal_lahir="item">
-                            <div class="fw-medium">
-                                {{ formatShortDate(item.tanggal_lahir) }}
-                            </div>
-                        </template>
-
-                        <!-- No. Telp Column -->
-                        <template #item-no_telepon="item">
-                            <div class="phone-number">
-                                <i class="fas fa-phone me-1 text-muted"></i>
-                                {{ item.no_telepon || "-" }}
-                            </div>
-                        </template>
-
-                        <!-- Status Column -->
-                        <template #item-status="item">
-                            <span
-                                class="status-badge"
-                                :class="getStatusClass(item.status)"
-                            >
-                                <i
-                                    :class="
-                                        getStatusIcon(item.status) + ' me-1'
-                                    "
-                                ></i>
-                                {{ item.status }}
-                            </span>
-                        </template>
-
-                        <!-- Actions Column -->
-                        <template #item-actions="item">
-                            <div class="action-buttons">
-                                <button
-                                    class="btn btn-action btn-view"
-                                    @click="viewStudentDetail(item)"
-                                    title="Detail"
-                                >
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button
-                                    class="btn btn-action btn-edit"
-                                    @click="editStudent(item)"
-                                    title="Edit"
-                                >
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button
-                                    class="btn btn-action btn-delete"
-                                    @click.stop.prevent="confirmDelete(item)"
-                                    title="Hapus"
-                                    type="button"
-                                >
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </template>
-
-                        <!-- Empty State -->
-                        <template #empty-message>
-                            <div class="empty-state text-center py-5">
-                                <div class="empty-icon mb-3">
-                                    <i
-                                        class="fas fa-users fa-4x text-light"
-                                    ></i>
-                                </div>
-                                <h5 class="mb-2">Tidak ada data siswa</h5>
-                                <p class="text-muted mb-4">
-                                    Belum ada data siswa yang tersedia
-                                </p>
-                                <button
-                                    @click="showAddModal = true"
-                                    class="btn btn-primary"
-                                >
-                                    <i class="fas fa-plus me-1"></i>Tambah Siswa
-                                </button>
-                            </div>
-                        </template>
-                    </EasyDataTable>
+                    <div class="table-responsive">
+                        <table class="table table-modern mb-0">
+                            <thead>
+                                <tr>
+                                    <th width="50">
+                                        <input type="checkbox" class="form-check-input" @change="toggleSelectAll" :checked="isAllSelected">
+                                    </th>
+                                    <th width="60">No</th>
+                                    <th>NIS</th>
+                                    <th>Nama</th>
+                                    <th>Kelas</th>
+                                    <th>L/P</th>
+                                    <th>Tgl Lahir</th>
+                                    <th>No. Telp</th>
+                                    <th>Status</th>
+                                    <th width="140">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-if="tableData.length === 0">
+                                    <td colspan="10" class="text-center py-5">
+                                        <div class="empty-state">
+                                            <div class="empty-icon mb-3">
+                                                <i class="fas fa-users fa-3x text-muted"></i>
+                                            </div>
+                                            <h5 class="mb-2">Tidak ada data siswa</h5>
+                                            <p class="text-muted mb-4">Belum ada data siswa yang tersedia</p>
+                                            <button @click="showAddModal = true" class="btn btn-primary">
+                                                <i class="fas fa-plus me-1"></i>Tambah Siswa
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr v-for="(item, index) in tableData" :key="item.id" :class="{ 'row-selected': selectedStudents.includes(item.id) }">
+                                    <td>
+                                        <input type="checkbox" class="form-check-input" :value="item.id" v-model="selectedStudents">
+                                    </td>
+                                    <td class="text-center fw-medium text-muted">{{ siswa.from + index }}</td>
+                                    <td class="fw-medium">{{ item.nis }}</td>
+                                    <td class="fw-semibold">{{ item.nama }}</td>
+                                    <td class="text-center">
+                                        <span class="badge kelas-badge">{{ item.kelas }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="gender-badge" :class="item.jenis_kelamin === 'L' ? 'male' : 'female'">
+                                            <i :class="item.jenis_kelamin === 'L' ? 'fas fa-mars' : 'fas fa-venus'"></i>
+                                            {{ item.jenis_kelamin }}
+                                        </div>
+                                    </td>
+                                    <td class="text-center">{{ formatShortDate(item.tanggal_lahir) }}</td>
+                                    <td class="text-center">
+                                        <span class="phone-number">{{ item.no_telepon || '-' }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="status-badge" :class="getStatusClass(item.status)">
+                                            <i :class="getStatusIcon(item.status) + ' me-1'"></i>
+                                            {{ item.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-action btn-view" @click="viewStudentDetail(item)" title="Detail">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-action btn-edit" @click="editStudent(item)" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-action btn-delete" @click.stop.prevent="confirmDelete(item)" title="Hapus" type="button">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
                     <!-- Pagination -->
                     <div class="p-3 border-top">
-                        <div
-                            class="d-flex justify-content-between align-items-center"
-                        >
-                            <div>
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-muted small">Tampilkan</span>
+                                    <select class="form-select form-select-sm" style="width: 70px;" v-model="perPage" @change="changePerPage">
+                                        <option :value="10">10</option>
+                                        <option :value="25">25</option>
+                                        <option :value="50">50</option>
+                                        <option :value="100">100</option>
+                                    </select>
+                                    <span class="text-muted small">data</span>
+                                </div>
                                 <small class="text-muted">
-                                    Menampilkan {{ siswa.from }} sampai
-                                    {{ siswa.to }} dari {{ siswa.total }} data
+                                    Menampilkan {{ siswa.from || 0 }} - {{ siswa.to || 0 }} dari {{ siswa.total || 0 }}
                                 </small>
                             </div>
                             <div>
@@ -1583,6 +1517,17 @@ const filters = reactive({
     jenis_kelamin: props.filters?.jenis_kelamin || "",
 });
 
+// Per page untuk pagination
+const perPage = ref(props.siswa?.per_page || 10);
+
+const changePerPage = () => {
+    router.get("/admin/siswa", { ...filters, per_page: perPage.value }, {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true,
+    });
+};
+
 // Student data untuk operasi
 const selectedStudent = ref(null);
 const studentToDelete = ref(null);
@@ -1694,6 +1639,21 @@ const tableData = computed(() => {
         no: start + index + 1
     }));
 });
+
+// Computed untuk check apakah semua terpilih
+const isAllSelected = computed(() => {
+    if (tableData.value.length === 0) return false;
+    return tableData.value.every(item => selectedStudents.value.includes(item.id));
+});
+
+// Toggle select all
+const toggleSelectAll = (event) => {
+    if (event.target.checked) {
+        selectedStudents.value = tableData.value.map(item => item.id);
+    } else {
+        selectedStudents.value = [];
+    }
+};
 
 // Debounce untuk search
 let searchTimeout = null;

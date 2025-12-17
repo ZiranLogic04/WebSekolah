@@ -30,21 +30,17 @@
                 <li class="nav-item dropdown has-arrow new-user-menus">
                     <a href="#" class="dropdown-toggle nav-link" data-bs-toggle="dropdown">
                         <span class="user-img">
-                            <img class="rounded-circle" src="/assets/img/profiles/avatar-01.jpg" width="31" alt="User Image">
                             <div class="user-text">
-                                <h6>{{ page.props.auth?.user?.name || 'Administrator' }}</h6>
-                                <p class="text-muted mb-0">Admin</p>
+                                <h6>{{ page.props.auth?.user?.name || 'User' }}</h6>
+                                <p class="text-muted mb-0">{{ roleLabel }}</p>
                             </div>
                         </span>
                     </a>
                     <div class="dropdown-menu">
                         <div class="user-header">
-                            <div class="avatar avatar-sm">
-                                <img src="/assets/img/profiles/avatar-01.jpg" alt="User Image" class="avatar-img rounded-circle">
-                            </div>
                             <div class="user-text">
-                                <h6>{{ page.props.auth?.user?.name || 'Administrator' }}</h6>
-                                <p class="text-muted mb-0">Admin</p>
+                                <h6>{{ page.props.auth?.user?.name || 'User' }}</h6>
+                                <p class="text-muted mb-0">{{ roleLabel }}</p>
                             </div>
                         </div>
                         <Link class="dropdown-item" href="/admin/profile">Profil Saya</Link>
@@ -65,7 +61,7 @@
                             <span>Main Menu</span>
                         </li>
 
-                        <!-- Dashboard -->
+                        <!-- Dashboard - Semua user -->
                         <li :class="{ active: isUrlActive('/admin/dashboard') }">
                             <Link href="/admin/dashboard">
                                 <i class="feather-grid"></i>
@@ -73,25 +69,26 @@
                             </Link>
                         </li>
 
-                        <!-- Post/Berita -->
-                        <!-- Post/Berita -->
-                        <li :class="{ active: isUrlActive('/admin/posts') }">
+                        <!-- Post/Berita - Admin only -->
+                        <li v-if="isAdmin" :class="{ active: isUrlActive('/admin/posts') }">
                             <Link href="/admin/posts">
                                 <i class="fas fa-newspaper"></i>
                                 <span>Post/Berita</span>
                             </Link>
                         </li>
 
-                        <!-- Halaman -->
-                        <li :class="{ active: isUrlActive('/admin/pages') }">
+                        <!-- Halaman - Admin only -->
+                        <li v-if="isAdmin" :class="{ active: isUrlActive('/admin/pages') }">
                             <Link href="/admin/pages">
                                 <i class="fas fa-file-alt"></i>
                                 <span>Halaman</span>
                             </Link>
                         </li>
 
-                        <!-- Master Induk -->
-                        <li class="submenu" :class="{ active: isUrlActive(['/admin/siswa', '/admin/guru', '/admin/lembaga']) }">
+
+
+                        <!-- Master Induk - Admin only -->
+                        <li v-if="isAdmin" class="submenu" :class="{ active: isUrlActive(['/admin/siswa', '/admin/guru', '/admin/lembaga']) }">
                             <a href="#" @click.prevent="toggleSubmenu('master')" :class="{ subdrop: openSubmenu === 'master' }">
                                 <i class="fas fa-database"></i>
                                 <span>Master Induk</span>
@@ -108,8 +105,8 @@
                             </transition>
                         </li>
 
-                        <!-- Surat-Surat -->
-                        <li class="submenu" :class="{ active: isUrlActive(['/admin/surat-masuk', '/admin/surat-keluar', '/admin/rekap-surat']) }">
+                        <!-- Surat-Surat - Admin & Staf Administrasi -->
+                        <li v-if="canAccessSurat" class="submenu" :class="{ active: isUrlActive(['/admin/surat-masuk', '/admin/surat-keluar', '/admin/rekap-surat']) }">
                             <a href="#" @click.prevent="toggleSubmenu('letters')" :class="{ subdrop: openSubmenu === 'letters' }">
                                 <i class="fas fa-envelope"></i>
                                 <span>Surat-Surat</span>
@@ -124,8 +121,8 @@
                             </transition>
                         </li>
 
-                        <!-- Keuangan -->
-                        <li class="submenu" :class="{ active: isUrlActive(['/admin/transaksi', '/admin/tagihan', '/admin/jenis-tagihan', '/admin/uang-sekolah', '/admin/pengeluaran', '/admin/transaksi-manual']) }">
+                        <!-- Keuangan - Admin & Staf Keuangan -->
+                        <li v-if="canAccessKeuangan" class="submenu" :class="{ active: isUrlActive(['/admin/transaksi', '/admin/tagihan', '/admin/jenis-tagihan', '/admin/uang-sekolah', '/admin/pengeluaran', '/admin/transaksi-manual']) }">
                             <a href="#" @click.prevent="toggleSubmenu('finance')" :class="{ subdrop: openSubmenu === 'finance' }">
                                 <i class="fas fa-wallet"></i>
                                 <span>Keuangan</span>
@@ -144,8 +141,13 @@
                             </transition>
                         </li>
 
-                        <!-- Galeri (Coming Soon) -->
-                        <!-- Menu Galeri akan ditambahkan setelah route tersedia -->
+                        <!-- Gallery - Admin only -->
+                        <li v-if="isAdmin" :class="{ active: isUrlActive('/admin/gallery') }">
+                            <Link href="/admin/gallery">
+                                <i class="fas fa-images"></i>
+                                <span>Gallery</span>
+                            </Link>
+                        </li>
                         
                     </ul>
                 </div>
@@ -167,6 +169,26 @@ import { Link, usePage } from "@inertiajs/vue3";
 
 const page = usePage();
 
+// Get user role
+const userRole = computed(() => page.props.auth?.user?.role || 'user');
+
+// Role checks
+const isAdmin = computed(() => userRole.value === 'admin');
+const canAccessSurat = computed(() => ['admin', 'staf_administrasi'].includes(userRole.value));
+const canAccessKeuangan = computed(() => ['admin', 'staf_keuangan'].includes(userRole.value));
+
+// Role label for display
+const roleLabel = computed(() => {
+    const labels = {
+        'admin': 'Administrator',
+        'staf_keuangan': 'Staf Keuangan',
+        'staf_administrasi': 'Staf Administrasi',
+        'guru': 'Guru',
+        'siswa': 'Siswa',
+    };
+    return labels[userRole.value] || 'User';
+});
+
 // State
 const openSubmenu = ref(null);
 const activeDropdown = ref(null);
@@ -183,8 +205,6 @@ const isUrlActive = (paths) => {
     }
     return currentUrl.startsWith(paths);
 };
-
-
 
 // Animasi masuk (slide down)
 const enter = (element) => {
@@ -258,6 +278,4 @@ onBeforeUnmount(() => {
 .sidebar-menu ul ul {
     overflow: hidden;
 }
-
-
 </style>

@@ -1,39 +1,39 @@
 <template>
   <BerandaLayout>
     <!-- Hero Slider -->
-    <HeroSlider :data="sections.hero?.content" />
+    <HeroSlider />
     
     <!-- Feature Area -->
-    <FeatureArea :data="sections.feature?.content" />
+    <FeatureArea />
     
     <!-- About Area -->
-    <AboutArea :data="sections.about?.content" />
+    <AboutArea />
     
-    <!-- Counter Area -->
+    <!-- Counter Area (TETAP DINAMIS) -->
     <CounterArea :stats="stats" />
     
     <!-- Department Area (Program) -->
-    <DepartmentArea :data="sections.program?.content" />
+    <DepartmentArea />
     
     <!-- Video Area -->
-    <VideoArea :data="sections.video?.content" />
+    <VideoArea />
     
     <!-- Team / Guru Area -->
-    <TeamArea :data="sections.team?.content" />
+    <TeamArea />
     
     <!-- Choose Area -->
-    <ChooseArea :data="sections.choose?.content" />
+    <ChooseArea />
     
     <!-- Portfolio Area -->
-    <PortofolioArea :data="sections.portfolio?.content" />
+    <PortofolioArea />
     
     <!-- Event Area -->
-    <EventArea :data="sections.event?.content" />
+    <EventArea />
     
     <!-- Testimonial Area -->
-    <TestimonialArea :data="sections.testimonial?.content" />
+    <TestimonialArea />
     
-    <!-- Blog Area -->
+    <!-- Blog Area (TETAP DINAMIS) -->
     <BlogArea :posts="posts" />
     
     <!-- Partner Area -->
@@ -60,7 +60,6 @@ import PartnerArea from '@/Components/Beranda/PartnerArea.vue'
 
 defineProps({
     posts: Array,
-    sections: Object,
     stats: Object 
 });
 </script>

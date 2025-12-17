@@ -5,152 +5,140 @@
             <div class="page-header">
                 <div class="row align-items-center">
                     <div class="col">
-                        <h3 class="page-title">Edit: {{ title }}</h3>
-                        <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><Link href="/dashboard">Dashboard</Link></li>
-                            <li class="breadcrumb-item"><Link href="/admin/pages">Halaman</Link></li>
-                            <li class="breadcrumb-item active">Edit</li>
-                        </ul>
+                        <div class="d-flex align-items-center gap-3">
+                            <Link href="/admin/pages" class="back-btn">
+                                <i class="fas fa-arrow-left"></i>
+                            </Link>
+                            <div>
+                                <h3 class="page-title mb-1">{{ title }}</h3>
+                                <ul class="breadcrumb mb-0">
+                                    <li class="breadcrumb-item"><Link href="/admin/dashboard">Dashboard</Link></li>
+                                    <li class="breadcrumb-item"><Link href="/admin/pages">Halaman</Link></li>
+                                    <li class="breadcrumb-item active">Edit</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="row justify-content-center">
-                <div class="col-md-9">
+                <div class="col-lg-10">
                     <form @submit.prevent="submit">
                         
+                        <!-- Form Groups -->
                         <div class="form-groups-container">
-                            <div v-for="(group, gIndex) in fieldGroups" :key="gIndex" class="card border-0 shadow-sm mb-4">
-                                <div class="card-header bg-white py-3 border-bottom-0">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-layer-group me-3 text-primary fs-5"></i>
-                                        <div>
-                                            <h5 class="mb-0 fw-bold text-dark">{{ group.title || 'Informasi Umum' }}</h5>
-                                            <p v-if="group.description" class="text-muted small mb-0 mt-1">{{ group.description }}</p>
-                                        </div>
+                            <div v-for="(group, gIndex) in fieldGroups" :key="gIndex" class="form-card">
+                                <div class="form-card-header">
+                                    <div class="header-icon">
+                                        <i class="fas fa-layer-group"></i>
+                                    </div>
+                                    <div class="header-text">
+                                        <h5>{{ group.title || 'Informasi Umum' }}</h5>
+                                        <p v-if="group.description">{{ group.description }}</p>
                                     </div>
                                 </div>
                                 
-                                <div class="card-body p-4 pt-0">
-                                    <hr class="mt-0 mb-4 text-muted opacity-25">
+                                <div class="form-card-body">
                                     
-                                    <!-- Auto Split Layout (If Image Exists) -->
+                                    <!-- Layout with Image -->
                                     <div class="row" v-if="group.fields.some(f => f.type === 'image')">
-                                        <!-- Col Left: Image -->
-                                        <div class="col-md-4 mb-4">
-                                            <div v-for="(field, fIndex) in group.fields.filter(f => f.type === 'image')" :key="'img'+fIndex" class="mb-3">
-                                                <div class="card border-0 bg-light h-100">
-                                                    <div class="card-body p-3 text-center d-flex flex-column justify-content-center">
-                                                        <label class="small text-uppercase fw-bold text-muted mb-3">{{ field.label }}</label>
-                                                        <!-- Preview Larger -->
-                                                        <div class="mb-3 bg-white shadow-sm rounded-3 overflow-hidden position-relative mx-auto" style="width: 100%; padding-top: 56.25%;">
-                                                            <div class="position-absolute top-0 start-0 w-100 h-100">
-                                                                <img v-if="previews[field.name] || (section.content && section.content[field.name])" 
-                                                                     :src="previews[field.name] || `/storage/${section.content[field.name]}`" 
-                                                                     class="w-100 h-100 object-fit-cover">
-                                                                <div v-else class="w-100 h-100 d-flex align-items-center justify-content-center text-muted bg-secondary bg-opacity-10">
-                                                                    <div class="text-center">
-                                                                        <i class="fas fa-cloud-upload-alt fa-2x mb-2 opacity-50"></i>
-                                                                        <p class="small mb-0 fst-italic">No Image</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <!-- Input -->
-                                                        <input type="file" class="form-control form-control-sm" @change="handleImageUpload($event, field.name)" accept="image/*">
+                                        <!-- Image Column -->
+                                        <div class="col-md-4">
+                                            <div v-for="(field, fIndex) in group.fields.filter(f => f.type === 'image')" :key="'img'+fIndex" class="image-upload-box">
+                                                <label class="field-label">{{ field.label }}</label>
+                                                <div class="image-preview">
+                                                    <img v-if="previews[field.name] || (section.content && section.content[field.name])" 
+                                                         :src="previews[field.name] || `/storage/${section.content[field.name]}`">
+                                                    <div v-else class="no-image">
+                                                        <i class="fas fa-cloud-upload-alt"></i>
+                                                        <span>Upload Gambar</span>
                                                     </div>
                                                 </div>
+                                                <input type="file" class="file-input" @change="handleImageUpload($event, field.name)" accept="image/*">
                                             </div>
                                         </div>
 
-                                        <!-- Col Right: Text Inputs -->
+                                        <!-- Text Fields Column -->
                                         <div class="col-md-8">
-                                            <div class="row">
-                                                <div class="col-12" v-for="(field, fIndex) in group.fields.filter(f => f.type !== 'image')" :key="'txt'+fIndex">
-                                                    
-                                                    <!-- Modern Floating Input -->
-                                                    <div class="form-floating mb-3" v-if="['text', 'number'].includes(field.type)">
-                                                        <input :type="field.type" class="form-control" :id="field.name" :placeholder="field.label" v-model="form[field.name]">
-                                                        <label :for="field.name">{{ field.label }}</label>
-                                                    </div>
+                                            <div v-for="(field, fIndex) in group.fields.filter(f => f.type !== 'image')" :key="'txt'+fIndex">
+                                                
+                                                <!-- Text Input -->
+                                                <div class="modern-input" v-if="['text', 'number'].includes(field.type)">
+                                                    <input :type="field.type" :id="field.name" placeholder=" " v-model="form[field.name]">
+                                                    <label :for="field.name">{{ field.label }}</label>
+                                                </div>
 
-                                                    <!-- Modern Floating Textarea -->
-                                                    <div class="form-floating mb-3" v-if="field.type === 'textarea'">
-                                                        <textarea class="form-control" :id="field.name" :placeholder="field.label" 
-                                                                  v-model="form[field.name]" style="height: 100px"></textarea>
-                                                        <label :for="field.name">{{ field.label }}</label>
-                                                    </div>
+                                                <!-- Textarea -->
+                                                <div class="modern-input" v-if="field.type === 'textarea'">
+                                                    <textarea :id="field.name" placeholder=" " v-model="form[field.name]" rows="3"></textarea>
+                                                    <label :for="field.name">{{ field.label }}</label>
+                                                </div>
 
-                                                    <!-- Visual Icon Picker (Compact) -->
-                                                    <div class="mb-4" v-if="field.type === 'icon_picker'">
-                                                        <label class="form-label small text-uppercase fw-bold text-muted mb-2">{{ field.label }}</label>
-                                                        <div class="row g-1">
-                                                            <div class="col-3 col-lg-2" v-for="(label, value) in field.options" :key="value">
-                                                                <div 
-                                                                    class="card h-100 cursor-pointer icon-card border-1" 
-                                                                    :class="{'border-primary bg-primary bg-opacity-10 shadow-sm': form[field.name] === value}"
-                                                                    @click="form[field.name] = value"
-                                                                    style="cursor: pointer; transition: all 0.2s; min-height: 60px;"
-                                                                    :title="label"
-                                                                >
-                                                                    <div class="card-body text-center p-1 d-flex flex-column align-items-center justify-content-center">
-                                                                        <i :class="value" class="mb-1" :style="{ color: form[field.name] === value ? '#0d6efd' : '#6c757d', fontSize: '24px' }"></i>
-                                                                        <div style="font-size: 8px; line-height: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 100%;" class="text-muted">{{ label }}</div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                <!-- Icon Picker -->
+                                                <div class="icon-picker-box" v-if="field.type === 'icon_picker'">
+                                                    <label class="field-label">{{ field.label }}</label>
+                                                    <div class="icon-grid">
+                                                        <div v-for="(label, value) in field.options" :key="value"
+                                                             class="icon-item"
+                                                             :class="{ active: form[field.name] === value }"
+                                                             @click="form[field.name] = value"
+                                                             :title="label">
+                                                            <i :class="value"></i>
                                                         </div>
                                                     </div>
-
                                                 </div>
+
+                                                <!-- Rich Text Editor -->
+                                                <div class="richtext-box" v-if="field.type === 'richtext'">
+                                                    <label class="field-label">{{ field.label }}</label>
+                                                    <div class="editor-wrapper">
+                                                        <QuillEditor theme="snow" v-model:content="form[field.name]" contentType="html" toolbar="minimal" />
+                                                    </div>
+                                                </div>
+
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Standard Stacked Layout (No Image) -->
-                                    <div class="row" v-else>
-                                        <div class="col-12 mb-4" v-for="(field, fIndex) in group.fields" :key="fIndex">
+                                    <!-- Standard Layout (No Image) -->
+                                    <div v-else>
+                                        <div v-for="(field, fIndex) in group.fields" :key="fIndex">
                                             
-                                            <!-- Modern Floating Input -->
-                                            <div class="form-floating mb-3" v-if="['text', 'number'].includes(field.type)">
-                                                <input :type="field.type" class="form-control" :id="field.name" :placeholder="field.label" v-model="form[field.name]">
+                                            <!-- Text Input -->
+                                            <div class="modern-input" v-if="['text', 'number'].includes(field.type)">
+                                                <input :type="field.type" :id="field.name" placeholder=" " v-model="form[field.name]">
                                                 <label :for="field.name">{{ field.label }}</label>
                                             </div>
 
-                                            <!-- Modern Floating Textarea -->
-                                            <div class="form-floating mb-3" v-if="field.type === 'textarea'">
-                                                <textarea class="form-control" :id="field.name" :placeholder="field.label" 
-                                                          v-model="form[field.name]" style="height: 100px"></textarea>
+                                            <!-- Textarea -->
+                                            <div class="modern-input" v-if="field.type === 'textarea'">
+                                                <textarea :id="field.name" placeholder=" " v-model="form[field.name]" rows="3"></textarea>
                                                 <label :for="field.name">{{ field.label }}</label>
                                             </div>
 
-                                            <!-- Visual Icon Picker (Compact) -->
-                                            <div class="mb-4" v-if="field.type === 'icon_picker'">
-                                                <label class="form-label small text-uppercase fw-bold text-muted mb-2">{{ field.label }}</label>
-                                                <div class="row g-1">
-                                                    <div class="col-3 col-sm-2 col-xl-1" v-for="(label, value) in field.options" :key="value">
-                                                        <div 
-                                                            class="card h-100 cursor-pointer icon-card border-1" 
-                                                            :class="{'border-primary bg-primary bg-opacity-10 shadow-sm': form[field.name] === value}"
-                                                            @click="form[field.name] = value"
-                                                            style="cursor: pointer; transition: all 0.2s; min-height: 60px;"
-                                                            :title="label"
-                                                        >
-                                                            <div class="card-body text-center p-1 d-flex flex-column align-items-center justify-content-center">
-                                                                <i :class="value" class="mb-1" :style="{ color: form[field.name] === value ? '#0d6efd' : '#6c757d', fontSize: '24px' }"></i>
-                                                            </div>
-                                                        </div>
+                                            <!-- Icon Picker -->
+                                            <div class="icon-picker-box" v-if="field.type === 'icon_picker'">
+                                                <label class="field-label">{{ field.label }}</label>
+                                                <div class="icon-grid">
+                                                    <div v-for="(label, value) in field.options" :key="value"
+                                                         class="icon-item"
+                                                         :class="{ active: form[field.name] === value }"
+                                                         @click="form[field.name] = value"
+                                                         :title="label">
+                                                        <i :class="value"></i>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <!-- Rich Text (Standard) -->
-                                            <div class="mb-4" v-if="field.type === 'richtext'">
-                                                <label class="form-label small text-uppercase fw-bold text-muted mb-2">{{ field.label }}</label>
-                                                <div class="bg-white rounded-3 shadow-sm border overflow-hidden">
+                                            <!-- Rich Text Editor -->
+                                            <div class="richtext-box" v-if="field.type === 'richtext'">
+                                                <label class="field-label">{{ field.label }}</label>
+                                                <div class="editor-wrapper">
                                                     <QuillEditor theme="snow" v-model:content="form[field.name]" contentType="html" toolbar="minimal" />
                                                 </div>
                                             </div>
+
                                         </div>
                                     </div>
 
@@ -159,15 +147,17 @@
                         </div>
 
                         <!-- Action Bar -->
-                        <div class="d-flex justify-content-end mt-4 p-3 bg-white shadow-sm rounded">
-                            <Link href="/admin/pages" class="btn btn-light text-muted me-3">Batal</Link>
-                            <button type="submit" class="btn btn-primary px-5 fw-bold" :disabled="form.processing">
-                                <i class="fas fa-save me-2"></i> Simpan Data
+                        <div class="action-bar">
+                            <Link href="/admin/pages" class="cancel-btn">
+                                <i class="fas fa-times me-2"></i>Batal
+                            </Link>
+                            <button type="submit" class="save-btn" :disabled="form.processing">
+                                <i class="fas fa-save me-2"></i>
+                                <span v-if="form.processing">Menyimpan...</span>
+                                <span v-else>Simpan Perubahan</span>
                             </button>
                         </div>
                         
-                        <div style="height: 50px;"></div>
-
                     </form>
                 </div>
             </div>
@@ -183,39 +173,33 @@ import { QuillEditor } from '@vueup/vue-quill';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 const props = defineProps({
-    section: Object, // Database record
-    schema: Array,   // Field definitions
+    section: Object,
+    schema: Array,
     title: String
 });
 
-    // Pre-process schema into groups
 const fieldGroups = computed(() => {
     const groups = [];
     let currentGroup = { title: null, description: null, fields: [] };
 
     props.schema.forEach(field => {
         if (field.group_title) {
-            // Push previous group if it has fields
             if (currentGroup.fields.length > 0) {
                 groups.push(currentGroup);
             }
-            // Start new group
             currentGroup = { 
                 title: field.group_title, 
                 description: field.group_description || null,
-                image: field.group_image || null,
                 fields: [] 
             };
         }
         currentGroup.fields.push(field);
     });
     
-    // Push the last group
     if (currentGroup.fields.length > 0) {
         groups.push(currentGroup);
     }
 
-    // Specila case: if no groups defined, wrap all in one
     if (groups.length === 0 && props.schema.length > 0) {
         groups.push({ title: 'Konten Halaman', description: 'Silakan edit konten di bawah ini.', fields: props.schema });
     }
@@ -223,13 +207,10 @@ const fieldGroups = computed(() => {
     return groups;
 });
 
-// Initialize form data from existing content
 const initialData = {};
 props.schema.forEach(field => {
     initialData[field.name] = props.section.content?.[field.name] || '';
 });
-
-// Add method spoofing for PUT
 initialData['_method'] = 'PUT';
 
 const form = useForm(initialData);
@@ -239,8 +220,6 @@ const handleImageUpload = (event, fieldName) => {
     const file = event.target.files[0];
     if (file) {
         form[fieldName] = file;
-        
-        // Create local preview
         const reader = new FileReader();
         reader.onload = (e) => {
             previews.value[fieldName] = e.target.result;
@@ -250,17 +229,325 @@ const handleImageUpload = (event, fieldName) => {
 };
 
 const submit = () => {
-    // Determine route parameter based on section key
     form.post(`/admin/pages/${props.section.key}`, {
         preserveScroll: true,
-        forceFormData: true, // Crucial for file uploads with PUT/POST spoofing
+        forceFormData: true,
     });
 };
 </script>
 
 <style scoped>
-.form-control:focus {
-    border-color: #86b7fe;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+/* Back Button */
+.back-btn {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #495057;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: linear-gradient(135deg, #3d5ee1 0%, #5a7cf7 100%);
+    color: #fff;
+    transform: scale(1.05);
+}
+
+/* Form Card */
+.form-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+
+.form-card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+    border-bottom: 1px solid #eef2f7;
+}
+
+.header-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #3d5ee1 0%, #5a7cf7 100%);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 20px;
+}
+
+.header-text h5 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin: 0;
+}
+
+.header-text p {
+    font-size: 13px;
+    color: #6c757d;
+    margin: 4px 0 0 0;
+}
+
+.form-card-body {
+    padding: 24px;
+}
+
+/* Modern Input */
+.modern-input {
+    position: relative;
+    margin-bottom: 24px;
+}
+
+.modern-input input,
+.modern-input textarea {
+    width: 100%;
+    padding: 18px 16px 8px;
+    font-size: 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.modern-input textarea {
+    resize: none;
+    min-height: 100px;
+}
+
+.modern-input input:focus,
+.modern-input textarea:focus {
+    border-color: #3d5ee1;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(61, 94, 225, 0.1);
+}
+
+.modern-input label {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 15px;
+    color: #6c757d;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    background: transparent;
+    padding: 0 4px;
+}
+
+.modern-input textarea + label {
+    top: 20px;
+    transform: none;
+}
+
+.modern-input input:focus + label,
+.modern-input input:not(:placeholder-shown) + label,
+.modern-input textarea:focus + label,
+.modern-input textarea:not(:placeholder-shown) + label {
+    top: 8px;
+    transform: none;
+    font-size: 11px;
+    font-weight: 600;
+    color: #3d5ee1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Field Label */
+.field-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #495057;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
+/* Image Upload */
+.image-upload-box {
+    margin-bottom: 24px;
+}
+
+.image-preview {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 16px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f1f3f9 0%, #e9ecef 100%);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.image-preview:hover {
+    border-color: #3d5ee1;
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-image {
+    text-align: center;
+    color: #adb5bd;
+}
+
+.no-image i {
+    font-size: 40px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.no-image span {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.file-input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 13px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.file-input:hover {
+    border-color: #3d5ee1;
+}
+
+/* Icon Picker */
+.icon-picker-box {
+    margin-bottom: 24px;
+}
+
+.icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: 8px;
+}
+
+.icon-item {
+    aspect-ratio: 1;
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.icon-item i {
+    font-size: 20px;
+    color: #6c757d;
+}
+
+.icon-item:hover {
+    border-color: #3d5ee1;
+    transform: scale(1.05);
+}
+
+.icon-item.active {
+    background: linear-gradient(135deg, #3d5ee1 0%, #5a7cf7 100%);
+    border-color: #3d5ee1;
+}
+
+.icon-item.active i {
+    color: #fff;
+}
+
+/* Rich Text Editor */
+.richtext-box {
+    margin-bottom: 24px;
+}
+
+.editor-wrapper {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    transition: all 0.3s ease;
+}
+
+.editor-wrapper:focus-within {
+    border-color: #3d5ee1;
+    box-shadow: 0 0 0 4px rgba(61, 94, 225, 0.1);
+}
+
+/* Action Bar */
+.action-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    padding: 20px 24px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+    margin-bottom: 40px;
+}
+
+.cancel-btn {
+    padding: 12px 24px;
+    background: #f8f9fa;
+    color: #6c757d;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+.cancel-btn:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.save-btn {
+    padding: 12px 32px;
+    background: linear-gradient(135deg, #3d5ee1 0%, #5a7cf7 100%);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(61, 94, 225, 0.3);
+}
+
+.save-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #2a4bc9 0%, #4a6ce7 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(61, 94, 225, 0.4);
+}
+
+.save-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 </style>

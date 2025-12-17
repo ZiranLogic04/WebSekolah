@@ -14,7 +14,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/berita', [\App\Http\Controllers\PostController::class, 'index'])->name('posts.public.index');
 Route::get('/berita/{slug}', [\App\Http\Controllers\PostController::class, 'show'])->name('posts.public.show');
+
 Route::get('/profil/{slug}', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
+Route::get('/gallery', [\App\Http\Controllers\GalleryController::class, 'index'])->name('gallery.index');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -24,58 +26,67 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+// Admin routes - all authenticated users can access dashboard
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Profile update - accessible by all authenticated users
+    Route::get('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update'); 
+    Route::put('/password', [\App\Http\Controllers\Admin\ProfileController::class, 'updatePassword'])->name('password.update');
+});
+
+// Admin only routes (full access)
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    // Siswa management
     Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa.index');
     Route::get('/siswa/template', [SiswaController::class, 'downloadTemplate'])->name('siswa.template');
     Route::resource('kelas', \App\Http\Controllers\Admin\KelasController::class)->except(['create', 'edit', 'show']);
-    Route::post('/siswa/kelas', [SiswaController::class, 'storeKelas'])->name('siswa.store-kelas'); // Optional: keep for legacy or refactor later
+    Route::post('/siswa/kelas', [SiswaController::class, 'storeKelas'])->name('siswa.store-kelas');
     Route::post('/siswa', [SiswaController::class, 'store'])->name('siswa.store');
     Route::put('/siswa/{siswa}', [SiswaController::class, 'update'])->name('siswa.update');
     Route::delete('/siswa/{siswa}', [SiswaController::class, 'destroy'])->name('siswa.destroy');
     Route::post('/siswa/bulk-destroy', [SiswaController::class, 'bulkDestroy'])->name('siswa.bulk-destroy');
     Route::post('/siswa/bulk-update', [SiswaController::class, 'bulkUpdate'])->name('siswa.bulk-update');
-    Route::post('/siswa/import', [SiswaController::class, 'import'])
-    ->name('siswa.import');
+    Route::post('/siswa/import', [SiswaController::class, 'import'])->name('siswa.import');
 
-     Route::resource('guru', GuruController::class);
-    
-    // Bulk actions
-    Route::post('/guru/bulk-update', [GuruController::class, 'bulkUpdate'])
-        ->name('guru.bulk-update');
-    
-    Route::post('/guru/bulk-destroy', [GuruController::class, 'bulkDestroy'])
-        ->name('guru.bulk-destroy');
-    
-    // Import/Export
-    Route::post('/guru/import', [GuruController::class, 'import'])
-        ->name('guru.import');
-    
-    Route::get('/guru/export', [GuruController::class, 'export'])
-        ->name('guru.export');
-    
-    Route::get('/guru/download-template', [GuruController::class, 'downloadTemplate'])
-        ->name('guru.download-template');
+    // Guru management
+    Route::get('/guru/download-template', [GuruController::class, 'downloadTemplate'])->name('guru.download-template');
+    Route::get('/guru/export', [GuruController::class, 'export'])->name('guru.export');
+    Route::resource('guru', GuruController::class);
+    Route::post('/guru/bulk-update', [GuruController::class, 'bulkUpdate'])->name('guru.bulk-update');
+    Route::post('/guru/bulk-destroy', [GuruController::class, 'bulkDestroy'])->name('guru.bulk-destroy');
+    Route::post('/guru/import', [GuruController::class, 'import'])->name('guru.import');
 
     // Data Lembaga
     Route::get('/lembaga', [\App\Http\Controllers\Admin\LembagaController::class, 'index'])->name('lembaga.index');
     Route::post('/lembaga', [\App\Http\Controllers\Admin\LembagaController::class, 'update'])->name('lembaga.update');
 
-    // Pengaturan Akun (Profile Update - Header)
-    Route::get('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update'); 
-    Route::put('/password', [\App\Http\Controllers\Admin\ProfileController::class, 'updatePassword'])->name('password.update');
-    // Renamed back to profile to distinguish from User Management or keep as akun? 
-    // The user wanted "Menu kelola akun yang ada di web ini" -> User Management.
-    // So "Pengaturan Akun" in sidebar = User Management.
-    // "Profil Saya" in header = Profile Update.
-    
     // User Management (Kelola Akun)
     Route::resource('akun', \App\Http\Controllers\Admin\UserController::class)->parameters(['akun' => 'user'])->names('users');
 
+    // Post/Berita
+    Route::resource('posts', PostController::class);
+    
+    // Halaman (Homepage Sections)
+    Route::get('/pages', [\App\Http\Controllers\Admin\PageController::class, 'index'])->name('pages.index');
+    Route::get('/pages/{section}/edit', [\App\Http\Controllers\Admin\PageController::class, 'edit'])->name('pages.edit');
+    Route::put('/pages/{section}', [\App\Http\Controllers\Admin\PageController::class, 'update'])->name('pages.update');
+
+
+    // Gallery Management
+    Route::get('/gallery', [\App\Http\Controllers\Admin\GalleryController::class, 'index'])->name('admin.gallery.index');
+    Route::post('/gallery', [\App\Http\Controllers\Admin\GalleryController::class, 'store'])->name('admin.gallery.store');
+    Route::post('/gallery/bulk-destroy', [\App\Http\Controllers\Admin\GalleryController::class, 'bulkDestroy'])->name('admin.gallery.bulk-destroy');
+    Route::post('/gallery/{gallery}', [\App\Http\Controllers\Admin\GalleryController::class, 'update'])->name('admin.gallery.update');
+    Route::delete('/gallery/{gallery}', [\App\Http\Controllers\Admin\GalleryController::class, 'destroy'])->name('admin.gallery.destroy');
+});
+
+// Staf Administrasi routes (Surat-surat)
+Route::middleware(['auth', 'role:admin,staf_administrasi'])->prefix('admin')->group(function () {
     // Pengaturan Surat
     Route::resource('surat', \App\Http\Controllers\Admin\SuratController::class)->except(['create', 'edit']);
-    Route::patch('/surat/{surat}/status', [\App\Http\Controllers\Admin\SuratController::class, 'markAsArchived'])->name('surat.status'); // Fix "Arsipkan" button
+    Route::patch('/surat/{surat}/status', [\App\Http\Controllers\Admin\SuratController::class, 'markAsArchived'])->name('surat.status');
     Route::get('/surat/{surat}/cetak', [\App\Http\Controllers\Admin\SuratController::class, 'show'])->name('surat.cetak');
     Route::resource('letter-templates', \App\Http\Controllers\Admin\LetterTemplateController::class);
     
@@ -88,15 +99,10 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     // Rekap Surat (Logbook)
     Route::get('/rekap-surat', [\App\Http\Controllers\Admin\RekapSuratController::class, 'index'])->name('rekap-surat.index');
     Route::get('/rekap-surat/print', [\App\Http\Controllers\Admin\RekapSuratController::class, 'print'])->name('rekap-surat.print');
+});
 
-    // Post/Berita
-    Route::resource('posts', PostController::class);
-    
-    // Halaman (Homepage Sections)
-    Route::get('/pages', [\App\Http\Controllers\Admin\PageController::class, 'index'])->name('pages.index');
-    Route::get('/pages/{section}/edit', [\App\Http\Controllers\Admin\PageController::class, 'edit'])->name('pages.edit');
-    Route::put('/pages/{section}', [\App\Http\Controllers\Admin\PageController::class, 'update'])->name('pages.update');
-
+// Staf Keuangan routes (Keuangan)
+Route::middleware(['auth', 'role:admin,staf_keuangan'])->prefix('admin')->group(function () {
     Route::resource('jenis-tagihan', \App\Http\Controllers\Admin\JenisTagihanController::class);
     Route::resource('tagihan', \App\Http\Controllers\Admin\TagihanController::class);
     Route::get('piutang', [\App\Http\Controllers\Admin\PiutangController::class, 'index'])->name('piutang.index');
@@ -119,5 +125,4 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('pengeluaran', [\App\Http\Controllers\Admin\PengeluaranController::class, 'index'])->name('pengeluaran.index');
     Route::post('pengeluaran', [\App\Http\Controllers\Admin\PengeluaranController::class, 'store'])->name('pengeluaran.store');
     Route::delete('pengeluaran/{pengeluaran}', [\App\Http\Controllers\Admin\PengeluaranController::class, 'destroy'])->name('pengeluaran.destroy');
-
 });

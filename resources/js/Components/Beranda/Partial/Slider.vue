@@ -1,25 +1,26 @@
-<!-- components/HeroSlider.vue -->
 <template>
   <div class="hero-section">
     <div class="hero-slider owl-carousel">
       
-      <!-- Slide 1 -->
-      <div class="hero-single" :style="slideStyle('slide_1_image', '123.jpg')">
+      <!-- Slide 1: PPDB -->
+      <div class="hero-single" style="background: url(/assets/img/hope/123.jpg); height: 500px; background-size: cover; background-position: center;">
         <div class="container">
           <div class="row align-items-center">
             <div class="col-md-12 col-lg-7">
               <div class="hero-content">
                 <h6 class="hero-sub-title" data-animation="fadeInDown" data-delay=".25s">
-                  <i class="fa fa-book-open"></i> {{ getText('slide_1_top_title', 'Selamat Datang') }}
+                  <i class="fa fa-book-open"></i> Selamat Datang di MI Al-Hikmah
                 </h6>
-                <h3 class="hero-title" :class="getClass('slide_1_title')" data-animation="fadeInRight" data-delay=".50s">
-                  {{ getText('slide_1_title', 'Penerimaan Siswa Baru 2025/2026') }}
+                <h3 class="hero-title" data-animation="fadeInRight" data-delay=".50s">
+                  Penerimaan Siswa Baru <span>2025/2026</span>
                 </h3>
-                <p :class="getClass('slide_1_subtitle')" data-animation="fadeInLeft" data-delay=".75s">
-                  {{ getText('slide_1_subtitle', 'Bergabunglah bersama sekolah dasar berbasis nilai Islam dan karakter Pancasila.') }}
+                <p data-animation="fadeInLeft" data-delay=".75s">
+                  Bergabunglah bersama sekolah dasar berbasis nilai Islam dan karakter
+                  Pancasila—guru peduli, biaya terjangkau, pembelajaran aktif, fasilitas nyaman.
                 </p>
-                <div class="hero-btn" data-animation="fadeInUp" data-delay="1s" v-if="getText('slide_1_button_text')">
-                  <a :href="getText('slide_1_button_link', '#')" class="theme-btn">{{ getText('slide_1_button_text', 'Daftar Sekarang') }}<i class="fas fa-arrow-right-long"></i></a>
+                <div class="hero-btn" data-animation="fadeInUp" data-delay="1s">
+                  <a href="#" class="theme-btn">Daftar Sekarang<i class="fas fa-arrow-right-long"></i></a>
+                  <a href="#" class="theme-btn theme-btn2">Info PPDB<i class="fas fa-arrow-right-long"></i></a>
                 </div>
               </div>
             </div>
@@ -27,23 +28,25 @@
         </div>
       </div>
 
-      <!-- Slide 2 -->
-      <div class="hero-single" :style="slideStyle('slide_2_image', 'HOPEDREAM_31.jpg')">
+      <!-- Slide 2: Tahfiz & BTQ -->
+      <div class="hero-single" style="background: url(/assets/img/hope/HOPEDREAM_31.jpg); height: 500px; background-size: cover; background-position: center;">
         <div class="container">
           <div class="row align-items-center">
             <div class="col-md-12 col-lg-7">
               <div class="hero-content">
                 <h6 class="hero-sub-title" data-animation="fadeInDown" data-delay=".25s">
-                   <i class="fa fa-book-open"></i> {{ getText('slide_2_top_title', 'Program Unggulan') }}
+                  <i class="fa fa-book-open"></i> Program Unggulan
                 </h6>
-                <h3 class="hero-title" :class="getClass('slide_2_title')" data-animation="fadeInRight" data-delay=".50s">
-                   {{ getText('slide_2_title', 'Program Tahfiz & BTQ') }}
+                <h3 class="hero-title" data-animation="fadeInRight" data-delay=".50s">
+                  Program <span>Tahfiz & BTQ</span>
                 </h3>
-                <p :class="getClass('slide_2_subtitle')" data-animation="fadeInLeft" data-delay=".75s">
-                   {{ getText('slide_2_subtitle', 'Target juz 30, tahsin harian, setoran mingguan, pembiasaan tilawah.') }}
+                <p data-animation="fadeInLeft" data-delay=".75s">
+                  Target juz 30, tahsin harian, setoran mingguan, pembiasaan tilawah—membentuk
+                  kebiasaan baik sejak dini.
                 </p>
-                <div class="hero-btn" data-animation="fadeInUp" data-delay="1s" v-if="getText('slide_2_button_text')">
-                  <a :href="getText('slide_2_button_link', '#')" class="theme-btn">{{ getText('slide_2_button_text', 'Lihat Program') }}<i class="fas fa-arrow-right-long"></i></a>
+                <div class="hero-btn" data-animation="fadeInUp" data-delay="1s">
+                  <a href="#" class="theme-btn">Lihat Program<i class="fas fa-arrow-right-long"></i></a>
+                  <a href="#" class="theme-btn theme-btn2">Jadwal Setoran<i class="fas fa-arrow-right-long"></i></a>
                 </div>
               </div>
             </div>
@@ -51,23 +54,77 @@
         </div>
       </div>
 
-      <!-- Slide 3 -->
-      <div class="hero-single" :style="slideStyle('slide_3_image', '43.jpg')">
+      <!-- Slide 3: Literasi -->
+      <div class="hero-single" style="background: url(/assets/img/hope/43.jpg); height: 500px; background-size: cover; background-position: center;">
         <div class="container">
           <div class="row align-items-center">
             <div class="col-md-12 col-lg-7">
               <div class="hero-content">
                 <h6 class="hero-sub-title" data-animation="fadeInDown" data-delay=".25s">
-                   <i class="fa fa-book-open"></i> {{ getText('slide_3_top_title', 'Budaya Madrasah') }}
+                  <i class="fa fa-book-open"></i> Budaya Madrasah
                 </h6>
-                <h3 class="hero-title" :class="getClass('slide_3_title')" data-animation="fadeInRight" data-delay=".50s">
-                   {{ getText('slide_3_title', 'Literasi & Numerasi') }}
+                <h3 class="hero-title" data-animation="fadeInRight" data-delay=".50s">
+                  Literasi <span>15 Menit</span> & Klinik Numerasi
                 </h3>
-                <p :class="getClass('slide_3_subtitle')" data-animation="fadeInLeft" data-delay=".75s">
-                   {{ getText('slide_3_subtitle', 'Membaca setiap hari dan pendampingan berhitung terstruktur.') }}
+                <p data-animation="fadeInLeft" data-delay=".75s">
+                  Membaca setiap hari dan pendampingan berhitung terstruktur untuk memperkuat
+                  pemahaman dasar siswa.
                 </p>
-                <div class="hero-btn" data-animation="fadeInUp" data-delay="1s" v-if="getText('slide_3_button_text')">
-                  <a :href="getText('slide_3_button_link', '#')" class="theme-btn">{{ getText('slide_3_button_text', 'Selengkapnya') }}<i class="fas fa-arrow-right-long"></i></a>
+                <div class="hero-btn" data-animation="fadeInUp" data-delay="1s">
+                  <a href="#" class="theme-btn">Program Literasi<i class="fas fa-arrow-right-long"></i></a>
+                  <a href="#" class="theme-btn theme-btn2">Klinik Numerasi<i class="fas fa-arrow-right-long"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 4: Sekolah Ramah Anak -->
+      <div class="hero-single" style="background: url(/assets/img/hope/first.jpg); height: 500px; background-size: cover; background-position: center;">
+        <div class="container">
+          <div class="row align-items-center">
+            <div class="col-md-12 col-lg-7">
+              <div class="hero-content">
+                <h6 class="hero-sub-title" data-animation="fadeInDown" data-delay=".25s">
+                  <i class="fa fa-book-open"></i> Lingkungan Aman & Nyaman
+                </h6>
+                <h1 class="hero-title" data-animation="fadeInRight" data-delay=".50s">
+                  Sekolah <span>Ramah Anak</span>
+                </h1>
+                <p data-animation="fadeInLeft" data-delay=".75s">
+                  Komitmen pada keselamatan dan kenyamanan belajar: Satgas Anti-Bullying, alur
+                  pengaduan, dan edukasi berkala.
+                </p>
+                <div class="hero-btn" data-animation="fadeInUp" data-delay="1s">
+                  <a href="#" class="theme-btn">Satgas & Alur<i class="fas fa-arrow-right-long"></i></a>
+                  <a href="#" class="theme-btn theme-btn2">Lapor Pengaduan<i class="fas fa-arrow-right-long"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 5: Ekstrakurikuler -->
+      <div class="hero-single" style="background: url(/assets/img/hope/img_66e00909f32259.92841743.jpg); height: 500px; background-size: cover; background-position: center;">
+        <div class="container">
+          <div class="row align-items-center">
+            <div class="col-md-12 col-lg-7">
+              <div class="hero-content">
+                <h6 class="hero-sub-title" data-animation="fadeInDown" data-delay=".25s">
+                  <i class="fa fa-book-open"></i> Kegiatan Siswa
+                </h6>
+                <h1 class="hero-title" data-animation="fadeInRight" data-delay=".50s">
+                  Ekstrakurikuler & <span>Prestasi</span>
+                </h1>
+                <p data-animation="fadeInLeft" data-delay=".75s">
+                  Pramuka, olahraga, seni, MTQ, dan program kreatif lain yang menumbuhkan
+                  kerjasama, disiplin, dan kepercayaan diri.
+                </p>
+                <div class="hero-btn" data-animation="fadeInUp" data-delay="1s">
+                  <a href="#" class="theme-btn">Jelajahi Ekskul<i class="fas fa-arrow-right-long"></i></a>
+                  <a href="#" class="theme-btn theme-btn2">Lihat Prestasi<i class="fas fa-arrow-right-long"></i></a>
                 </div>
               </div>
             </div>
@@ -81,49 +138,6 @@
 
 <script setup>
 import { onMounted } from 'vue'
-
-const props = defineProps({
-    data: {
-        type: Object,
-        default: () => ({})
-    },
-    activeField: {
-        type: String,
-        default: null
-    }
-});
-
-const asset = (path) => `/${path}`;
-
-const getImage = (key, defaultPath) => {
-    if (props.data[key] instanceof File) {
-        return URL.createObjectURL(props.data[key]);
-    }
-    if (props.data[key]) {
-        return `/storage/${props.data[key]}`;
-    }
-    return asset(defaultPath);
-}
-
-const getText = (key, defaultText) => {
-    return props.data[key] || defaultText;
-}
-
-const getClass = (key) => {
-    return props.activeField === key ? 'highlight-active' : '';
-}
-
-const slideStyle = (key, defaultImage) => {
-  return {
-    background: `url(${getImage(key, `assets/img/hope/${defaultImage}`)})`,
-    height: '500px',
-    backgroundSize: 'cover',
-    backgroundPosition: 'center'
-  }
-}
-// Remove onMounted logic for now to prevent conflict with Vue reactivity if using v-for later? 
-// Actually OwlCarousel might break if DOM changes.
-// Keep it simple: Hardcode 3 slides that use dynamic data.
 
 onMounted(() => {
   if (window.$ && window.$.fn && window.$.fn.owlCarousel) {
@@ -143,7 +157,7 @@ onMounted(() => {
 
 <style scoped>
 .hero-section {
-    margin-top: 50px; /* Adjust based on header height */
+    margin-top: 50px;
     padding-top: 20px;
     position: relative;
     z-index: 1;
@@ -153,9 +167,5 @@ onMounted(() => {
   background-position: center;
   display: flex;
   align-items: center;
-}
-.highlight-active {
-    outline: 5px solid #ffc107;
-    z-index: 100;
 }
 </style>

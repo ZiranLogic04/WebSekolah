@@ -26,8 +26,19 @@ const items = computed(() => {
         no: index + 1,
         initials: getInitials(user.name),
         status: 'Aktif',
-        role_display: capitalize(user.role || 'user')
+        role_display: capitalize((user.role || 'user').replace(/_/g, ' '))
     }));
+});
+
+// Filter items berdasarkan search
+const filteredItems = computed(() => {
+    if (!search.value) return items.value;
+    const keyword = search.value.toLowerCase();
+    return items.value.filter(item => 
+        item.name?.toLowerCase().includes(keyword) || 
+        item.email?.toLowerCase().includes(keyword) ||
+        item.role?.toLowerCase().includes(keyword)
+    );
 });
 
 function capitalize(s) {
@@ -160,54 +171,63 @@ watch(() => page.props.flash, (flash) => {
                         </div>
                         
                         <div class="card-body p-0">
-                            <VueEasyDataTable
-                                :headers="headers"
-                                :items="items"
-                                :search-value="search"
-                                table-class-name="modern-data-table"
-                                header-text-direction="left"
-                                body-text-direction="left"
-                                border-cell
-                                alternating
-                                :rows-per-page="10"
-                            >
-                                <template #item-user_info="item">
-                                    <div class="d-flex align-items-center py-2">
-                                        <div class="avatar-circle me-3">{{ item.initials }}</div>
-                                        <div>
-                                            <h6 class="mb-0 fw-bold text-dark">{{ item.name }}</h6>
-                                            <small class="text-muted">Part of Admin System</small>
-                                        </div>
-                                    </div>
-                                </template>
-
-                                <template #item-email="item">
-                                    <span class="text-muted">{{ item.email }}</span>
-                                </template>
-
-                                <template #item-role_display="item">
-                                    <span :class="{
-                                        'status-badge bg-primary': item.role === 'admin',
-                                        'status-badge bg-info': item.role === 'guru',
-                                        'status-badge bg-warning': item.role === 'siswa'
-                                    }">{{ item.role_display }}</span>
-                                </template>
-
-                                <template #item-status="item">
-                                    <span class="status-badge bg-success">Active</span>
-                                </template>
-
-                                <template #item-actions="item">
-                                    <div class="action-buttons">
-                                        <button class="btn btn-action btn-edit" @click="openModal(item)" title="Edit">
-                                            <i class="fas fa-pen"></i>
-                                        </button>
-                                        <button class="btn btn-action btn-delete" @click="confirmDelete(item.id)" title="Hapus">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </div>
-                                </template>
-                            </VueEasyDataTable>
+                            <div class="table-responsive">
+                                <table class="table table-modern mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th width="60">No</th>
+                                            <th>Pengguna</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Status</th>
+                                            <th width="100">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-if="filteredItems.length === 0">
+                                            <td colspan="6" class="text-center py-5">
+                                                <div class="empty-state">
+                                                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                                                    <h5>Tidak ada data</h5>
+                                                    <p class="text-muted">Belum ada data pengguna</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr v-for="(item, index) in filteredItems" :key="item.id">
+                                            <td class="text-center fw-medium text-muted">{{ index + 1 }}</td>
+                                            <td>
+                                                <div class="py-2">
+                                                    <h6 class="mb-0 fw-bold text-dark">{{ item.name }}</h6>
+                                                    <small class="text-muted">Part of Admin System</small>
+                                                </div>
+                                            </td>
+                                            <td><span class="text-muted">{{ item.email }}</span></td>
+                                            <td class="text-center">
+                                                <span :class="{
+                                                    'status-badge bg-primary': item.role === 'admin',
+                                                    'status-badge bg-info': item.role === 'guru',
+                                                    'status-badge bg-warning': item.role === 'siswa',
+                                                    'status-badge bg-success': item.role === 'staf_keuangan',
+                                                    'status-badge bg-secondary': item.role === 'staf_administrasi'
+                                                }">{{ item.role_display }}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="status-badge bg-success">Active</span>
+                                            </td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-action btn-edit" @click="openModal(item)" title="Edit">
+                                                        <i class="fas fa-pen"></i>
+                                                    </button>
+                                                    <button class="btn btn-action btn-delete" @click="confirmDelete(item.id)" title="Hapus">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -247,6 +267,8 @@ watch(() => page.props.flash, (flash) => {
                                 <select class="form-select" v-model="form.role">
                                     <option value="admin">Admin</option>
                                     <option value="guru">Guru</option>
+                                    <option value="staf_keuangan">Staf Keuangan</option>
+                                    <option value="staf_administrasi">Staf Administrasi</option>
                                     <option value="siswa">Siswa</option>
                                 </select>
                                 <div v-if="form.errors.role" class="text-danger small mt-1">{{ form.errors.role }}</div>

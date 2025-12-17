@@ -22,6 +22,7 @@
               <div class="blog-item-meta">
                 <ul>
                   <li><a href="#"><i class="far fa-user-circle"></i> {{ post.author?.name || 'Admin' }}</a></li>
+                  <li><a href="#"><i class="far fa-comments"></i> 0 Komentar</a></li>
                 </ul>
               </div>
               <h4 class="blog-title">
