@@ -2,30 +2,31 @@
     <AdminLayout>
         <Head title="Data Guru" />
 
-        <!-- Toast Notification Component -->
-        <ToastNotification ref="toast" />
-
         <div class="content container-fluid">
             <!-- Modern Page Header -->
-            <div class="page-header">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h3 class="page-title">Data Guru</h3>
-                        <ul class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <Link href="/dashboard">Dashboard</Link>
-                            </li>
-                            <li class="breadcrumb-item active">Data Guru</li>
-                        </ul>
+            <!-- Radiant Header Card -->
+            <div class="card border-0 shadow-lg rounded-4 mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);">
+                <div class="card-body p-4 p-lg-5 position-relative z-1">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <div class="icon-box bg-white rounded-3 text-primary p-2">
+                                    <i class="fas fa-chalkboard-teacher fs-3"></i>
+                                </div>
+                                <h2 class="fw-bold text-white mb-0 ls-tight">Data Guru</h2>
+                            </div>
+                            <p class="text-white-50 mb-0 fs-5">Manajemen data tenaga pengajar dan staf akademik.</p>
+                        </div>
+                        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                            <button @click="showAddModal = true" class="btn btn-light btn-lg rounded-pill shadow-sm px-4 fw-bold text-primary hover-elevate">
+                                <i class="fas fa-plus-circle me-2"></i>Tambah Guru
+                            </button>
+                        </div>
                     </div>
-                    <div class="col-auto">
-                        <button
-                            @click="showAddModal = true"
-                            class="btn btn-primary"
-                        >
-                            <i class="fas fa-plus me-1"></i> Tambah Guru
-                        </button>
-                    </div>
+                </div>
+                <!-- Decorative Background -->
+                <div class="position-absolute bottom-0 end-0 opacity-10 me-n5 mb-n5">
+                    <i class="fas fa-chalkboard-teacher" style="font-size: 10rem; color: white;"></i>
                 </div>
             </div>
 
@@ -35,12 +36,12 @@
                     <form @submit.prevent="filter" class="row g-3">
                         <div class="col-lg-3 col-md-6">
                             <div class="input-group input-group-modern">
-                                <span class="input-group-text">
-                                    <i class="fas fa-search"></i>
+                                <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3">
+                                    <i class="fas fa-search text-muted"></i>
                                 </span>
                                 <input
                                     type="text"
-                                    class="form-control"
+                                    class="form-control border-start-0 rounded-end-pill ps-0"
                                     placeholder="Cari NIP atau Nama..."
                                     v-model="filters.search"
                                     @input="onFilterChange"
@@ -49,7 +50,7 @@
                         </div>
                         <div class="col-lg-2 col-md-6">
                             <select
-                                class="form-select"
+                                class="form-select rounded-pill"
                                 v-model="filters.status_kepegawaian"
                                 @change="filter"
                             >
@@ -62,7 +63,7 @@
                         </div>
                         <div class="col-lg-2 col-md-6">
                             <select
-                                class="form-select"
+                                class="form-select rounded-pill"
                                 v-model="filters.status_aktif"
                                 @change="filter"
                             >
@@ -75,7 +76,7 @@
                         </div>
                         <div class="col-lg-2 col-md-6">
                             <select
-                                class="form-select"
+                                class="form-select rounded-pill"
                                 v-model="filters.jenis_kelamin"
                                 @change="filter"
                             >
@@ -89,7 +90,7 @@
                                 <button
                                     type="button"
                                     @click="resetFilters"
-                                    class="btn btn-outline-secondary w-50"
+                                    class="btn btn-light rounded-pill w-50"
                                 >
                                     <i class="fas fa-redo me-1"></i>Reset
                                 </button>
@@ -169,20 +170,18 @@
                                     <th width="50">
                                         <input type="checkbox" class="form-check-input" @change="toggleSelectAll" :checked="isAllSelected">
                                     </th>
-                                    <th width="60">No</th>
-                                    <th>Nama / NIP</th>
-                                    <th>Bidang Studi</th>
-                                    <th>L/P</th>
-                                    <th>Tgl Lahir</th>
-                                    <th>No. Telp</th>
-                                    <th>Status</th>
-                                    <th>Keaktifan</th>
-                                    <th width="140">Aksi</th>
+                                    <th width="60" class="text-center">No</th>
+                                    <th class="text-start">NIP</th>
+                                    <th class="text-start">Nama</th>
+                                    <th class="text-center">Bidang Studi</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Keaktifan</th>
+                                    <th width="140" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-if="tableData.length === 0">
-                                    <td colspan="10" class="text-center py-5">
+                                    <td colspan="8" class="text-center py-5">
                                         <div class="empty-state">
                                             <div class="empty-icon mb-3">
                                                 <i class="fas fa-chalkboard-teacher fa-3x text-muted"></i>
@@ -200,22 +199,10 @@
                                         <input type="checkbox" class="form-check-input" :value="item.id" v-model="selectedTeachers">
                                     </td>
                                     <td class="text-center fw-medium text-muted">{{ guru.from + index }}</td>
-                                    <td>
-                                        <div class="fw-semibold">{{ item.nama }}</div>
-                                        <small class="text-muted">{{ item.nip }}</small>
-                                    </td>
+                                    <td class="fw-medium">{{ item.nip }}</td>
+                                    <td class="fw-semibold text-wrap" style="min-width: 200px; max-width: 300px;">{{ item.nama }}</td>
                                     <td class="text-center">
-                                        <span class="badge bidang-badge">{{ item.bidang_studi || '-' }}</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="gender-badge" :class="item.jenis_kelamin === 'L' ? 'male' : 'female'">
-                                            <i :class="item.jenis_kelamin === 'L' ? 'fas fa-mars' : 'fas fa-venus'"></i>
-                                            {{ item.jenis_kelamin }}
-                                        </div>
-                                    </td>
-                                    <td class="text-center">{{ formatShortDate(item.tanggal_lahir) }}</td>
-                                    <td class="text-center">
-                                        <span class="phone-number">{{ item.no_telepon || '-' }}</span>
+                                        <span class="badge bidang-badge text-wrap">{{ item.bidang_studi || '-' }}</span>
                                     </td>
                                     <td class="text-center">
                                         <span class="status-badge" :class="getKepegawaianClass(item.status_kepegawaian)">
@@ -228,16 +215,34 @@
                                             {{ item.status_aktif }}
                                         </span>
                                     </td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="btn btn-action btn-view" @click="viewTeacherDetail(item)" title="Detail">
+                                    <td class="text-nowrap text-center">
+                                        <div class="d-flex gap-2 justify-content-center">
+                                            <!-- View Detail -->
+                                            <button 
+                                                class="btn-icon-modern btn-icon-view" 
+                                                @click="viewTeacherDetail(item)" 
+                                                title="Detail Guru"
+                                            >
                                                 <i class="fas fa-eye"></i>
                                             </button>
-                                            <button class="btn btn-action btn-edit" @click="editTeacher(item)" title="Edit">
+
+                                            <!-- Edit -->
+                                            <button 
+                                                class="btn-icon-modern btn-icon-edit" 
+                                                @click="editTeacher(item)" 
+                                                title="Edit Data"
+                                            >
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button class="btn btn-action btn-delete" @click.stop.prevent="confirmDelete(item)" title="Hapus" type="button">
-                                                <i class="fas fa-trash"></i>
+
+                                            <!-- Delete -->
+                                            <button 
+                                                class="btn-icon-modern btn-icon-delete" 
+                                                @click.stop.prevent="confirmDelete(item)" 
+                                                title="Hapus Permanen" 
+                                                type="button"
+                                            >
+                                                <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </div>
                                     </td>
@@ -301,10 +306,10 @@
                 style="z-index: 1060"
             >
                 <div class="modal-content modern-modal">
-                    <div class="modal-header">
+                    <div class="modal-header text-white" style="background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);">
                         <div class="modal-title">
                             <i
-                                class="modal-icon"
+                                class="modal-icon text-white"
                                 :class="
                                     isEditing
                                         ? 'fas fa-edit'
@@ -312,14 +317,14 @@
                                 "
                             ></i>
                             <div>
-                                <h5>
+                                <h5 class="text-white mb-0">
                                     {{
                                         isEditing
                                             ? "Edit Data Guru"
                                             : "Tambah Data Guru"
                                     }}
                                 </h5>
-                                <p class="modal-subtitle text-muted">
+                                <p class="modal-subtitle text-white-50 mb-0">
                                     {{
                                         isEditing
                                             ? "Perbarui data guru yang sudah ada"
@@ -330,14 +335,14 @@
                         </div>
                         <button
                             type="button"
-                            class="btn-close"
+                            class="btn-close btn-close-white"
                             @click="closeModal"
                         ></button>
                     </div>
                     <form @submit.prevent="saveTeacher">
                         <div class="modal-body">
                              <!-- Tabs Navigation -->
-                            <div class="modal-tabs mb-4">
+                            <div class="modal-tabs mb-4" v-if="!isEditing">
                                 <div class="nav-tabs">
                                     <button
                                         type="button"
@@ -348,7 +353,6 @@
                                         <i class="fas fa-keyboard me-2"></i>Input Manual
                                     </button>
                                     <button
-                                        v-if="!isEditing"
                                         type="button"
                                         class="nav-tab"
                                         :class="{ active: activeTab === 'import' }"
@@ -359,286 +363,260 @@
                                 </div>
                             </div>
 
-                            <!-- Manual Input Form -->
+                            <!-- Manual Input Form with Tabs -->
                             <div v-if="activeTab === 'manual'">
-                                <div class="row g-3">
+                                <!-- Form Tab Navigation -->
+                                <div class="form-tabs mb-4">
+                                    <nav class="nav nav-pills nav-fill">
+                                        <button type="button" class="nav-link" :class="{ active: formTab === 'identity' }" @click="formTab = 'identity'">
+                                            <i class="fas fa-user-tie me-1"></i> Identitas
+                                        </button>
+                                        <button type="button" class="nav-link" :class="{ active: formTab === 'employment' }" @click="formTab = 'employment'">
+                                            <i class="fas fa-briefcase me-1"></i> Kepegawaian
+                                        </button>
+                                        <button type="button" class="nav-link" :class="{ active: formTab === 'contact' }" @click="formTab = 'contact'">
+                                            <i class="fas fa-address-book me-1"></i> Kontak
+                                        </button>
+                                        <button type="button" class="nav-link" :class="{ active: formTab === 'social' }" @click="formTab = 'social'">
+                                            <i class="fas fa-share-alt me-1"></i> Medsos
+                                        </button>
+                                    </nav>
+                                </div>
+
+                                <!-- Tab: Identitas -->
+                                <div v-show="formTab === 'identity'" class="row g-3">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label required">NIP</label>
                                             <div class="input-group">
-                                                <span class="input-group-text">
-                                                    <i class="fas fa-id-card"></i>
-                                                </span>
-                                                <input
-                                                    type="text"
-                                                    class="form-control"
-                                                    v-model="form.nip"
-                                                    :class="{
-                                                        'is-invalid': form.errors.nip,
-                                                    }"
-                                                    placeholder="Masukkan NIP"
-                                                />
-                                                <div
-                                                    v-if="form.errors.nip"
-                                                    class="invalid-feedback"
-                                                >
-                                                    {{ form.errors.nip }}
-                                                </div>
+                                                <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                                <input type="text" class="form-control" v-model="form.nip" :class="{ 'is-invalid': form.errors.nip }" placeholder="Masukkan NIP (Opsional)">
+                                                <div v-if="form.errors.nip" class="invalid-feedback">{{ form.errors.nip }}</div>
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- Sisa form manual tetap sama, hanya dibungkus div -->
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label required"
-                                                >Nama Lengkap</label
-                                            >
+                                            <label class="form-label required">Nama Lengkap</label>
                                             <div class="input-group">
-                                                <span class="input-group-text">
-                                                    <i class="fas fa-user"></i>
-                                                </span>
-                                                <input
-                                                    type="text"
-                                                    class="form-control"
-                                                    v-model="form.nama"
-                                                    :class="{
-                                                        'is-invalid': form.errors.nama,
-                                                    }"
-                                                    placeholder="Masukkan nama lengkap"
-                                                />
-                                                <div
-                                                    v-if="form.errors.nama"
-                                                    class="invalid-feedback"
-                                                >
-                                                    {{ form.errors.nama }}
-                                                </div>
+                                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                                <input type="text" class="form-control" v-model="form.nama" :class="{ 'is-invalid': form.errors.nama }" placeholder="Nama lengkap">
+                                                <div v-if="form.errors.nama" class="invalid-feedback">{{ form.errors.nama }}</div>
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label required">Jenis Kelamin</label>
+                                            <select class="form-select" v-model="form.jenis_kelamin" :class="{ 'is-invalid': form.errors.jenis_kelamin }">
+                                                <option value="">Pilih Jenis Kelamin</option>
+                                                <option value="L">Laki-laki</option>
+                                                <option value="P">Perempuan</option>
+                                            </select>
+                                            <div v-if="form.errors.jenis_kelamin" class="invalid-feedback">{{ form.errors.jenis_kelamin }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Agama</label>
+                                            <select class="form-select" v-model="form.agama">
+                                                <option value="">Pilih Agama</option>
+                                                <option value="Islam">Islam</option>
+                                                <option value="Kristen">Kristen</option>
+                                                <option value="Katolik">Katolik</option>
+                                                <option value="Hindu">Hindu</option>
+                                                <option value="Buddha">Buddha</option>
+                                                <option value="Konghucu">Konghucu</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Tempat Lahir</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                                <input type="text" class="form-control" v-model="form.tempat_lahir" placeholder="Kota kelahiran">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Tanggal Lahir</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                                <input type="date" class="form-control" v-model="form.tanggal_lahir">
+                                            </div>
+                                        </div>
+                                    </div>
+                                     <div class="col-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Foto Guru</label>
+                                            <div class="upload-card" @click="$refs.fotoInput.click()">
+                                                <input type="file" ref="fotoInput" class="d-none" @change="handleFileUpload" accept="image/jpeg,image/png,image/jpg,image/webp">
+                                                <div class="upload-card-content" :class="{ 'has-file': form.foto_preview, 'border-danger': form.errors.foto }">
+                                                    <div v-if="form.foto_preview" class="text-center">
+                                                        <img :src="form.foto_preview" class="img-thumbnail mb-2 shadow-sm" style="height: 100px; width: 100px; object-fit: cover; border-radius: 50%;">
+                                                        <div class="upload-status text-success fw-bold"><i class="fas fa-check-circle me-1"></i>Foto dipilih</div>
+                                                    </div>
+                                                    <div v-else class="text-center">
+                                                        <div class="upload-icon-circle bg-light rounded-circle p-3 d-inline-block mb-2">
+                                                            <i class="fas fa-camera text-primary fs-3"></i>
+                                                        </div>
+                                                        <div class="upload-label fw-medium text-dark">Klik untuk upload foto</div>
+                                                        <div class="upload-hint text-muted small">JPG, PNG, WebP (Maks 2MB)</div>
+                                                    </div>
+                                                </div>
+                                                <div v-if="form.errors.foto" class="text-danger small mt-1 text-center font-weight-bold">{{ form.errors.foto }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tab: Kepegawaian -->
+                                <div v-show="formTab === 'employment'" class="row g-3">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Bidang Studi</label>
                                             <div class="input-group">
-                                                <span class="input-group-text">
-                                                    <i class="fas fa-book"></i>
-                                                </span>
-                                                <input
-                                                    type="text"
-                                                    class="form-control"
-                                                    v-model="form.bidang_studi"
-                                                    placeholder="Contoh: Matematika"
-                                                />
+                                                <span class="input-group-text"><i class="fas fa-book"></i></span>
+                                                <input type="text" class="form-control" v-model="form.bidang_studi" :class="{ 'is-invalid': form.errors.bidang_studi }" placeholder="Contoh: Matematika">
+                                                <div class="invalid-feedback" v-if="form.errors.bidang_studi">{{ form.errors.bidang_studi }}</div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label required"
-                                                >Jenis Kelamin</label
-                                            >
+                                            <label class="form-label">Jabatan</label>
                                             <div class="input-group">
-                                                <span class="input-group-text">
-                                                    <i class="fas fa-venus-mars"></i>
-                                                </span>
-                                                <select
-                                                    class="form-select"
-                                                    v-model="form.jenis_kelamin"
-                                                    :class="{
-                                                        'is-invalid':
-                                                            form.errors.jenis_kelamin,
-                                                    }"
-                                                >
-                                                    <option value="">
-                                                        Pilih Jenis Kelamin
-                                                    </option>
-                                                    <option value="L">Laki-laki</option>
-                                                    <option value="P">Perempuan</option>
-                                                </select>
-                                                <div
-                                                    v-if="form.errors.jenis_kelamin"
-                                                    class="invalid-feedback"
-                                                >
-                                                    {{ form.errors.jenis_kelamin }}
-                                                </div>
+                                                <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
+                                                <input type="text" class="form-control" v-model="form.jabatan" :class="{ 'is-invalid': form.errors.jabatan }" placeholder="Contoh: Guru Kelas">
+                                                <div class="invalid-feedback" v-if="form.errors.jabatan">{{ form.errors.jabatan }}</div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label"
-                                            >Tempat Lahir</label
-                                        >
-                                        <div class="input-group">
-                                            <span class="input-group-text">
-                                                <i
-                                                    class="fas fa-map-marker-alt"
-                                                ></i>
-                                            </span>
-                                            <input
-                                                type="text"
-                                                class="form-control"
-                                                v-model="form.tempat_lahir"
-                                                placeholder="Kota kelahiran"
-                                            />
+                                        <div class="form-group">
+                                            <label class="form-label">Status Kepegawaian</label>
+                                            <select class="form-select" v-model="form.status_kepegawaian" :class="{ 'is-invalid': form.errors.status_kepegawaian }">
+                                                <option value="">Pilih Status</option>
+                                                <option value="PNS">PNS</option>
+                                                <option value="Honorer">Honorer</option>
+                                                <option value="Kontrak">Kontrak</option>
+                                                <option value="Tetap">Tetap</option>
+                                            </select>
+                                            <div class="invalid-feedback" v-if="form.errors.status_kepegawaian">{{ form.errors.status_kepegawaian }}</div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label"
-                                            >Tanggal Lahir</label
-                                        >
-                                        <div class="input-group">
-                                            <span class="input-group-text">
-                                                <i class="fas fa-calendar"></i>
-                                            </span>
-                                            <input
-                                                type="date"
-                                                class="form-control"
-                                                v-model="form.tanggal_lahir"
-                                            />
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Status Aktif</label>
+                                            <select class="form-select" v-model="form.status_aktif" :class="{ 'is-invalid': form.errors.status_aktif }">
+                                                <option value="Aktif">Aktif</option>
+                                                <option value="Non-Aktif">Non-Aktif</option>
+                                                <option value="Cuti">Cuti</option>
+                                                <option value="Pensiun">Pensiun</option>
+                                            </select>
+                                            <div class="invalid-feedback" v-if="form.errors.status_aktif">{{ form.errors.status_aktif }}</div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label class="form-label">Alamat</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">
-                                                <i class="fas fa-home"></i>
-                                            </span>
-                                            <textarea
-                                                class="form-control"
-                                                rows="2"
-                                                v-model="form.alamat"
-                                                placeholder="Alamat lengkap"
-                                            ></textarea>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Pendidikan Terakhir</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
+                                                <input type="text" class="form-control" v-model="form.pendidikan_terakhir" :class="{ 'is-invalid': form.errors.pendidikan_terakhir }" placeholder="Contoh: S1 Pendidikan">
+                                                <div class="invalid-feedback" v-if="form.errors.pendidikan_terakhir">{{ form.errors.pendidikan_terakhir }}</div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label"
-                                            >Email</label
-                                        >
-                                        <div class="input-group">
-                                            <span class="input-group-text">
-                                                <i class="fas fa-envelope"></i>
-                                            </span>
-                                            <input
-                                                type="email"
-                                                class="form-control"
-                                                v-model="form.email"
-                                                :class="{
-                                                    'is-invalid': form.errors.email,
-                                                }"
-                                                placeholder="nama@email.com"
-                                            />
-                                            <div
-                                                v-if="form.errors.email"
-                                                class="invalid-feedback"
-                                            >
-                                                {{ form.errors.email }}
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Tanggal Mulai Bekerja</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-calendar-check"></i></span>
+                                                <input type="date" class="form-control" v-model="form.tanggal_mulai_bekerja" :class="{ 'is-invalid': form.errors.tanggal_mulai_bekerja }">
+                                                <div class="invalid-feedback" v-if="form.errors.tanggal_mulai_bekerja">{{ form.errors.tanggal_mulai_bekerja }}</div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label"
-                                            >No. Telepon</label
-                                        >
-                                        <div class="input-group">
-                                            <span class="input-group-text">
-                                                <i class="fas fa-phone"></i>
-                                            </span>
-                                            <input
-                                                type="text"
-                                                class="form-control"
-                                                v-model="form.no_telepon"
-                                                placeholder="08xxxxxxxxxx"
-                                            />
+
+                                <!-- Tab: Kontak -->
+                                <div v-show="formTab === 'contact'" class="row g-3">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Alamat Lengkap</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-home"></i></span>
+                                                <textarea class="form-control" rows="3" v-model="form.alamat" :class="{ 'is-invalid': form.errors.alamat }" placeholder="Alamat lengkap domisili"></textarea>
+                                                <div v-if="form.errors.alamat" class="invalid-feedback">{{ form.errors.alamat }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Email</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                                <input type="email" class="form-control" v-model="form.email" :class="{ 'is-invalid': form.errors.email }" placeholder="nama@email.com">
+                                                <div v-if="form.errors.email" class="invalid-feedback">{{ form.errors.email }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">No. Telepon / HP</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                                <input type="text" class="form-control" v-model="form.no_telepon" :class="{ 'is-invalid': form.errors.no_telepon }" placeholder="08xxxxxxxxxx">
+                                                <div v-if="form.errors.no_telepon" class="invalid-feedback">{{ form.errors.no_telepon }}</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label"
-                                            >Status Kepegawaian</label
-                                        >
-                                        <select
-                                            class="form-select"
-                                            v-model="form.status_kepegawaian"
-                                        >
-                                            <option value="">
-                                                Pilih Status
-                                            </option>
-                                            <option value="PNS">PNS</option>
-                                            <option value="Honorer">
-                                                Honorer
-                                            </option>
-                                            <option value="Kontrak">
-                                                Kontrak
-                                            </option>
-                                            <option value="Tetap">Tetap</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label"
-                                            >Status Aktif</label
-                                        >
-                                        <select
-                                            class="form-select"
-                                            v-model="form.status_aktif"
-                                        >
-                                            <option value="Aktif">Aktif</option>
-                                            <option value="Non-Aktif">
-                                                Non-Aktif
-                                            </option>
-                                            <option value="Cuti">Cuti</option>
-                                            <option value="Pensiun">
-                                                Pensiun
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label"
-                                            >Pendidikan Terakhir</label
-                                        >
-                                        <div class="input-group">
-                                            <span class="input-group-text">
-                                                <i class="fas fa-graduation-cap"></i>
-                                            </span>
-                                            <input
-                                                type="text"
-                                                class="form-control"
-                                                v-model="form.pendidikan_terakhir"
-                                                placeholder="Contoh: S1 Pendidikan Matematika"
-                                            />
+
+                                <!-- Tab: Medsos -->
+                                <div v-show="formTab === 'social'" class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Facebook</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fab fa-facebook text-primary"></i></span>
+                                                <input type="text" class="form-control" v-model="form.facebook" :class="{ 'is-invalid': form.errors.facebook }" placeholder="URL Profil Facebook">
+                                                <div v-if="form.errors.facebook" class="invalid-feedback">{{ form.errors.facebook }}</div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label"
-                                            >Tanggal Mulai Bekerja</label
-                                        >
-                                        <div class="input-group">
-                                            <span class="input-group-text">
-                                                <i class="fas fa-calendar-check"></i>
-                                            </span>
-                                            <input
-                                                type="date"
-                                                class="form-control"
-                                                v-model="form.tanggal_mulai_bekerja"
-                                            />
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Instagram</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fab fa-instagram text-danger"></i></span>
+                                                <input type="text" class="form-control" v-model="form.instagram" :class="{ 'is-invalid': form.errors.instagram }" placeholder="URL Profil Instagram">
+                                                <div v-if="form.errors.instagram" class="invalid-feedback">{{ form.errors.instagram }}</div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Twitter / X</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fab fa-twitter text-info"></i></span>
+                                                <input type="text" class="form-control" v-model="form.twitter" :class="{ 'is-invalid': form.errors.twitter }" placeholder="URL Profil Twitter">
+                                                <div v-if="form.errors.twitter" class="invalid-feedback">{{ form.errors.twitter }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">LinkedIn</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fab fa-linkedin text-primary"></i></span>
+                                                <input type="text" class="form-control" v-model="form.linkedin" :class="{ 'is-invalid': form.errors.linkedin }" placeholder="URL Profil LinkedIn">
+                                                <div v-if="form.errors.linkedin" class="invalid-feedback">{{ form.errors.linkedin }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -772,19 +750,19 @@
                 style="z-index: 1060"
             >
                 <div class="modal-content modern-modal">
-                    <div class="modal-header">
+                    <div class="modal-header text-white" style="background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);">
                         <div class="modal-title">
-                            <i class="modal-icon fas fa-chalkboard-teacher"></i>
+                            <i class="modal-icon fas fa-chalkboard-teacher text-white"></i>
                             <div>
-                                <h5>Detail Data Guru</h5>
-                                <p class="modal-subtitle text-muted">
+                                <h5 class="text-white mb-0">Detail Data Guru</h5>
+                                <p class="modal-subtitle text-white-50 mb-0">
                                     Informasi lengkap data guru
                                 </p>
                             </div>
                         </div>
                         <button
                             type="button"
-                            class="btn-close"
+                            class="btn-close btn-close-white"
                             @click="showDetailModal = false"
                         ></button>
                     </div>
@@ -1279,6 +1257,250 @@
             </div>
         </div>
 
+                        <!-- Detail Guru Modal -->
+        <!-- Detail Guru Modal -->
+        <div
+            v-if="showDetailModal"
+            class="modal fade show d-block"
+            tabindex="-1"
+            role="dialog"
+            aria-modal="true"
+            style="background: rgba(0, 0, 0, 0.5); z-index: 9999; display: block;"
+        >
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" style="z-index: 10000">
+                <div class="modal-content modern-modal border-0 overflow-hidden" v-if="selectedTeacher">
+                    <div class="detail-header text-center p-3 position-relative">
+                        <button 
+                            type="button" 
+                            class="btn-close btn-close-white position-absolute top-0 end-0 m-3" 
+                            @click="showDetailModal = false"
+                        ></button>
+                        
+                        <div class="detail-avatar-large shadow-sm mb-2 mx-auto">
+                            <img v-if="selectedTeacher.foto" :src="`/storage/${selectedTeacher.foto}`" alt="Foto Guru">
+                            <span v-else>{{ getInitials(selectedTeacher.nama) }}</span>
+                        </div>
+                        
+                        <h5 class="text-white fw-bold mb-2">{{ selectedTeacher.nama }}</h5>
+                        <div class="d-flex justify-content-center flex-wrap gap-2">
+                            <span class="badge bg-white text-primary border border-white text-uppercase fw-bold px-3 py-2 rounded-pill shadow-sm" style="opacity: 0.95;">
+                                <i class="fas fa-id-badge me-1"></i> {{ selectedTeacher.nip }}
+                            </span>
+                            <span class="badge bg-dark text-warning border border-dark text-uppercase fw-bold px-3 py-2 rounded-pill shadow-sm" style="opacity: 0.9;">
+                                <i class="fas fa-briefcase me-1"></i> {{ selectedTeacher.status_kepegawaian }}
+                            </span>
+                            <span class="badge bg-white text-success border border-white text-uppercase fw-bold px-3 py-2 rounded-pill shadow-sm" style="opacity: 0.95;">
+                                <i class="fas fa-check-circle me-1"></i> {{ selectedTeacher.status_aktif }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="modal-body bg-light p-3">
+                        <!-- Tab Navigation -->
+                        <div class="d-flex justify-content-center mb-3">
+                            <div class="bg-white p-1 rounded-pill shadow-sm d-inline-flex">
+                                <button 
+                                    class="btn btn-sm rounded-pill px-3 fw-bold transition-all"
+                                    :class="detailTab === 'kepegawaian' ? 'btn-primary shadow-sm' : 'btn-light text-muted bg-transparent'"
+                                    @click="detailTab = 'kepegawaian'"
+                                >
+                                    <i class="fas fa-id-card me-1"></i>Kepegawaian
+                                </button>
+                                <button 
+                                    class="btn btn-sm rounded-pill px-3 fw-bold transition-all"
+                                    :class="detailTab === 'pribadi' ? 'btn-primary shadow-sm' : 'btn-light text-muted bg-transparent'"
+                                    @click="detailTab = 'pribadi'"
+                                >
+                                    <i class="fas fa-user me-1"></i>Pribadi
+                                </button>
+                                <button 
+                                    class="btn btn-sm rounded-pill px-3 fw-bold transition-all"
+                                    :class="detailTab === 'kontak' ? 'btn-primary shadow-sm' : 'btn-light text-muted bg-transparent'"
+                                    @click="detailTab = 'kontak'"
+                                >
+                                    <i class="fas fa-address-book me-1"></i>Kontak
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tab Content -->
+                        <div class="tab-content">
+                            <!-- Data Kepegawaian -->
+                            <div v-show="detailTab === 'kepegawaian'" class="animate__animated animate__fadeIn">
+                                <div class="info-card p-3">
+                                    <h6 class="text-primary fw-bold mb-3 border-bottom pb-2">
+                                        <i class="fas fa-id-card me-2"></i>Data Kepegawaian
+                                    </h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <span class="info-label">NIP</span>
+                                                <span class="info-value">{{ selectedTeacher.nip || '-' }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <span class="info-label">Bidang Studi</span>
+                                                <span class="info-value">{{ selectedTeacher.bidang_studi || '-' }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <span class="info-label">Status Kepegawaian</span>
+                                                <span class="badge bg-warning text-dark border border-dark px-3 py-2 rounded-pill shadow-sm" style="opacity: 0.9;">
+                                                     <i class="fas fa-briefcase me-1"></i> {{ selectedTeacher.status_kepegawaian }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <span class="info-label">Status Aktif</span>
+                                                <span class="badge bg-success text-white border border-white px-3 py-2 rounded-pill shadow-sm" style="opacity: 0.9;">
+                                                     <i class="fas fa-check-circle me-1"></i> {{ selectedTeacher.status_aktif }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <span class="info-label">Mulai Tugas</span>
+                                                <span class="info-value">{{ selectedTeacher.tmt_kerja ? formatShortDate(selectedTeacher.tmt_kerja) : '-' }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <span class="info-label">Pendidikan Terakhir</span>
+                                                <span class="info-value">{{ selectedTeacher.pendidikan_terakhir || '-' }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="info-item">
+                                                <span class="info-label">Tempat Tugas</span>
+                                                <span class="info-value">{{ selectedTeacher.tempat_tugas || '-' }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Data Pribadi -->
+                            <div v-show="detailTab === 'pribadi'" class="animate__animated animate__fadeIn">
+                                <div class="info-card p-3">
+                                    <h6 class="text-primary fw-bold mb-3 border-bottom pb-2">
+                                        <i class="fas fa-user me-2"></i>Data Pribadi
+                                    </h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <span class="info-label">Nama Lengkap</span>
+                                                <span class="info-value">{{ selectedTeacher.nama }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <span class="info-label">Jenis Kelamin</span>
+                                                <span class="info-value">
+                                                    <i :class="selectedTeacher.jenis_kelamin === 'L' ? 'fas fa-mars text-primary' : 'fas fa-venus text-danger'" class="me-1"></i>
+                                                    {{ selectedTeacher.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan' }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <span class="info-label">Tempat Lahir</span>
+                                                <span class="info-value">{{ selectedTeacher.tempat_lahir || '-' }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <span class="info-label">Tanggal Lahir</span>
+                                                <span class="info-value">
+                                                    {{ selectedTeacher.tanggal_lahir ? formatShortDate(selectedTeacher.tanggal_lahir) : '-' }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <span class="info-label">Agama</span>
+                                                <span class="info-value">{{ selectedTeacher.agama || '-' }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="info-item">
+                                                <span class="info-label">Alamat Lengkap</span>
+                                                <span class="info-value">{{ selectedTeacher.alamat || '-' }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Kontak & Medsos -->
+                            <div v-show="detailTab === 'kontak'" class="animate__animated animate__fadeIn">
+                                <div class="info-card p-3">
+                                    <h6 class="text-primary fw-bold mb-3 border-bottom pb-2">
+                                        <i class="fas fa-address-book me-2"></i>Kontak & Media Sosial
+                                    </h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="info-item border-0 p-0 mb-2">
+                                                <span class="info-label">Email</span>
+                                                <div class="d-flex align-items-center mt-1">
+                                                    <div class="icon-box-sm bg-light text-primary rounded-circle me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                                        <i class="fas fa-envelope"></i>
+                                                    </div>
+                                                    <span class="info-value">{{ selectedTeacher.email || '-' }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-item border-0 p-0 mb-2">
+                                                <span class="info-label">No. Telepon</span>
+                                                <div class="d-flex align-items-center mt-1">
+                                                    <div class="icon-box-sm bg-light text-success rounded-circle me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                                        <i class="fas fa-phone"></i>
+                                                    </div>
+                                                    <span class="info-value">{{ selectedTeacher.no_telepon || '-' }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mt-4" v-if="selectedTeacher.facebook || selectedTeacher.instagram || selectedTeacher.twitter || selectedTeacher.linkedin">
+                                            <span class="info-label mb-3 d-block">Media Sosial</span>
+                                            <div class="d-flex gap-3">
+                                                <a v-if="selectedTeacher.facebook" :href="selectedTeacher.facebook" target="_blank" class="btn btn-outline-primary rounded-pill d-flex align-items-center gap-2">
+                                                    <i class="fab fa-facebook-f"></i> Facebook
+                                                </a>
+                                                <a v-if="selectedTeacher.instagram" :href="selectedTeacher.instagram" target="_blank" class="btn btn-outline-danger rounded-pill d-flex align-items-center gap-2">
+                                                    <i class="fab fa-instagram"></i> Instagram
+                                                </a>
+                                                <a v-if="selectedTeacher.twitter" :href="selectedTeacher.twitter" target="_blank" class="btn btn-outline-info rounded-pill d-flex align-items-center gap-2">
+                                                    <i class="fab fa-twitter"></i> Twitter
+                                                </a>
+                                                <a v-if="selectedTeacher.linkedin" :href="selectedTeacher.linkedin" target="_blank" class="btn btn-outline-primary rounded-pill d-flex align-items-center gap-2">
+                                                    <i class="fab fa-linkedin-in"></i> LinkedIn
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="col-12" v-else>
+                                            <div class="text-center text-muted py-3">
+                                                <i class="fas fa-link mb-2"></i>
+                                                <p class="mb-0">Tidak ada media sosial terhubung</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-else class="modal-content modern-modal border-0 p-5 text-center">
+                     <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </AdminLayout>
 </template>
 
@@ -1286,7 +1508,8 @@
 import { ref, reactive, computed, watch, onMounted } from "vue";
 import { Link, useForm, router, Head, usePage } from "@inertiajs/vue3";
 import AdminLayout from "@/Layouts/AdminLayout.vue";
-import ToastNotification from "@/Components/ToastNotification.vue";
+import Swal from 'sweetalert2';
+import { showToast } from '@/Utils/swal';
 
 // Import EasyDataTable
 import VueEasyDataTable from "vue3-easy-data-table";
@@ -1318,15 +1541,16 @@ const props = defineProps({
 // State
 const showAddModal = ref(false);
 const showDetailModal = ref(false);
-const showConfirmModal = ref(false);
 const showBulkModal = ref(false);
 const showBulkDeleteModal = ref(false);
 const isEditing = ref(false);
 const activeTab = ref('manual');
+const detailTab = ref('kepegawaian'); // Tab state for Detail Modal
 const loading = ref(false);
 const deleting = ref(false);
 const deletingBulk = ref(false);
 const importing = ref(false);
+const formTab = ref('identity'); // UI State for Form Tabs
 
 // Filters untuk SERVER-SIDE
 const filters = reactive({
@@ -1363,6 +1587,14 @@ const form = useForm({
     status_aktif: "Aktif",
     pendidikan_terakhir: "",
     tanggal_mulai_bekerja: "",
+    jabatan: "",
+    agama: "",
+    foto: null,
+    foto_preview: null,
+    facebook: "",
+    instagram: "",
+    twitter: "",
+    linkedin: "",
 });
 
 const bulkForm = useForm({
@@ -1371,43 +1603,23 @@ const bulkForm = useForm({
     status_kepegawaian: "",
 });
 
-// Toast Notification Ref
-const toast = ref(null);
 
-// Helper untuk show toast
-const showSuccess = (title, message = "") => {
-    if (toast.value) {
-        toast.value.showSuccessToast(title, message);
-    }
-};
-
-const showError = (title, message = "") => {
-    if (toast.value) {
-        toast.value.showErrorToast(title, message);
-    }
-};
-
-const showWarning = (title, message = "") => {
-    if (toast.value) {
-        toast.value.showWarningToast(title, message);
-    }
-};
 
 // Watch for flash messages from Inertia
 watch(
     () => page.props.flash,
     (flash) => {
         if (flash?.success) {
-            showSuccess("Sukses!", flash.success);
+            showToast("success", "Sukses!", flash.success);
         }
         if (flash?.error) {
-            showError("Error!", flash.error);
+            showToast("error", "Error!", flash.error);
         }
         if (flash?.warning) {
-            showWarning("Peringatan!", flash.warning);
+            showToast("warning", "Peringatan!", flash.warning);
         }
         if (flash?.info) {
-            showSuccess("Info!", flash.info);
+            showToast("info", "Info!", flash.info);
         }
     },
     { deep: true, immediate: true }
@@ -1584,7 +1796,7 @@ const deselectAllTeachers = () => {
 
 const showBulkActions = () => {
     if (selectedTeachers.value.length === 0) {
-        showWarning("Peringatan!", "Pilih guru terlebih dahulu!");
+        showToast("warning", "Peringatan!", "Pilih guru terlebih dahulu!");
         return;
     }
     showBulkModal.value = true;
@@ -1592,7 +1804,8 @@ const showBulkActions = () => {
 
 const applyBulkActions = () => {
     if (!bulkAction.status_aktif && !bulkAction.status_kepegawaian) {
-        showWarning(
+        showToast(
+            "warning",
             "Peringatan!",
             "Pilih setidaknya satu aksi (status aktif atau kepegawaian)!"
         );
@@ -1606,7 +1819,8 @@ const applyBulkActions = () => {
     bulkForm.post("/admin/guru/bulk-update", {
         preserveScroll: true,
         onSuccess: () => {
-            showSuccess(
+            showToast(
+                "success",
                 "Sukses!",
                 `Berhasil mengupdate ${selectedTeachers.value.length} data guru`
             );
@@ -1618,7 +1832,7 @@ const applyBulkActions = () => {
         },
         onError: (errors) => {
             console.log("Bulk update errors:", errors);
-            showError("Gagal!", "Terjadi kesalahan saat mengupdate data");
+            showToast("error", "Gagal!", "Terjadi kesalahan saat mengupdate data");
         },
     });
 };
@@ -1639,7 +1853,8 @@ const deleteBulkTeachers = () => {
         {
             preserveScroll: true,
             onSuccess: () => {
-                showSuccess(
+                showToast(
+                    "success",
                     "Sukses!",
                     `Berhasil menghapus ${selectedTeachers.value.length} data guru`
                 );
@@ -1650,7 +1865,7 @@ const deleteBulkTeachers = () => {
             onError: (errors) => {
                 deletingBulk.value = false;
                 console.log("Bulk delete errors:", errors);
-                showError("Gagal!", "Terjadi kesalahan saat menghapus data");
+                showToast("error", "Gagal!", "Terjadi kesalahan saat menghapus data");
             },
         }
     );
@@ -1666,7 +1881,7 @@ const handleFileChange = (e) => {
 
 const importGuru = () => {
     if (!importForm.file) {
-        showWarning("Peringatan!", "Silakan pilih file Excel terlebih dahulu");
+        showToast("warning", "Peringatan!", "Silakan pilih file Excel terlebih dahulu");
         return;
     }
 
@@ -1684,18 +1899,19 @@ const importGuru = () => {
             // but we can show detailed result if passed 
             if (page.props.flash.importResult) {
                 const result = page.props.flash.importResult;
-                 showSuccess(
+                 showToast(
+                    "success",
                     "Import Selesai!", 
                     `Sukses: ${result.successCount}, Gagal: ${result.errorCount}`
                 );
             } else {
-                 showSuccess("Sukses!", "Data guru berhasil diimport");
+                 showToast("success", "Sukses!", "Data guru berhasil diimport");
             }
         },
         onError: (errors) => {
             importing.value = false;
             console.log("Import errors:", errors);
-            showError("Gagal!", "Terjadi kesalahan saat import data");
+            showToast("error", "Gagal!", "Terjadi kesalahan saat import data");
         },
     });
 };
@@ -1746,7 +1962,7 @@ const removeImportFile = () => {
 
 const processImport = () => {
     if (!importFile.value) {
-        showWarning("Peringatan!", "Pilih file terlebih dahulu!");
+        showToast("warning", "Peringatan!", "Pilih file terlebih dahulu!");
         return;
     }
     
@@ -1773,16 +1989,16 @@ const processImport = () => {
                 const { successCount, errorCount, errors } = importResult;
                 
                 if (successCount > 0 && errorCount === 0) {
-                    showSuccess("Import Berhasil!", `${successCount} data guru berhasil diimport`);
+                    showToast("success", "Import Berhasil!", `${successCount} data guru berhasil diimport`);
                 } else if (successCount > 0 && errorCount > 0) {
-                    showWarning("Import Selesai", `${successCount} berhasil, ${errorCount} gagal`);
+                    showToast("warning", "Import Selesai", `${successCount} berhasil, ${errorCount} gagal`);
                     if (errors && errors.length > 0) {
                         console.log("Detail error:", errors);
                     }
                 } else if (successCount === 0 && errorCount > 0) {
-                    showError("Import Gagal!", `Semua ${errorCount} data gagal diimport. Periksa format file.`);
+                    showToast("error", "Import Gagal!", `Semua ${errorCount} data gagal diimport. Periksa format file.`);
                 } else {
-                    showWarning("Tidak Ada Data", "Tidak ada data yang diimport");
+                    showToast("warning", "Tidak Ada Data", "Tidak ada data yang diimport");
                 }
             } else if (page.props.flash?.success) {
                 // Flash success message handled by watcher
@@ -1797,17 +2013,33 @@ const processImport = () => {
             
             // Tampilkan error message yang lebih spesifik
             if (errors.file) {
-                showError("Gagal!", errors.file);
+                showToast("error", "Gagal!", errors.file);
             } else {
-                showError("Gagal!", "Format file tidak valid. Gunakan template yang disediakan.");
+                showToast("error", "Gagal!", "Format file tidak valid. Gunakan template yang disediakan.");
             }
         },
     });
 };
 
+// Helper to safely format date YYYY-MM-DD for input
+const formatDateForInput = (dateString) => {
+    if (!dateString) return "";
+    // If it's already YYYY-MM-DD
+    if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) return dateString;
+    // If it's ISO like 2024-05-20T00:00:00...
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return "";
+        return date.toISOString().split('T')[0];
+    } catch (e) {
+        return "";
+    }
+};
+
+// Teacher CRUD Operations
 // Teacher CRUD Operations
 const viewTeacherDetail = (teacher) => {
-    selectedTeacher.value = teacher;
+    selectedTeacher.value = { ...teacher }; // Clone object to ensure reactivity
     showDetailModal.value = true;
 };
 
@@ -1816,82 +2048,151 @@ const editTeacher = (teacher) => {
     form.id = teacher.id;
     form.nip = teacher.nip;
     form.nama = teacher.nama;
+    form.jabatan = teacher.jabatan;
     form.bidang_studi = teacher.bidang_studi;
     form.jenis_kelamin = teacher.jenis_kelamin;
     form.tempat_lahir = teacher.tempat_lahir;
-    form.tanggal_lahir = teacher.tanggal_lahir;
+    form.tanggal_lahir = formatDateForInput(teacher.tanggal_lahir);
     form.alamat = teacher.alamat;
     form.email = teacher.email;
+    form.email = teacher.email;
     form.no_telepon = teacher.no_telepon;
+    form.agama = teacher.agama || "";
     form.status_kepegawaian = teacher.status_kepegawaian;
     form.status_aktif = teacher.status_aktif;
     form.pendidikan_terakhir = teacher.pendidikan_terakhir;
-    form.tanggal_mulai_bekerja = teacher.tanggal_mulai_bekerja;
+    form.tanggal_mulai_bekerja = formatDateForInput(teacher.tanggal_mulai_bekerja);
+    form.facebook = teacher.facebook;
+    form.instagram = teacher.instagram;
+    form.twitter = teacher.twitter;
+    form.linkedin = teacher.linkedin;
+    
+    // Set foto preview if exists
+    if (teacher.foto) {
+        form.foto_preview = `/storage/${teacher.foto}`;
+    }
 
     showAddModal.value = true;
     showDetailModal.value = false;
     activeTab.value = 'manual';
+
+    // Show existing photo preview if available
+    form.foto_preview = teacher.foto ? `/storage/${teacher.foto}` : null;
+    form.foto = null; // Reset file input
 };
 
 const confirmDelete = (teacher) => {
-    teacherToDelete.value = teacher;
-    showConfirmModal.value = true;
-};
-
-const deleteTeacher = () => {
-    if (!teacherToDelete.value || deleting.value) return;
-
-    deleting.value = true;
-
-    form.delete(`/admin/guru/${teacherToDelete.value.id}`, {
-        preserveScroll: true,
-        onSuccess: () => {
-            showSuccess(
-                "Sukses!",
-                `Berhasil menghapus data guru: ${teacherToDelete.value.nama}`
-            );
-            showConfirmModal.value = false;
-            teacherToDelete.value = null;
+    Swal.fire({
+        title: 'Hapus Data Guru?',
+        html: `Anda yakin ingin menghapus data guru <br/><strong class="text-dark">"${teacher.nama}"</strong>?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: '<i class="fas fa-trash-alt me-1"></i> Ya, Hapus!',
+        cancelButtonText: 'Batal',
+        customClass: {
+            popup: 'rounded-4 shadow-lg border-0',
+            title: 'fs-5 fw-bold text-dark',
+            htmlContainer: 'text-secondary',
+            confirmButton: 'btn btn-danger px-4 py-2 rounded-3 shadow-sm',
+            cancelButton: 'btn btn-secondary px-4 py-2 rounded-3 shadow-sm'
         },
-        onError: (errors) => {
-            console.log("Delete errors:", errors);
-            showError("Gagal!", "Terjadi kesalahan saat menghapus data");
-        },
-        onFinish: () => {
-            deleting.value = false;
-        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            router.delete(`/admin/guru/${teacher.id}`, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    // Toast handled by watcher
+                },
+                onError: (errors) => {
+                    showToast('error', 'Gagal', 'Terjadi kesalahan saat menghapus data');
+                }
+            });
+        }
     });
 };
 
-const saveTeacher = () => {
-    if (!form.nip || !form.nama || !form.jenis_kelamin) {
-        showWarning("Peringatan!", "Harap isi semua field yang wajib diisi!");
-        return;
+const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        form.foto = file;
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            form.foto_preview = e.target.result;
+        };
+        reader.readAsDataURL(file);
     }
+};
+
+const saveTeacher = () => {
+    form.processing = true;
 
     if (isEditing.value) {
-        form.put(`/admin/guru/${form.id}`, {
+        // MANUAL FORMDATA CONSTRUCTION TO ENSURE FILE UPLOAD WORKS
+        // This avoids issues with Inertia's transform wrapper
+        const formData = new FormData();
+        
+        // Append all form fields
+        formData.append('_method', 'PUT'); // Simulate PUT
+        formData.append('id', form.id);
+        formData.append('nip', form.nip || '');
+        formData.append('nama', form.nama || '');
+        formData.append('jabatan', form.jabatan || '');
+        formData.append('bidang_studi', form.bidang_studi || '');
+        formData.append('jenis_kelamin', form.jenis_kelamin || '');
+        formData.append('tempat_lahir', form.tempat_lahir || '');
+        formData.append('tanggal_lahir', form.tanggal_lahir || '');
+        formData.append('agama', form.agama || '');
+        formData.append('alamat', form.alamat || '');
+        formData.append('email', form.email || '');
+        formData.append('no_telepon', form.no_telepon || '');
+        formData.append('status_kepegawaian', form.status_kepegawaian || '');
+        formData.append('status_aktif', form.status_aktif || '');
+        formData.append('pendidikan_terakhir', form.pendidikan_terakhir || '');
+        formData.append('tanggal_mulai_bekerja', form.tanggal_mulai_bekerja || '');
+        formData.append('facebook', form.facebook || '');
+        formData.append('instagram', form.instagram || '');
+        formData.append('twitter', form.twitter || '');
+        formData.append('linkedin', form.linkedin || '');
+
+        // Append file if exists
+        if (form.foto) {
+            formData.append('foto', form.foto);
+        }
+
+        router.post(`/admin/guru/${form.id}`, formData, {
             preserveScroll: true,
+            forceFormData: true,
             onSuccess: () => {
-                showSuccess("Sukses!", "Data guru berhasil diperbarui");
+                showToast("success", "Sukses!", "Data guru berhasil diperbarui");
                 closeModal();
+                form.processing = false;
             },
             onError: (errors) => {
                 console.log("Update errors:", errors);
-                showError("Gagal!", "Terjadi kesalahan saat menyimpan data");
+                form.errors = errors; // Map errors back to form
+                // Generic error toast only, detailed errors are inline
+                showToast("error", "Gagal!", "Gagal menyimpan data. Periksa inputan anda.");
+                form.processing = false;
             },
         });
     } else {
         form.post("/admin/guru", {
             preserveScroll: true,
             onSuccess: () => {
-                showSuccess("Sukses!", "Data guru berhasil ditambahkan");
+                showToast("success", "Sukses!", "Data guru berhasil ditambahkan");
                 closeModal();
+                form.processing = false;
             },
             onError: (errors) => {
                 console.log("Create errors:", errors);
-                showError("Gagal!", "Terjadi kesalahan saat menambah data");
+                showToast("error", "Gagal!", "Terjadi kesalahan saat menambah data");
+                form.processing = false;
             },
+            forceFormData: true,
         });
     }
 };
@@ -1935,5 +2236,424 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* All styles have been moved to admin-theme.css */
+/* ============================================================
+   DATA GURU - PREMIUM STYLES (Matching DataSiswa)
+   ============================================================ */
+
+/* Gradient Header */
+.gradient-header {
+    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+}
+
+.header-icon-box {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Table Modern Premium */
+.table-modern thead th {
+    background-color: #f8fafc;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1rem 1.5rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.table-modern tbody td {
+    padding: 1rem 1.5rem;
+    vertical-align: middle;
+    color: #334155;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.table-modern tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table-modern tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* Row Selected */
+.row-selected td {
+    background-color: #eff6ff !important;
+}
+
+/* Badge Tweaks */
+.bidang-badge {
+    background: #e0e7ff;
+    color: #4338ca;
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.gender-badge {
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.gender-badge.male {
+    background: #eff6ff;
+    color: #2563eb;
+}
+.gender-badge.female {
+    background: #fdf2f8;
+    color: #db2777;
+}
+
+/* Status Badge */
+.status-badge {
+    padding: 0.35em 0.8em;
+    font-size: 0.85em;
+    font-weight: 600;
+    border-radius: 50px;
+    letter-spacing: 0.3px;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Modern Icon Actions - Premium Style */
+.btn-icon-modern {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background-color: #f3f4f6;
+    color: #6b7280;
+    font-size: 1rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.btn-icon-modern:hover {
+    transform: translateY(-2px);
+    color: white;
+}
+
+.btn-icon-view:hover {
+    background-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-icon-edit:hover {
+    background-color: #f59e0b; 
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.btn-icon-delete:hover {
+    background-color: #ef4444; 
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Filter Card */
+.filter-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.input-group-modern {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.input-group-modern .input-group-text {
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    border-right: none;
+    color: #94a3b8;
+}
+.input-group-modern .form-control {
+    border: 1px solid #e2e8f0;
+    border-left: none;
+}
+.input-group-modern .form-control:focus {
+    box-shadow: none;
+    border-color: #e2e8f0;
+}
+
+/* Modern Table Card */
+.modern-table-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+/* Modern Modal */
+.modern-modal {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+.modern-modal .modal-header {
+    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+    padding: 1.5rem;
+    border-bottom: none;
+    color: white;
+}
+.modern-modal .modal-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.modal-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+.modal-subtitle {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+    font-weight: 400;
+}
+.modern-modal .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+}
+
+/* Tabs */
+.modal-tabs {
+    border-bottom: 1px solid #e2e8f0;
+}
+.nav-tab {
+    background: none;
+    border: none;
+    padding: 1rem 1.5rem;
+    font-weight: 500;
+    color: #64748b;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+}
+.nav-tab:hover { color: #3b82f6; }
+.nav-tab.active {
+    color: #3b82f6;
+    border-bottom-color: #3b82f6;
+}
+
+/* Form Styles */
+.form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 0.5rem;
+}
+.required::after {
+    content: "*";
+    color: #dc2626;
+    margin-left: 2px;
+}
+.section-title {
+    color: #3b82f6;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+/* Detail Modal Info Items */
+.info-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border-left: 3px solid #e9ecef;
+    transition: all 0.2s ease;
+}
+
+.info-item:hover {
+    border-left-color: #0d6efd;
+    background: #f0f4ff;
+}
+
+.info-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #212529;
+    word-break: break-word;
+}
+
+.detail-header {
+    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+    padding: 2rem;
+    border-radius: 12px 12px 0 0;
+    color: white;
+    position: relative;
+    text-align: center;
+}
+
+.detail-avatar-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 4px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    overflow: hidden;
+    margin: 0 auto 1rem;
+}
+
+.detail-avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.info-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+    height: 100%;
+    border: 1px solid #f1f5f9;
+}
+
+/* Avatar Circle */
+.avatar-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Upload Card */
+.upload-card {
+    border: 2px dashed #dee2e6;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.upload-card:hover {
+    border-color: #0d6efd;
+    background: #f0f4ff;
+    transform: translateY(-2px);
+}
+
+.upload-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+}
+
+.upload-card-content.has-file {
+    border-color: #198754;
+    background: #f0fff4;
+}
+
+.upload-icon {
+    font-size: 2rem;
+    color: #6c757d;
+    transition: color 0.3s ease;
+}
+
+.upload-card:hover .upload-icon {
+    color: #0d6efd;
+}
+
+.upload-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+.upload-hint {
+    font-size: 0.75rem;
+    color: #adb5bd;
+}
+
+.upload-status {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* Import Wizard Styles */
+.import-container {
+    padding: 1rem;
+}
+.upload-zone {
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    padding: 3rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.upload-zone:hover {
+    border-color: #3b82f6;
+    background-color: #f8faff;
+}
+
+/* SweetAlert Toast Customization */
+body.swal2-toast-shown .swal2-container.swal2-top-end, 
+body.swal2-toast-shown .swal2-container.swal2-top-right {
+    top: 1rem !important;
+    right: 1rem !important;
+}
+
+.small-toast {
+    font-size: 0.85rem !important;
+    width: auto !important;
+    min-width: 350px !important;
+    max-width: 800px !important;
+    padding: 0.75rem 1rem !important;
+    white-space: nowrap !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+}
+
+.small-toast-title {
+    font-weight: 500 !important;
+    margin: 0 !important;
+    letter-spacing: 0.3px;
+    color: #333;
+}
 </style>

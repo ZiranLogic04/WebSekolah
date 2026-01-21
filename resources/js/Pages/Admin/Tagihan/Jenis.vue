@@ -1,54 +1,45 @@
 <template>
     <AdminLayout>
         <div class="content container-fluid">
-            <div class="page-header">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h3 class="page-title">Daftar Jenis Tagihan</h3>
-                        <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><Link href="/admin/dashboard">Dashboard</Link></li>
-                            <li class="breadcrumb-item"><Link href="/admin/uang-sekolah">Keuangan</Link></li>
-                            <li class="breadcrumb-item active">Jenis Tagihan</li>
-                        </ul>
+            <!-- Radiant Header Card -->
+            <div class="card border-0 shadow-lg rounded-4 mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);">
+                <div class="card-body p-4 p-lg-5 position-relative z-1">
+                    <div class="row align-items-center">
+                        <div class="col-lg-7">
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <div class="icon-box bg-white rounded-3 text-primary p-2">
+                                    <i class="fas fa-tags fs-3"></i>
+                                </div>
+                                <h2 class="fw-bold text-white mb-0 ls-tight">Jenis Tagihan</h2>
+                            </div>
+                            <p class="text-white-50 mb-0 fs-5">Kelola kategori/jenis tagihan sekolah.</p>
+                        </div>
+                        <div class="col-lg-5 text-lg-end mt-3 mt-lg-0">
+                            <Link href="/admin/tagihan" class="btn btn-light rounded-pill px-4 me-2 fw-medium">
+                                <i class="fas fa-arrow-left me-2 text-secondary"></i>Kembali
+                            </Link>
+                            <button class="btn btn-light btn-lg rounded-pill shadow-sm px-4 fw-bold text-primary hover-elevate" @click="openModal()">
+                                <i class="fas fa-plus-circle me-2 text-primary"></i>Tambah Jenis
+                            </button>
+                        </div>
                     </div>
-                    <div class="col-auto">
-                        <button class="btn btn-primary" @click="openModal()"><i class="fas fa-plus"></i> Tambah Jenis Tagihan</button>
-                    </div>
+                </div>
+                <!-- Decorative Background -->
+                <div class="position-absolute bottom-0 end-0 opacity-10 me-n5 mb-n5">
+                    <i class="fas fa-tags" style="font-size: 10rem; color: white;"></i>
                 </div>
             </div>
 
-            <!-- Tab Filter -->
-            <ul class="nav nav-tabs nav-tabs-bottom mb-4">
-                <li class="nav-item">
-                    <a class="nav-link" :class="{ active: activeFilter === '' }" href="#" @click.prevent="setFilter('')">
-                        <i class="fas fa-list me-1"></i> Semua
-                        <span class="badge bg-secondary ms-1">{{ countAll }}</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" :class="{ active: activeFilter === 'Pemasukan' }" href="#" @click.prevent="setFilter('Pemasukan')">
-                        <i class="fas fa-arrow-down text-success me-1"></i> Pemasukan
-                        <span class="badge bg-success ms-1">{{ countPemasukan }}</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" :class="{ active: activeFilter === 'Pengeluaran' }" href="#" @click.prevent="setFilter('Pengeluaran')">
-                        <i class="fas fa-arrow-up text-danger me-1"></i> Pengeluaran
-                        <span class="badge bg-danger ms-1">{{ countPengeluaran }}</span>
-                    </a>
-                </li>
-            </ul>
-
+            <!-- Table Card -->
             <div class="row">
-                <div class="col-md-12">
-                    <div class="card card-table">
-                        <div class="card-body">
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4">
                             <div class="table-responsive">
-                                <table class="table table-hover table-center mb-0 datatable">
+                                <table class="table table-hover table-center mb-0">
                                     <thead>
                                         <tr>
                                             <th>Nama Jenis Tagihan</th>
-                                            <th>Tipe</th>
                                             <th>Kode</th>
                                             <th>Keterangan</th>
                                             <th class="text-end">Aksi</th>
@@ -57,29 +48,23 @@
                                     <tbody>
                                         <tr v-for="item in filteredData" :key="item.id">
                                             <td class="fw-bold">{{ item.nama }}</td>
-                                            <td>
-                                                <span class="badge" :class="item.tipe === 'Pemasukan' ? 'bg-success' : 'bg-danger'">
-                                                    <i :class="item.tipe === 'Pemasukan' ? 'fas fa-arrow-down' : 'fas fa-arrow-up'" class="me-1"></i>
-                                                    {{ item.tipe }}
-                                                </span>
-                                            </td>
-                                            <td>{{ item.kode || '-' }}</td>
+                                            <td><span class="badge bg-secondary">{{ item.kode || '-' }}</span></td>
                                             <td>{{ item.keterangan || '-' }}</td>
                                             <td class="text-end">
-                                                <div class="actions">
-                                                    <button class="btn btn-sm bg-success-light me-2" @click="openModal(item)">
-                                                        <i class="feather-edit"></i>
+                                                <div class="btn-group">
+                                                    <button class="btn btn-sm btn-outline-success" @click="openModal(item)" title="Edit">
+                                                        <i class="fas fa-edit"></i>
                                                     </button>
-                                                    <button class="btn btn-sm bg-danger-light" @click="confirmDelete(item.id)">
-                                                        <i class="feather-trash-2"></i>
+                                                    <button class="btn btn-sm btn-outline-danger" @click="confirmDelete(item.id)" title="Hapus">
+                                                        <i class="fas fa-trash"></i>
                                                     </button>
                                                 </div>
                                             </td>
                                         </tr>
                                         <tr v-if="filteredData.length === 0">
-                                            <td colspan="5" class="text-center text-muted py-4">
-                                                <i class="fas fa-inbox fa-2x mb-2 d-block opacity-50"></i>
-                                                Belum ada data jenis tagihan {{ activeFilter ? activeFilter.toLowerCase() : '' }}.
+                                            <td colspan="4" class="text-center text-muted py-5">
+                                                <i class="fas fa-inbox fa-3x mb-3 d-block opacity-25"></i>
+                                                Belum ada data jenis tagihan.
                                             </td>
                                         </tr>
                                     </tbody>
@@ -93,49 +78,47 @@
             <!-- Modal -->
             <div class="modal fade" id="modalJenis" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">{{ isEdit ? 'Edit Jenis Tagihan' : 'Tambah Jenis Tagihan Baru' }}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form @submit.prevent="submit">
-                                <div class="form-group mb-3">
-                                    <label class="form-label">Tipe Transaksi <span class="text-danger">*</span></label>
-                                    <div class="d-flex gap-3">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" id="tipePemasukan" value="Pemasukan" v-model="form.tipe">
-                                            <label class="form-check-label" for="tipePemasukan">
-                                                <i class="fas fa-arrow-down text-success me-1"></i> Pemasukan
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" id="tipePengeluaran" value="Pengeluaran" v-model="form.tipe">
-                                            <label class="form-check-label" for="tipePengeluaran">
-                                                <i class="fas fa-arrow-up text-danger me-1"></i> Pengeluaran
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="invalid-feedback d-block" v-if="form.errors.tipe">{{ form.errors.tipe }}</div>
+                    <div class="modal-content border-0 shadow-lg rounded-4">
+                        <div class="modal-header bg-primary text-white rounded-top-4">
+                            <div class="modal-title d-flex align-items-center">
+                                <div class="icon-box bg-white rounded-3 text-primary p-2 me-3">
+                                    <i class="fas fa-tags"></i>
                                 </div>
-                                <div class="form-group mb-3">
-                                    <label class="form-label">Nama Jenis Tagihan <span class="text-danger">*</span></label>
-                                    <input class="form-control" type="text" v-model="form.nama" placeholder="Contoh: SPP, ATK, Listrik">
+                                <div>
+                                    <h5 class="mb-0 text-white">{{ isEdit ? 'Edit Jenis Tagihan' : 'Tambah Jenis Tagihan' }}</h5>
+                                    <small class="text-white opacity-75">{{ isEdit ? 'Perbarui data jenis tagihan' : 'Buat kategori tagihan baru' }}</small>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-4">
+                            <form @submit.prevent="submit">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Nama Jenis Tagihan <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                        <input class="form-control" type="text" v-model="form.nama" placeholder="Contoh: SPP, ATK, Listrik">
+                                    </div>
                                     <div class="invalid-feedback d-block" v-if="form.errors.nama">{{ form.errors.nama }}</div>
                                 </div>
-                                <div class="form-group mb-3">
-                                    <label class="form-label">Kode (Opsional)</label>
-                                    <input class="form-control" type="text" v-model="form.kode" placeholder="Contoh: SPP-2024">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Kode <span class="text-muted small">(Opsional)</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+                                        <input class="form-control" type="text" v-model="form.kode" placeholder="Contoh: SPP-2024">
+                                    </div>
                                 </div>
-                                <div class="form-group mb-3">
-                                    <label class="form-label">Keterangan</label>
-                                    <textarea class="form-control" v-model="form.keterangan" rows="2" placeholder="Deskripsi jenis tagihan (opsional)"></textarea>
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Keterangan <span class="text-muted small">(Opsional)</span></label>
+                                    <textarea class="form-control" v-model="form.keterangan" rows="2" placeholder="Deskripsi jenis tagihan..."></textarea>
                                 </div>
-                                <div class="mt-4 d-flex gap-2">
-                                    <button type="button" class="btn btn-secondary flex-fill" data-bs-dismiss="modal">Batal</button>
-                                    <button type="submit" class="btn btn-primary flex-fill" :disabled="form.processing">
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-light flex-fill rounded-pill" data-bs-dismiss="modal">
+                                        <i class="fas fa-times me-1"></i> Batal
+                                    </button>
+                                    <button type="submit" class="btn btn-primary flex-fill rounded-pill" :disabled="form.processing">
                                         <span v-if="form.processing"><i class="fas fa-spinner fa-spin me-1"></i> Menyimpan...</span>
-                                        <span v-else>Simpan</span>
+                                        <span v-else><i class="fas fa-save me-1"></i> Simpan</span>
                                     </button>
                                 </div>
                             </form>
@@ -153,33 +136,25 @@ import { ref, computed, onMounted } from 'vue';
 import { Link, useForm, router } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Swal from 'sweetalert2';
+import { showToast } from '@/Utils/swal';
 
 const props = defineProps({
     jenisTagihans: Array,
-    filters: Object
 });
 
 const isEdit = ref(false);
 const modalInstance = ref(null);
-const activeFilter = ref(props.filters?.tipe || '');
 
 const form = useForm({
     id: null,
     nama: '',
-    tipe: 'Pemasukan',
     kode: '',
     keterangan: ''
 });
 
-// Computed counts
-const countAll = computed(() => props.jenisTagihans.length);
-const countPemasukan = computed(() => props.jenisTagihans.filter(i => i.tipe === 'Pemasukan').length);
-const countPengeluaran = computed(() => props.jenisTagihans.filter(i => i.tipe === 'Pengeluaran').length);
-
-// Filtered data based on active tab (client-side for speed)
+// Use data directly (Controller already filters latest)
 const filteredData = computed(() => {
-    if (!activeFilter.value) return props.jenisTagihans;
-    return props.jenisTagihans.filter(i => i.tipe === activeFilter.value);
+    return props.jenisTagihans;
 });
 
 onMounted(() => {
@@ -188,24 +163,27 @@ onMounted(() => {
     if (window.bootstrap) {
         modalInstance.value = new window.bootstrap.Modal(modalEl);
     }
+    
+    // Fix sidebar z-index when modal opens
+    const sidebar = document.getElementById('sidebar');
+    if (modalEl && sidebar) {
+        modalEl.addEventListener('show.bs.modal', () => {
+            sidebar.style.zIndex = '999';
+        });
+        modalEl.addEventListener('hidden.bs.modal', () => {
+            sidebar.style.zIndex = '';
+        });
+    }
 });
-
-const setFilter = (tipe) => {
-    activeFilter.value = tipe;
-    // Optional: could also do server-side filter
-    // router.get('/admin/jenis-tagihan', { tipe }, { preserveState: true, replace: true });
-};
 
 const openModal = (item = null) => {
     form.clearErrors();
     form.reset();
-    form.tipe = 'Pemasukan'; // Default
 
     if (item) {
         isEdit.value = true;
         form.id = item.id;
         form.nama = item.nama;
-        form.tipe = item.tipe;
         form.kode = item.kode;
         form.keterangan = item.keterangan;
     } else {
@@ -224,14 +202,20 @@ const submit = () => {
         form.put(`/admin/jenis-tagihan/${form.id}`, {
             onSuccess: () => {
                 hideModal();
-                Swal.fire('Berhasil!', 'Jenis tagihan berhasil diperbarui.', 'success');
+                showToast('success', 'Berhasil!', 'Jenis tagihan berhasil diperbarui.');
+            },
+            onError: () => {
+                showToast('error', 'Gagal!', 'Periksa inputan Anda. Pastikan field yang wajib sudah diisi.');
             }
         });
     } else {
         form.post('/admin/jenis-tagihan', {
             onSuccess: () => {
                 hideModal();
-                Swal.fire('Berhasil!', 'Jenis tagihan baru berhasil ditambahkan.', 'success');
+                showToast('success', 'Berhasil!', 'Jenis tagihan baru berhasil ditambahkan.');
+            },
+            onError: () => {
+                showToast('error', 'Gagal!', 'Periksa inputan Anda. Pastikan field yang wajib sudah diisi.');
             }
         });
     }
@@ -256,3 +240,11 @@ const confirmDelete = (id) => {
     });
 };
 </script>
+
+<style>
+/* Global style - fix sidebar appearing above modal backdrop */
+.modal.show ~ .sidebar,
+body.modal-open .sidebar {
+    z-index: 999 !important;
+}
+</style>

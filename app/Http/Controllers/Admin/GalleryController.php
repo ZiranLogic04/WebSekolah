@@ -41,19 +41,45 @@ class GalleryController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'category' => 'nullable|string|max:100',
             'description' => 'nullable|string',
+        ], [
+            'title.required' => 'Judul gambar wajib diisi.',
+            'image.required' => 'File gambar wajib diunggah.',
+            'image.image' => 'File harus berupa gambar.',
+            'image.mimes' => 'Format gambar harus jpeg, png, jpg, gif, atau webp.',
+            'image.max' => 'Ukuran gambar maksimal 5MB.',
         ]);
 
-        $imagePath = $request->file('image')->store('galleries', 'public');
+        // Convert to WebP
+        $image = $request->file('image');
+        $filename = 'gallery_' . time() . '_' . uniqid() . '.webp';
+        
+        $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+        $img = $manager->read($image->getRealPath());
+        
+        // Resize if too large (max 1920px width)
+        if ($img->width() > 1920) {
+            $img->scale(width: 1920);
+        }
+        
+        // Save as WebP with 85% quality
+        $savePath = storage_path('app/public/galleries/' . $filename);
+        
+        // Ensure directory exists
+        if (!file_exists(storage_path('app/public/galleries'))) {
+            mkdir(storage_path('app/public/galleries'), 0755, true);
+        }
+        
+        $img->toWebp(85)->save($savePath);
 
         Gallery::create([
             'title' => $request->title,
-            'image' => $imagePath,
+            'image' => 'galleries/' . $filename,
             'category' => $request->category,
             'description' => $request->description,
             'is_active' => true,
         ]);
 
-        return redirect()->back()->with('success', 'Gambar berhasil diupload');
+        return redirect()->back()->with('success', 'Berhasil mengunggah gambar baru.');
     }
 
     public function update(Request $request, Gallery $gallery)
@@ -64,6 +90,11 @@ class GalleryController extends Controller
             'category' => 'nullable|string|max:100',
             'description' => 'nullable|string',
             'is_active' => 'boolean',
+        ], [
+            'title.required' => 'Judul gambar wajib diisi.',
+            'image.image' => 'File harus berupa gambar.',
+            'image.mimes' => 'Format gambar harus jpeg, png, jpg, gif, atau webp.',
+            'image.max' => 'Ukuran gambar maksimal 5MB.',
         ]);
 
         $data = [
@@ -78,12 +109,31 @@ class GalleryController extends Controller
             if ($gallery->image) {
                 Storage::disk('public')->delete($gallery->image);
             }
-            $data['image'] = $request->file('image')->store('galleries', 'public');
+            
+            // Convert to WebP
+            $image = $request->file('image');
+            $filename = 'gallery_' . time() . '_' . uniqid() . '.webp';
+            
+            $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+            $img = $manager->read($image->getRealPath());
+            
+            if ($img->width() > 1920) {
+                $img->scale(width: 1920);
+            }
+            
+            $savePath = storage_path('app/public/galleries/' . $filename);
+            
+            if (!file_exists(storage_path('app/public/galleries'))) {
+                mkdir(storage_path('app/public/galleries'), 0755, true);
+            }
+            
+            $img->toWebp(85)->save($savePath);
+            $data['image'] = 'galleries/' . $filename;
         }
 
         $gallery->update($data);
 
-        return redirect()->back()->with('success', 'Gambar berhasil diupdate');
+        return redirect()->back()->with('success', 'Berhasil memperbarui data gambar.');
     }
 
     public function destroy(Gallery $gallery)
@@ -95,7 +145,7 @@ class GalleryController extends Controller
 
         $gallery->delete();
 
-        return redirect()->back()->with('success', 'Gambar berhasil dihapus');
+        return redirect()->back()->with('success', 'Berhasil menghapus gambar.');
     }
 
     public function bulkDestroy(Request $request)

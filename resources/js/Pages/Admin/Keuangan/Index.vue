@@ -1,43 +1,57 @@
 <template>
     <AdminLayout>
         <div class="content container-fluid">
-            <!-- Page Header -->
-            <div class="page-header">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h3 class="page-title">Rekap Keuangan</h3>
-                        <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><Link href="/dashboard">Dashboard</Link></li>
-                            <li class="breadcrumb-item active">Keuangan</li>
-                        </ul>
+            <!-- Radiant Header (Solid Color Variant) -->
+            <div class="card border-0 shadow-lg rounded-4 mb-4 overflow-hidden position-relative bg-primary">
+                <div class="card-body p-4 p-lg-5 position-relative z-1">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <div class="icon-box bg-white rounded-3 text-primary p-2">
+                                    <i class="fas fa-chart-line fs-3"></i>
+                                </div>
+                                <h2 class="fw-bold text-white mb-0 ls-tight">Rekap Keuangan</h2>
+                            </div>
+                            <p class="text-white-50 mb-0 fs-5">Ringkasan arus kas, pemasukan, dan pengeluaran sekolah.</p>
+                        </div>
+                        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                            <button class="btn btn-light btn-lg rounded-pill shadow-sm px-4 fw-bold text-primary hover-elevate" @click="openPrintModal">
+                                <i class="fas fa-print me-2"></i>Cetak Laporan
+                            </button>
+                        </div>
                     </div>
-                    <div class="col-auto">
-                        <button type="button" @click="openPrintModal" class="btn btn-primary">
-                            <i class="fas fa-print"></i> Cetak Laporan
-                        </button>
-                    </div>
+                </div>
+                <!-- Decorative Background -->
+                <div class="position-absolute bottom-0 end-0 opacity-10 me-n5 mb-n5">
+                    <i class="fas fa-chart-pie" style="font-size: 10rem; color: white;"></i>
                 </div>
             </div>
 
             <!-- Dashboard Info -->
             <div class="row">
-                <div class="col-md-12 mb-3">
-                     <div class="card bg-white shadow-sm border-0">
-                        <div class="card-body">
-                            <h5 class="card-title text-muted mb-3">Ringkasan Keuangan</h5>
-                            <div class="row">
+                <div class="col-md-12 mb-4">
+                     <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4">
+                            <h5 class="card-title fw-bold text-muted mb-4"><i class="fas fa-wallet me-2"></i>Ringkasan Keuangan</h5>
+                            <div class="row g-4">
                                 <div class="col-md-4 text-center border-end">
-                                    <h6 class="text-primary"><i class="fas fa-wallet mb-2"></i> Total Saldo Sekolah (Saat Ini)</h6>
-                                    <h3>{{ formatRupiah(summary.saldo_sekolah) }}</h3>
-                                    <small class="text-muted">Total kas tersedia</small>
+                                    <div class="p-2">
+                                        <h6 class="text-primary fw-bold mb-3">Total Saldo Sekolah</h6>
+                                        <h2 class="fw-bold mb-1">{{ formatRupiah(summary.saldo_sekolah) }}</h2>
+                                        <small class="text-muted"><i class="fas fa-check-circle text-success me-1"></i>Kas tersedia saat ini</small>
+                                    </div>
                                 </div>
                                 <div class="col-md-4 text-center border-end">
-                                    <h6 class="text-success"><i class="fas fa-arrow-down mb-2"></i> Pemasukan {{ summary.label_periode }}</h6>
-                                    <h3>{{ formatRupiah(summary.pemasukan_periode) }}</h3>
+                                    <div class="p-2">
+                                        <h6 class="text-success fw-bold mb-3">Pemasukan {{ summary.label_periode }}</h6>
+                                        <h3 class="fw-bold text-success mb-0"><i class="fas fa-arrow-down me-2"></i>{{ formatRupiah(summary.pemasukan_periode) }}</h3>
+                                    </div>
                                 </div>
                                 <div class="col-md-4 text-center">
-                                    <h6 class="text-danger"><i class="fas fa-arrow-up mb-2"></i> Pengeluaran {{ summary.label_periode }}</h6>
-                                    <h3>{{ formatRupiah(summary.pengeluaran_periode) }}</h3>
+                                    <div class="p-2">
+                                        <h6 class="text-danger fw-bold mb-3">Pengeluaran {{ summary.label_periode }}</h6>
+                                        <h3 class="fw-bold text-danger mb-0"><i class="fas fa-arrow-up me-2"></i>{{ formatRupiah(summary.pengeluaran_periode) }}</h3>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -48,33 +62,34 @@
             <!-- Laporan Arus Kas Detail -->
             <div class="row mb-4">
                 <!-- Rincian Pemasukan -->
-                <div class="col-md-6 d-flex">
-                    <div class="card flex-fill">
-                        <div class="card-header">
-                            <h5 class="card-title text-success">Rincian Pemasukan {{ summary.label_periode }}</h5>
+                <div class="col-md-6 d-flex mb-4 mb-md-0">
+                    <div class="card border-0 shadow-sm rounded-4 flex-fill overflow-hidden">
+                        <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                            <h5 class="card-title fw-bold text-success mb-0"><i class="fas fa-arrow-down me-2"></i>Rincian Pemasukan</h5>
+                            <small class="text-muted">{{ summary.label_periode }}</small>
                         </div>
                         <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover mb-0">
-                                    <thead>
+                            <div class="table-responsive p-3">
+                                <table class="table table-hover table-center mb-0">
+                                    <thead class="table-light rounded-3">
                                         <tr>
-                                            <th>Kategori</th>
-                                            <th class="text-end">Jumlah</th>
+                                            <th class="rounded-start-3 ps-4">Kategori</th>
+                                            <th class="text-end rounded-end-3 pe-4">Jumlah</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-if="laporan.pemasukan.length === 0">
-                                            <td colspan="2" class="text-center">Tidak ada data pemasukan.</td>
+                                            <td colspan="2" class="text-center py-4 text-muted">Tidak ada data pemasukan.</td>
                                         </tr>
                                         <tr v-for="(item, index) in laporan.pemasukan" :key="index">
-                                            <td>{{ item.kategori }} <span class="badge bg-light text-dark rounded-pill ms-1">{{ item.count }}x</span></td>
-                                            <td class="text-end fw-bold text-success">{{ formatRupiah(item.total) }}</td>
+                                            <td class="ps-4">{{ item.kategori }} <span class="badge bg-success-subtle text-success rounded-pill ms-2">{{ item.count }}x</span></td>
+                                            <td class="text-end fw-bold text-success pe-4">{{ formatRupiah(item.total) }}</td>
                                         </tr>
                                     </tbody>
                                     <tfoot>
                                         <tr class="fw-bold bg-light">
-                                            <td>Total</td>
-                                            <td class="text-end text-success">{{ formatRupiah(summary.pemasukan_periode) }}</td>
+                                            <td class="ps-4 rounded-start-3">Total</td>
+                                            <td class="text-end text-success pe-4 rounded-end-3">{{ formatRupiah(summary.pemasukan_periode) }}</td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -85,33 +100,38 @@
 
                 <!-- Rincian Pengeluaran -->
                 <div class="col-md-6 d-flex">
-                    <div class="card flex-fill">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title text-danger mb-0">Rincian Pengeluaran</h5>
-                            <span class="badge bg-danger-light">{{ summary.label_periode }}</span>
+                    <div class="card border-0 shadow-sm rounded-4 flex-fill overflow-hidden">
+                        <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title fw-bold text-danger mb-0"><i class="fas fa-arrow-up me-2"></i>Rincian Pengeluaran</h5>
+                                <small class="text-muted">{{ summary.label_periode }}</small>
+                            </div>
                         </div>
                         <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover mb-0">
-                                    <thead>
+                            <div class="table-responsive p-3">
+                                <table class="table table-hover table-center mb-0">
+                                    <thead class="table-light rounded-3">
                                         <tr>
-                                            <th>Kategori</th>
-                                            <th class="text-end">Jumlah</th>
+                                            <th class="rounded-start-3 ps-4">Kategori</th>
+                                            <th class="text-end rounded-end-3 pe-4">Jumlah</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-if="laporan.pengeluaran.length === 0">
-                                            <td colspan="2" class="text-center text-muted py-3">Tidak ada data pengeluaran.</td>
+                                            <td colspan="2" class="text-center text-muted py-4">Tidak ada data pengeluaran.</td>
                                         </tr>
                                         <tr v-for="(item, index) in laporan.pengeluaran" :key="index">
-                                            <td>{{ item.kategori }} <span class="badge bg-light text-dark rounded-pill ms-1">{{ item.count }}x</span></td>
-                                            <td class="text-end fw-bold text-danger">{{ formatRupiah(item.total) }}</td>
+                                            <td class="ps-4">
+                                                {{ item.kategori }}
+                                                <span class="badge bg-danger-subtle text-danger rounded-pill ms-2">{{ item.count }}x</span>
+                                            </td>
+                                            <td class="text-end fw-bold text-danger pe-4">{{ formatRupiah(item.total) }}</td>
                                         </tr>
                                     </tbody>
                                     <tfoot>
                                         <tr class="fw-bold bg-light">
-                                            <td>Total</td>
-                                            <td class="text-end text-danger">{{ formatRupiah(summary.pengeluaran_periode) }}</td>
+                                            <td class="ps-4 rounded-start-3">Total</td>
+                                            <td class="text-end text-danger pe-4 rounded-end-3">{{ formatRupiah(summary.pengeluaran_periode) }}</td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -121,59 +141,65 @@
                 </div>
             </div>
 
+
+
             <!-- RIWAYAT TRANSAKSI DETAIL -->
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title">Log Transaksi Lengkap</h5>
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+                            <h5 class="card-title fw-bold text-dark mb-0"><i class="fas fa-history me-2 text-primary"></i>Riwayat Transaksi</h5>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body p-4">
                             <!-- Simple Search Filter within Table Card -->
-                            <div class="row mb-3">
+                            <div class="row mb-4">
                                 <div class="col-md-8"></div>
                                 <div class="col-md-4">
                                     <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="Cari transaksi..." v-model="filterForm.search" @keyup.enter="handleSearch">
-                                        <button class="btn btn-outline-secondary" type="button" @click="handleSearch"><i class="fas fa-search"></i></button>
+                                        <span class="input-group-text bg-light border-end-0 rounded-start-pill ps-3"><i class="fas fa-search text-muted"></i></span>
+                                        <input type="text" class="form-control bg-light border-start-0 border-end-0" placeholder="Cari transaksi..." v-model="filterForm.search" @keyup.enter="handleSearch">
+                                        <button class="btn btn-primary rounded-end-pill px-4" type="button" @click="handleSearch">
+                                            Cari
+                                        </button>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="table-responsive">
-                                <table class="table table-hover table-center mb-0 datatable">
-                                    <thead class="thead-light">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light rounded-3">
                                         <tr>
-                                            <th>Tanggal</th>
-                                            <th>Kategori / Sumber</th>
-                                            <th>Tipe</th>
-                                            <th>Jumlah</th>
-                                            <th class="text-end">Aksi</th>
+                                            <th class="rounded-start-3 ps-4 py-3" style="width: 15%;">Tanggal</th>
+                                            <th class="py-3" style="width: 20%;">Kategori</th>
+                                            <th class="py-3" style="width: 35%;">Keterangan</th>
+                                            <th class="text-center py-3" style="width: 10%;">Tipe</th>
+                                            <th class="text-end rounded-end-3 pe-4 py-3" style="width: 20%;">Jumlah</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-if="transaksi.data.length === 0">
-                                            <td colspan="5" class="text-center p-5">Belum ada data transaksi.</td>
+                                            <td colspan="5" class="text-center p-5 text-muted">Belum ada data transaksi.</td>
                                         </tr>
                                         <tr v-for="item in transaksi.data" :key="item.id">
-                                            <td>{{ new Date(item.tanggal).toLocaleDateString('id-ID') }}</td>
+                                            <td class="ps-4">{{ new Date(item.tanggal).toLocaleDateString('id-ID') }}</td>
                                             <td>
-                                                <div class="fw-bold">{{ item.kategori ? item.kategori.nama : 'Lainnya' }}</div>
-                                                <small class="text-muted">{{ item.sumber }} - {{ item.keterangan }}</small>
+                                                <!-- Priority: 1. Relation (jenisKategori), 2. Manual string (kategori), 3. Sumber, 4. Fallback -->
+                                                <div class="fw-bold text-dark">
+                                                    {{ item.jenis_kategori?.nama || item.kategori || item.sumber || 'Lainnya' }}
+                                                </div>
                                             </td>
                                             <td>
-                                                <span class="badge" :class="item.tipe === 'Masuk' ? 'bg-success' : 'bg-danger'">
-                                                    {{ item.tipe }}
-                                                </span>
+                                                <small class="text-muted d-block text-truncate" style="max-width: 300px;">{{ item.keterangan || item.sumber || '-' }}</small>
                                             </td>
-                                            <td class="fw-bold" :class="item.tipe === 'Masuk' ? 'text-success' : 'text-danger'">
+                                            <td class="text-center">
+                                                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill border" 
+                                                     :class="item.tipe === 'Masuk' ? 'border-success-subtle bg-success-subtle text-success' : 'border-danger-subtle bg-danger-subtle text-danger'">
+                                                    <i class="fas" :class="item.tipe === 'Masuk' ? 'fa-arrow-down' : 'fa-arrow-up'"></i>
+                                                    <span class="fw-bold small">{{ item.tipe === 'Masuk' ? 'Masuk' : 'Keluar' }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="text-end fw-bold pe-4" :class="item.tipe === 'Masuk' ? 'text-success' : 'text-danger'">
                                                 {{ item.tipe === 'Masuk' ? '+' : '-' }} {{ formatRupiah(item.jumlah) }}
-                                            </td>
-                                            <td class="text-end">
-                                                <button v-if="!item.transaksi_id" class="btn btn-sm btn-danger" @click="confirmDelete(item.id)">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                                <span v-else class="text-muted"><i class="fas fa-lock"></i></span>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -181,12 +207,18 @@
                             </div>
 
                             <!-- Pagination -->
-                            <div class="row mt-3" v-if="transaksi.links.length > 3">
+                            <div class="row mt-4" v-if="transaksi.links.length > 3">
                                 <div class="col-md-12">
                                     <nav aria-label="Page navigation">
                                         <ul class="pagination justify-content-center">
                                             <li class="page-item" :class="{ disabled: !link.url, active: link.active }" v-for="(link, index) in transaksi.links" :key="index">
-                                                <Link class="page-link" :href="link.url || '#'" v-html="link.label" preserve-state preserve-scroll />
+                                                <Link class="page-link rounded-circle mx-1 border-0 shadow-sm d-flex align-items-center justify-content-center" 
+                                                      style="width: 32px; height: 32px;"
+                                                      :class="link.active ? 'bg-primary text-white' : 'bg-white text-dark'"
+                                                      :href="link.url || '#'" 
+                                                      v-html="link.label" 
+                                                      preserve-state 
+                                                      preserve-scroll />
                                             </li>
                                         </ul>
                                     </nav>
@@ -198,115 +230,153 @@
             </div>
 
             <!-- Modal Form (Hidden but accessible if needed via URL param or future feature) -->
-            <div class="modal fade" id="keuanganModal" tabindex="-1" aria-hidden="true">
+            <div class="modal fade" id="keuanganModal" tabindex="-1" aria-hidden="true" style="z-index: 1055;">
                 <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Catat Transaksi Manual</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-content border-0 shadow-lg rounded-4">
+                        <div class="modal-header bg-primary text-white rounded-top-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="icon-box bg-white rounded-3 text-primary p-2">
+                                    <i class="fas fa-edit"></i>
+                                </div>
+                                <div>
+                                    <h5 class="modal-title fw-bold text-white mb-0">Catat Transaksi</h5>
+                                    <small class="text-white opacity-75">Input pemasukan atau pengeluaran baru</small>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <form @submit.prevent="submitForm">
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <label class="form-label">Tipe Transaksi</label>
+                            <div class="modal-body p-4">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold mb-3">Tipe Transaksi</label>
                                     <div class="d-flex gap-3">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" id="tipeMasuk" value="Masuk" v-model="form.tipe">
-                                            <label class="form-check-label" for="tipeMasuk">
-                                                <i class="fas fa-arrow-down text-success me-1"></i> Pemasukan
+                                        <div class="form-check card-radio flex-fill">
+                                            <input class="form-check-input visually-hidden" type="radio" id="tipeMasuk" value="Masuk" v-model="form.tipe">
+                                            <label class="form-check-label card p-3 text-center border cursor-pointer h-100" :class="form.tipe === 'Masuk' ? 'border-success bg-success-subtle text-success fw-bold' : ''" for="tipeMasuk">
+                                                <i class="fas fa-arrow-down mb-2 fs-4 d-block"></i>
+                                                Pemasukan
                                             </label>
                                         </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" id="tipeKeluar" value="Keluar" v-model="form.tipe">
-                                            <label class="form-check-label" for="tipeKeluar">
-                                                <i class="fas fa-arrow-up text-danger me-1"></i> Pengeluaran
+                                        <div class="form-check card-radio flex-fill">
+                                            <input class="form-check-input visually-hidden" type="radio" id="tipeKeluar" value="Keluar" v-model="form.tipe">
+                                            <label class="form-check-label card p-3 text-center border cursor-pointer h-100" :class="form.tipe === 'Keluar' ? 'border-danger bg-danger-subtle text-danger fw-bold' : ''" for="tipeKeluar">
+                                                <i class="fas fa-arrow-up mb-2 fs-4 d-block"></i>
+                                                Pengeluaran
                                             </label>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="mb-3" v-if="currentKategori.length > 0">
-                                    <label class="form-label">Kategori</label>
-                                    <select class="form-select" v-model="form.kategori_id">
+                                    <label class="form-label fw-bold">Kategori</label>
+                                    <select class="form-select rounded-pill bg-light border-0 ps-3" v-model="form.kategori_id">
                                         <option value="">-- Pilih Kategori (Opsional) --</option>
                                         <option v-for="kat in currentKategori" :key="kat.id" :value="kat.id">
                                             {{ kat.nama }} {{ kat.kode ? `(${kat.kode})` : '' }}
                                         </option>
                                     </select>
-                                    <small class="text-muted">Opsional. <Link href="/admin/jenis-tagihan" class="text-primary">Kelola Kategori</Link></small>
+                                    <small class="text-muted ms-2 mt-1 d-block">Opsional. <Link href="/admin/jenis-tagihan" class="text-primary text-decoration-none">Kelola Kategori</Link></small>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Sumber / Keterangan Singkat</label>
-                                    <input type="text" class="form-control" v-model="form.sumber" placeholder="Contoh: Beli Spidol, Dana BOS, dll" required>
+                                    <label class="form-label fw-bold">Sumber / Keterangan Singkat</label>
+                                    <input type="text" class="form-control rounded-pill bg-light border-0 ps-3" v-model="form.sumber" placeholder="Contoh: Beli Spidol, Dana BOS, dll" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Jumlah (Rp)</label>
-                                    <input type="text" class="form-control" v-model="displayAmount" @input="handleAmountInput" required placeholder="0">
+                                    <label class="form-label fw-bold">Jumlah (Rp)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text rounded-start-pill bg-light border-0 fw-bold">Rp</span>
+                                        <input type="text" class="form-control rounded-end-pill bg-light border-0 ps-2 fw-bold" v-model="displayAmount" @input="handleAmountInput" required placeholder="0">
+                                    </div>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Tanggal</label>
-                                    <input type="date" class="form-control" v-model="form.tanggal" required>
+                                    <label class="form-label fw-bold">Tanggal</label>
+                                    <input type="date" class="form-control rounded-pill bg-light border-0 ps-3" v-model="form.tanggal" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Keterangan Tambahan (Opsional)</label>
-                                    <textarea class="form-control" v-model="form.keterangan" rows="2" placeholder="Detail tambahan..."></textarea>
+                                    <label class="form-label fw-bold">Keterangan Tambahan (Opsional)</label>
+                                    <textarea class="form-control rounded-4 bg-light border-0 p-3" v-model="form.keterangan" rows="2" placeholder="Detail tambahan..."></textarea>
                                 </div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                <button type="submit" class="btn btn-primary" :disabled="form.processing">Simpan</button>
+                            <div class="modal-footer border-0 px-4 pb-4">
+                                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                                <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm" :disabled="form.processing">Simpan Transaksi</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- Modal Print Filter -->
-            <div class="modal fade" id="printModal" tabindex="-1" aria-hidden="true">
+            <!-- Modal Print Filter - Modern Design -->
+            <div class="modal fade" id="printModal" tabindex="-1" aria-hidden="true" style="z-index: 1055;">
                 <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Cetak Laporan Keuangan</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-content border-0 shadow-lg rounded-4">
+                        <div class="modal-header bg-primary text-white rounded-top-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="icon-box bg-white rounded-3 text-primary p-2">
+                                    <i class="fas fa-print"></i>
+                                </div>
+                                <div>
+                                    <h5 class="modal-title fw-bold text-white mb-0">Cetak Laporan</h5>
+                                    <small class="text-white opacity-75">Ekspor laporan keuangan ke PDF</small>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body">
+                        <div class="modal-body p-4">
                             <form @submit.prevent="handlePrintSubmit">
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Pilih Periode Laporan</label>
-                                    <select class="form-select" v-model="printFilter.period">
-                                        <option value="week">Minggu Ini</option>
-                                        <option value="month">Bulan Ini</option>
-                                        <option value="month_range">Pilih Rentang Bulan</option>
-                                        <option value="year">Tahun Ini</option>
-                                        <option value="custom">Pilih Tanggal Manual</option>
-                                    </select>
+                                <!-- Period Selection Cards -->
+                                <div class="row g-3 mb-4">
+                                    <div class="col-6">
+                                        <div class="period-card" 
+                                            :class="{ 'active': printFilter.period === 'week' }"
+                                            @click="printFilter.period = 'week'">
+                                            <i class="fas fa-calendar-week"></i>
+                                            <span>Minggu Ini</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="period-card" 
+                                            :class="{ 'active': printFilter.period === 'month' }"
+                                            @click="printFilter.period = 'month'">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            <span>Bulan Ini</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="period-card" 
+                                            :class="{ 'active': printFilter.period === 'year' }"
+                                            @click="printFilter.period = 'year'">
+                                            <i class="fas fa-calendar"></i>
+                                            <span>Tahun Ini</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="period-card" 
+                                            :class="{ 'active': printFilter.period === 'custom' }"
+                                            @click="printFilter.period = 'custom'">
+                                            <i class="fas fa-calendar-day"></i>
+                                            <span>Pilih Tanggal</span>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- Custom Date Range -->
-                                <div class="row" v-if="printFilter.period === 'custom'">
-                                    <div class="col-6 mb-3">
-                                        <label class="form-label">Dari Tanggal</label>
-                                        <input type="date" class="form-control" v-model="printFilter.start_date">
-                                    </div>
-                                    <div class="col-6 mb-3">
-                                    <label class="form-label">Sampai Tanggal</label>
-                                        <input type="date" class="form-control" v-model="printFilter.end_date">
-                                    </div>
-                                </div>
-
-                                <!-- Month Range -->
-                                <div class="row" v-if="printFilter.period === 'month_range'">
-                                    <div class="col-6 mb-3">
-                                        <label class="form-label">Dari Bulan</label>
-                                        <input type="month" class="form-control" v-model="printFilter.start_month">
-                                    </div>
-                                    <div class="col-6 mb-3">
-                                    <label class="form-label">Sampai Bulan</label>
-                                        <input type="month" class="form-control" v-model="printFilter.end_month">
+                                <div class="custom-date-section rounded-3 p-3 bg-light animated fadeIn" v-if="printFilter.period === 'custom'">
+                                    <div class="row g-3">
+                                        <div class="col-6">
+                                            <label class="form-label fw-bold small text-muted mb-1">Dari Tanggal</label>
+                                            <input type="date" class="form-control rounded-pill border-0 shadow-sm" v-model="printFilter.start_date">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label fw-bold small text-muted mb-1">Sampai Tanggal</label>
+                                            <input type="date" class="form-control rounded-pill border-0 shadow-sm" v-model="printFilter.end_date">
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-print me-2"></i> Cetak Sekarang</button>
+                                <div class="d-grid mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+                                        <i class="fas fa-download me-2"></i> Unduh Laporan PDF
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -401,14 +471,34 @@ let printModalInstance = null;
 onMounted(() => {
     // Initialize Transaction Modal
     const el = document.getElementById('keuanganModal');
-    if (window.bootstrap) {
+    if (window.bootstrap && el) {
         modalInstance = new window.bootstrap.Modal(el);
+        
+        // Z-Index Fix for Sidebar when modal opens
+        el.addEventListener('show.bs.modal', () => {
+             const sidebar = document.querySelector('.sidebar');
+             if(sidebar) sidebar.style.zIndex = '1000';
+        });
+        el.addEventListener('hidden.bs.modal', () => {
+             const sidebar = document.querySelector('.sidebar');
+             if(sidebar) sidebar.style.zIndex = '';
+        });
     }
     
     // Initialize Print Modal
     const printEl = document.getElementById('printModal');
     if (window.bootstrap && printEl) {
         printModalInstance = new window.bootstrap.Modal(printEl);
+        
+        // Z-Index Fix for Sidebar when modal opens
+        printEl.addEventListener('show.bs.modal', () => {
+             const sidebar = document.querySelector('.sidebar');
+             if(sidebar) sidebar.style.zIndex = '1000';
+        });
+        printEl.addEventListener('hidden.bs.modal', () => {
+             const sidebar = document.querySelector('.sidebar');
+             if(sidebar) sidebar.style.zIndex = '';
+        });
     }
     
     // Auto open modal if ?action=create
@@ -533,5 +623,123 @@ const formatRupiah = (value) => {
 </script>
 
 <style scoped>
-/* Scoped styles for Dashboard view */
+/* Table Header Styling */
+.table thead th {
+    background-color: #3d5ee1;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1rem 0.75rem;
+    border: none;
+}
+.table tbody td {
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+    font-size: 0.95rem;
+}
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Card Styling */
+.card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+/* Icon Box */
+.icon-box {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+/* Hover Elevate */
+.hover-elevate {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hover-elevate:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Card Radio (for Tipe Transaksi) */
+.card-radio label {
+    transition: all 0.2s ease;
+}
+.card-radio label:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* Period Card (for Print Modal) */
+.period-card {
+    border: 2px solid #e9ecef;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #495057;
+    background-color: #fff;
+}
+
+.period-card i {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    color: #6c757d;
+    transition: color 0.2s ease;
+}
+
+.period-card span {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.period-card:hover {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+    transform: translateY(-3px);
+}
+
+.period-card.active {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+    color: #3b82f6;
+}
+
+.period-card.active i {
+    color: #3b82f6;
+}
+
+/* Animations */
+.animated {
+    animation-duration: 0.3s;
+    animation-fill-mode: both;
+}
+.fadeIn {
+    animation-name: fadeIn;
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 </style>

@@ -23,7 +23,9 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             // AdminSeeder::class, // Diganti UserSeeder yang lebih lengkap
             LembagaSeeder::class,
-            LetterTemplateSeeder::class,
+            SuratTemplateSeeder::class, // 13 Template Surat Default
+            MenuItemSeeder::class,
+            ProfessionalDemoSeeder::class, // Data demo untuk halaman depan
         ]);
     }
 }

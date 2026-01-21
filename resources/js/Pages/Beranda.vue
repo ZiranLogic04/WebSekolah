@@ -1,43 +1,43 @@
 <template>
   <BerandaLayout>
     <!-- Hero Slider -->
-    <HeroSlider />
+    <HeroSlider :sliders="sliders" />
     
     <!-- Feature Area -->
-    <FeatureArea />
+    <FeatureArea :features="features" />
     
     <!-- About Area -->
-    <AboutArea />
+    <AboutArea :about="about" />
     
-    <!-- Counter Area (TETAP DINAMIS) -->
+    <!-- Counter Area -->
     <CounterArea :stats="stats" />
     
     <!-- Department Area (Program) -->
-    <DepartmentArea />
+    <DepartmentArea :program="program" />
     
     <!-- Video Area -->
-    <VideoArea />
+    <VideoArea :video="video" />
     
     <!-- Team / Guru Area -->
-    <TeamArea />
+    <TeamArea :team="team" />
     
     <!-- Choose Area -->
-    <ChooseArea />
+    <ChooseArea :choose="choose" />
     
     <!-- Portfolio Area -->
-    <PortofolioArea />
+    <PortofolioArea :portfolio="portfolio" />
     
     <!-- Event Area -->
-    <EventArea />
+    <EventArea :event="event" />
     
     <!-- Testimonial Area -->
-    <TestimonialArea />
+    <TestimonialArea :section="testimonial" />
     
-    <!-- Blog Area (TETAP DINAMIS) -->
+    <!-- Blog Area -->
     <BlogArea :posts="posts" />
     
     <!-- Partner Area -->
-    <PartnerArea />
+    <PartnerArea :section="partner" />
   </BerandaLayout>
 </template>
 
@@ -57,9 +57,19 @@ import TestimonialArea from '@/Components/Beranda/TestimonialArea.vue'
 import BlogArea from '@/Components/Beranda/BlogArea.vue'
 import PartnerArea from '@/Components/Beranda/PartnerArea.vue'
 
-
 defineProps({
     posts: Array,
-    stats: Object 
-});
+    stats: Object,
+    sliders: Array,
+    features: Array,
+    about: Object,
+    program: Object,
+    video: Object,
+    team: Object,
+    choose: Object,
+    portfolio: Object,
+    event: Object,
+    testimonial: Object,
+    partner: Object,
+})
 </script>

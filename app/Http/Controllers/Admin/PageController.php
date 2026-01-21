@@ -20,41 +20,32 @@ class PageController extends Controller
                 'description' => 'Kelola Visi dan Misi Sekolah.',
                 'icon' => 'fas fa-bullseye',
                 'color' => 'bg-primary',
-                'fields' => [
-                    ['name' => 'visi', 'type' => 'textarea', 'label' => 'Visi Sekolah', 'group_title' => 'Visi'],
-                    ['name' => 'misi', 'type' => 'richtext', 'label' => 'Misi Sekolah', 'group_title' => 'Misi'],
-                ]
+                'custom_editor' => 'visi-misi',
+                'fields' => []
             ],
             'sejarah' => [
                 'title' => 'Sejarah Sekolah',
                 'description' => 'Kelola Sejarah singkat sekolah.',
                 'icon' => 'fas fa-history',
                 'color' => 'bg-warning',
-                'fields' => [
-                    ['name' => 'image', 'type' => 'image', 'label' => 'Foto Gedung / Sejarah', 'group_title' => 'Konten Sejarah'],
-                    ['name' => 'content', 'type' => 'richtext', 'label' => 'Isi Sejarah'],
-                ]
+                'custom_editor' => 'sejarah',
+                'fields' => []
             ],
             'sambutan' => [
-                'title' => 'Sambutan Kepala Sekolah',
-                'description' => 'Kata sambutan dari Kepala Sekolah.',
+                'title' => 'Kepala Madrasah',
+                'description' => 'Profil lengkap, biodata, dan sambutan Kepala Madrasah.',
                 'icon' => 'fas fa-user-tie',
                 'color' => 'bg-success',
-                'fields' => [
-                    ['name' => 'kepsek_name', 'type' => 'text', 'label' => 'Nama Kepala Sekolah', 'group_title' => 'Biodata'],
-                    ['name' => 'kepsek_image', 'type' => 'image', 'label' => 'Foto Kepala Sekolah'],
-                    ['name' => 'content', 'type' => 'richtext', 'label' => 'Isi Sambutan', 'group_title' => 'Konten Sambutan'],
-                ]
+                'custom_editor' => 'kepala',
+                'fields' => []
             ],
             'organisasi' => [
                 'title' => 'Struktur Organisasi',
-                'description' => 'Gambar bagan struktur organisasi.',
+                'description' => 'Bagan struktur organisasi dan wali kelas.',
                 'icon' => 'fas fa-sitemap',
                 'color' => 'bg-info',
-                'fields' => [
-                    ['name' => 'image', 'type' => 'image', 'label' => 'Gambar Struktur Organisasi', 'group_title' => 'Bagan Organisasi'],
-                    ['name' => 'description', 'type' => 'textarea', 'label' => 'Keterangan Tambahan (Opsional)'],
-                ]
+                'custom_editor' => 'organisasi',
+                'fields' => []
             ],
             
             // === HALAMAN BARU ===
@@ -63,12 +54,10 @@ class PageController extends Controller
                 'description' => 'Kelola informasi fasilitas sekolah.',
                 'icon' => 'fas fa-building',
                 'color' => 'bg-secondary',
+                'custom_editor' => 'sarpras', // Flag untuk pakai editor khusus
                 'fields' => [
-                    ['name' => 'jumlah_rombel', 'type' => 'text', 'label' => 'Jumlah Rombel', 'group_title' => 'Ringkasan Statistik'],
-                    ['name' => 'jumlah_siswa', 'type' => 'text', 'label' => 'Jumlah Siswa Aktif'],
-                    ['name' => 'jumlah_guru', 'type' => 'text', 'label' => 'Jumlah Guru & Tendik'],
-                    ['name' => 'jumlah_alumni', 'type' => 'text', 'label' => 'Jumlah Alumni'],
-                    ['name' => 'content', 'type' => 'richtext', 'label' => 'Deskripsi Fasilitas', 'group_title' => 'Konten Sarana'],
+                    // Data facilities dan inventaris akan disimpan sebagai JSON
+                    // dan diedit via komponen khusus SarprasEdit.vue
                 ]
             ],
             'tujuan' => [
@@ -76,9 +65,9 @@ class PageController extends Controller
                 'description' => 'Kelola tujuan pendidikan madrasah.',
                 'icon' => 'fas fa-bullseye',
                 'color' => 'bg-primary',
+                'custom_editor' => 'tujuan', // Flag untuk pakai editor khusus
                 'fields' => [
-                    ['name' => 'content', 'type' => 'richtext', 'label' => 'Daftar Tujuan Madrasah', 'group_title' => 'Tujuan'],
-                    ['name' => 'program_pendukung', 'type' => 'richtext', 'label' => 'Program yang Mendukung', 'group_title' => 'Program Pendukung'],
+                    // Data tujuan dan program_pendukung akan disimpan sebagai JSON
                 ]
             ],
             'kurikulum' => [
@@ -86,80 +75,29 @@ class PageController extends Controller
                 'description' => 'Kelola informasi kurikulum dan mata pelajaran.',
                 'icon' => 'fas fa-book-open',
                 'color' => 'bg-success',
-                'fields' => [
-                    ['name' => 'ringkasan', 'type' => 'richtext', 'label' => 'Ringkasan Kurikulum', 'group_title' => 'Kurikulum'],
-                    ['name' => 'mapel_keagamaan', 'type' => 'richtext', 'label' => 'Mata Pelajaran Keagamaan', 'group_title' => 'Mata Pelajaran'],
-                    ['name' => 'mapel_umum', 'type' => 'richtext', 'label' => 'Mata Pelajaran Umum'],
-                    ['name' => 'penilaian', 'type' => 'richtext', 'label' => 'Sistem Penilaian', 'group_title' => 'Penilaian & Program'],
-                    ['name' => 'program_penguat', 'type' => 'richtext', 'label' => 'Program Penguat'],
-                ]
+                'custom_editor' => 'kurikulum',
+                'fields' => []
             ],
             'ppdb_syarat' => [
                 'title' => 'Syarat & Alur PPDB',
-                'description' => 'Kelola informasi persyaratan dan alur pendaftaran.',
+                'description' => 'Kelola informasi persyaratan, alur pendaftaran, dan kontak.',
                 'icon' => 'fas fa-user-plus',
                 'color' => 'bg-warning',
-                'fields' => [
-                    ['name' => 'syarat_admin', 'type' => 'richtext', 'label' => 'Syarat Administratif', 'group_title' => 'Syarat Pendaftaran'],
-                    ['name' => 'syarat_usia', 'type' => 'richtext', 'label' => 'Ketentuan Usia & Akademik'],
-                    ['name' => 'alur', 'type' => 'richtext', 'label' => 'Alur Pendaftaran', 'group_title' => 'Alur PPDB'],
-                    ['name' => 'kontak_panitia', 'type' => 'textarea', 'label' => 'Kontak Panitia', 'group_title' => 'Kontak'],
-                    ['name' => 'wa_panitia', 'type' => 'text', 'label' => 'Nomor WhatsApp Panitia'],
-                    ['name' => 'email_panitia', 'type' => 'text', 'label' => 'Email Panitia'],
-                ]
+                'custom_editor' => 'ppdb-syarat',
+                'fields' => []
             ],
             'ppdb_kuota' => [
                 'title' => 'Jadwal & Kuota PPDB',
-                'description' => 'Kelola jadwal dan kuota penerimaan siswa baru.',
+                'description' => 'Kelola jadwal, kuota, dan biaya pendidikan.',
                 'icon' => 'fas fa-calendar-check',
                 'color' => 'bg-info',
-                'fields' => [
-                    ['name' => 'tahun_ajar', 'type' => 'text', 'label' => 'Tahun Ajaran', 'group_title' => 'Info Umum'],
-                    ['name' => 'jadwal_daftar', 'type' => 'text', 'label' => 'Jadwal Pendaftaran', 'group_title' => 'Jadwal PPDB'],
-                    ['name' => 'jadwal_verifikasi', 'type' => 'text', 'label' => 'Jadwal Verifikasi'],
-                    ['name' => 'jadwal_observasi', 'type' => 'text', 'label' => 'Jadwal Observasi'],
-                    ['name' => 'jadwal_pengumuman', 'type' => 'text', 'label' => 'Jadwal Pengumuman'],
-                    ['name' => 'jadwal_daftar_ulang', 'type' => 'text', 'label' => 'Jadwal Daftar Ulang'],
-                    ['name' => 'kuota_total', 'type' => 'text', 'label' => 'Total Kuota', 'group_title' => 'Kuota'],
-                    ['name' => 'kuota_terisi', 'type' => 'text', 'label' => 'Kuota Terisi'],
-                    ['name' => 'biaya_daftar', 'type' => 'text', 'label' => 'Biaya Pendaftaran', 'group_title' => 'Biaya'],
-                    ['name' => 'biaya_spp', 'type' => 'text', 'label' => 'SPP Bulanan'],
-                    ['name' => 'biaya_paket', 'type' => 'text', 'label' => 'Paket Seragam/Perlengkapan'],
-                ]
+                'custom_editor' => 'ppdb-kuota',
+                'fields' => []
             ],
         ];
     }
 
-    public function index()
-    {
-        $config = $this->getSectionsConfig();
-        
-        // Semua halaman profil yang tersedia (Beranda sekarang statis)
-        $orderedKeys = [
-            // Profil Madrasah
-            'visi_misi',
-            'sejarah',
-            'sambutan',
-            'organisasi',
-            // Halaman Baru
-            'sarpras',
-            'tujuan',
-            'kurikulum',
-            'ppdb_syarat',
-            'ppdb_kuota',
-        ];
-        
-        $sections = [];
-        foreach ($orderedKeys as $key) {
-            if (isset($config[$key])) {
-                $sections[] = array_merge(['id' => $key], $config[$key]);
-            }
-        }
 
-        return Inertia::render('Admin/Pages/Index', [
-            'sections' => $sections
-        ]);
-    }
 
     public function edit($key)
     {
@@ -179,10 +117,93 @@ class PageController extends Controller
             'content' => $section ? $section->content : [],
         ];
 
+        // Jika ada custom editor, gunakan komponen khusus
+        if (isset($sectionConfig['custom_editor'])) {
+            // Mapping custom_editor ke nama komponen Vue
+            $editorMap = [
+                'visi-misi' => 'Visi-misiEdit',
+                'sejarah' => 'SejarahEdit',
+                'kepala' => 'KepalaEdit',
+                'organisasi' => 'OrganisasiEdit',
+                'kurikulum' => 'KurikulumEdit',
+                'sarpras' => 'SarprasEdit',
+                'tujuan' => 'TujuanEdit',
+                'ppdb-syarat' => 'PpdbSyaratEdit',
+                'ppdb-kuota' => 'PpdbKuotaEdit',
+            ];
+            
+            $editorKey = $sectionConfig['custom_editor'];
+            $customEditor = $editorMap[$editorKey] ?? ucfirst($editorKey) . 'Edit';
+            
+            // Determine Back URL & Menu Context
+            $menuItem = \App\Models\MenuItem::where('slug', $key)->first();
+            $backUrl = route('halaman.index'); 
+            $menuNavbar = null;
+            
+            if ($menuItem && $menuItem->menu_navbar_id) {
+                $backUrl = route('menu-item.mega-menu', $menuItem->menu_navbar_id);
+                $menuNavbar = \App\Models\MenuNavbar::find($menuItem->menu_navbar_id);
+            } else {
+                // Fallback: Try to map section keys to known Mega Menus
+                $manualMap = [
+                    'visi-misi' => 'profil',
+                    'sejarah' => 'profil',
+                    'struktur-organisasi' => 'profil',
+                    'sarana-prasarana' => 'profil',
+                    'tujuan' => 'profil',
+                    'kepala-madrasah' => 'profil',
+                    'prestasi' => 'profil',
+                    'kemitraan' => 'profil',
+                    
+                    'kurikulum-mapel' => 'profil', 
+                    'kalender-akademik' => 'profil', 
+                ];
+                
+                // Better: Explicit Map
+                $sectionToNavbarSlug = [
+                     // Profil
+                    'visi-misi' => 'akademik',
+                    'sejarah' => 'akademik',
+                    'struktur-organisasi' => 'akademik',
+                    'sarana-prasarana' => 'akademik',
+                    'tujuan' => 'akademik',
+                    'kepala-madrasah' => 'akademik',
+                    'prestasi' => 'akademik',
+                    'kemitraan' => 'akademik',
+                    // Akademik
+                    'kurikulum-mapel' => 'akademik',
+                ];
+
+                $targetSlug = $sectionToNavbarSlug[$key] ?? 'akademik'; // Default to akademik if unknown
+                $menuNavbar = \App\Models\MenuNavbar::where('slug', $targetSlug)->first();
+                
+                if ($menuNavbar) {
+                    $backUrl = route('menu-item.mega-menu', $menuNavbar->id);
+                }
+            }
+            
+            return Inertia::render('Admin/Pages/' . $customEditor, [
+                'section' => $sectionData,
+                'title' => $sectionConfig['title'] ?? 'Edit Halaman',
+                'backUrl' => $backUrl,
+                'menuName' => $menuNavbar ? $menuNavbar->nama : 'Akademik',
+                'menuId' => $menuNavbar ? $menuNavbar->id : null,
+                'flash' => [
+                    'success' => session('success'),
+                    'error' => session('error'),
+                ]
+            ]);
+        }
+
         return Inertia::render('Admin/Pages/Edit', [
             'section' => $sectionData,
             'schema' => $fields,
             'title' => $sectionConfig['title'] ?? 'Edit Halaman',
+            'backUrl' => $backUrl,
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error'),
+            ]
         ]);
     }
 
@@ -196,32 +217,98 @@ class PageController extends Controller
 
         $section = Section::firstOrNew(['key' => $key]);
         $currentContent = $section->content ?? [];
-        $fields = $config[$key]['fields'] ?? [];
+        $sectionConfig = $config[$key];
+        $fields = $sectionConfig['fields'] ?? [];
 
-        foreach ($fields as $field) {
-            $name = $field['name'];
-            $type = $field['type'];
-
-            if ($type === 'image' && $request->hasFile($name)) {
-                // Delete old image if exists
-                if (isset($currentContent[$name]) && Storage::disk('public')->exists($currentContent[$name])) {
-                    Storage::disk('public')->delete($currentContent[$name]);
+        // Handle custom editor (JSON data)
+        if (isset($sectionConfig['custom_editor'])) {
+            // Ambil semua data dari request dan simpan ke content
+            $allowedFields = [
+                // Sarpras
+                'facilities', 'inventaris', 'content',
+                // Tujuan
+                'tujuan', 'program',
+                // Visi Misi
+                'visi', 'tagline', 'misi',
+                // Sejarah
+                'narasi', 'timeline', 'tahun_berdiri',
+                'nsm', 'akreditasi', 'kepala_nama', 'alamat', 'jml_siswa', 'jml_guru', 'jml_rombel', // Manual Stats
+                // Kepala
+                'foto', 'nip', 'periode', 'email', 'telepon', 'quote', 'sambutan', 'riwayat',
+                // Organisasi
+                'pengawas', 'kepala', 'pimpinan', 'koordinator', 'administrasi', 'komite', 'wali_kelas', 'catatan',
+                'mode_tampilan', 'org_chart_image', // Toggle & Image
+                'pengawas_label', 'kepala_label', // Labels
+                'pimpinan_title', 'koordinator_title', 'administrasi_title', 'komite_title', // Editable Titles
+                // Kurikulum
+                'ringkasan', 'highlight', 'mapel_keagamaan', 'mapel_umum', 'alokasi', 'penilaian', 'program_penguat', 'ekskul',
+                // PPDB Syarat
+                'syarat_admin', 'syarat_usia', 'alur_steps', 'kontak_info', 'kontak_wa', 'kontak_email', 'link_daftar',
+                // PPDB Kuota
+                'jadwal', 'kuota_total', 'kuota_terisi', 'biaya_daftar', 'biaya_spp', 'biaya_paket',
+            ];
+            
+            foreach ($allowedFields as $field) {
+                if ($request->has($field)) {
+                    $value = $request->input($field);
+                    
+                    // Decode JSON string fields (from FormData)
+                    if (is_string($value) && in_array($field, ['riwayat', 'timeline', 'wali_kelas', 'pimpinan', 'koordinator', 'misi', 'tujuan', 'program', 'highlight', 'mapel_keagamaan', 'mapel_umum', 'alokasi', 'penilaian', 'program_penguat', 'ekskul', 'facilities', 'inventaris', 'alur_steps', 'jadwal'])) {
+                        $decoded = json_decode($value, true);
+                        if (json_last_error() === JSON_ERROR_NONE) {
+                            $value = $decoded;
+                        }
+                    }
+                    
+                    $currentContent[$field] = $value;
                 }
-                // Store new image
-                $path = $request->file($name)->store('sections/' . $key, 'public');
-                $currentContent[$name] = $path;
-            } elseif ($type !== 'image') {
-                // Handle text/textarea/richtext/icon_picker
-                if ($request->has($name)) {
-                    $currentContent[$name] = $request->input($name);
+            }
+            
+            // Handle file upload untuk foto kepala
+            if ($request->hasFile('foto')) {
+                if (isset($currentContent['foto']) && Storage::disk('public')->exists($currentContent['foto'])) {
+                    Storage::disk('public')->delete($currentContent['foto']);
+                }
+                $path = $request->file('foto')->store('sections/kepala', 'public');
+                $currentContent['foto'] = $path;
+            }
+
+            // Handle file upload untuk Bagan Struktur Organisasi
+            if ($request->hasFile('org_chart_image')) {
+                if (isset($currentContent['org_chart_image']) && Storage::disk('public')->exists($currentContent['org_chart_image'])) {
+                    Storage::disk('public')->delete($currentContent['org_chart_image']);
+                }
+                $path = $request->file('org_chart_image')->store('sections/organisasi', 'public');
+                $currentContent['org_chart_image'] = $path;
+            }
+        } else {
+            // Handle regular fields
+            foreach ($fields as $field) {
+                $name = $field['name'];
+                $type = $field['type'];
+
+                if ($type === 'image' && $request->hasFile($name)) {
+                    // Delete old image if exists
+                    if (isset($currentContent[$name]) && Storage::disk('public')->exists($currentContent[$name])) {
+                        Storage::disk('public')->delete($currentContent[$name]);
+                    }
+                    // Store new image
+                    $path = $request->file($name)->store('sections/' . $key, 'public');
+                    $currentContent[$name] = $path;
+                } elseif ($type !== 'image') {
+                    // Handle text/textarea/richtext/icon_picker
+                    if ($request->has($name)) {
+                        $currentContent[$name] = $request->input($name);
+                    }
                 }
             }
         }
 
         $section->content = $currentContent;
-        $section->title = $config[$key]['title']; // Fix: Ensure title is saved
+        $section->title = $sectionConfig['title']; // Fix: Ensure title is saved
         $section->save();
 
-        return redirect()->route('pages.index')->with('success', 'Konten berhasil diperbarui!');
+        // Redirect back to the same edit page
+        return redirect()->back()->with('success', 'Konten berhasil diperbarui!');
     }
 }

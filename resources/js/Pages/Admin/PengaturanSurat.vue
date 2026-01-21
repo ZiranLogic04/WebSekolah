@@ -1,555 +1,778 @@
 <script setup>
-import { ref, reactive, watch, computed, nextTick, onMounted } from 'vue';
-import { Head, useForm, usePage, router } from '@inertiajs/vue3';
+import { ref, watch, computed } from 'vue';
+import { Head, useForm, router, usePage } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import ToastNotification from '@/Components/ToastNotification.vue';
+import { showToast, confirmDelete } from '@/Utils/swal';
 import { QuillEditor } from '@vueup/vue-quill';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
-import VueEasyDataTable from 'vue3-easy-data-table';
-import 'vue3-easy-data-table/dist/style.css';
 
 const props = defineProps({
-    surats: Array,
+    lembaga: Object, // Contains logos, kop_lines
     templates: Array,
-    lembaga: Object,
 });
 
-const activeTab = ref('archive'); // 'archive', 'create', 'templates'
-const toast = ref(null);
+const activeTab = ref('kop'); // 'kop', 'templates'
 const page = usePage();
 
-const computedSurats = computed(() => {
-    return props.surats.map((item, index) => ({
-        ...item,
-        no: index + 1
-    }));
-});
-
-// ----------------------------------------------------------------------
-// TAB 1: ARSIP SURAT (Letter Archive)
-// ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
-// TAB 1: ARSIP SURAT (Letter Archive)
-// ----------------------------------------------------------------------
-const headersArchive = [
-    { text: "No", value: "no", width: 50 },
-    { text: "Jenis Surat", value: "jenis_surat" },
-    { text: "Kode/Nomor", value: "kode_surat" },
-    { text: "Tanggal", value: "created_at" },
-    { text: "Status", value: "status" },
-    { text: "Aksi", value: "actions", width: 200 },
-];
-
-const deleteSurat = (id) => {
-    if(confirm('Hapus arsip surat ini?')) router.delete(`/admin/surat/${id}`);
-};
-const printSurat = (id) => {
-    window.open(`/admin/surat/${id}/cetak`, '_blank');
-};
-const archiveSurat = (id) => {
-    if(confirm('Arsipkan surat ini? Status akan berubah menjadi Final.')) {
-        router.patch(`/admin/surat/${id}/status`, {}, {
-            onSuccess: () => toast.value?.showSuccessToast('Berhasil', 'Surat telah diarsipkan.')
-        });
-    }
-};
-
-// ----------------------------------------------------------------------
-// TAB 2: BUAT SURAT (The Generator)
-// ----------------------------------------------------------------------
-const dynamicFields = ref([]);
-const letterForm = useForm({
-    id: null,
-    template_id: '',
-    jenis_surat: '', // Required for backend
-    kode_surat: '',
-    data_json: {}, // Dynamic data
-    isi_surat: '', // Valid HTML from template
-    use_system_header: true,
-    // Kop defaults (taken directly from props)
-    kop_baris1: 'PEMERINTAH PROVINSI JAWA TIMUR',
-    kop_baris2: props.lembaga?.nama_sekolah ? props.lembaga.nama_sekolah.toUpperCase() : '',
-    kop_baris3: props.lembaga?.alamat || '',
-    kop_baris4: [
-        props.lembaga?.email ? `Email: ${props.lembaga.email}` : '',
-        props.lembaga?.telepon ? `Telp: ${props.lembaga.telepon}` : ''
-    ].filter(Boolean).join(' | '),
-    kop_baris5: '',
-    kop_baris6: '',
-    processing: false
-});
-
-const previewContent = ref('');
-const previewEditorRef = ref(null);
-
-// Helper: Update Preview Content manually
-const updatePreview = () => {
-    let content = letterForm.isi_surat || '';
-    
-    // Replace [NOMOR_SURAT]
-    if (letterForm.kode_surat) {
-        content = content.replace(/\[NOMOR_SURAT\]/g, letterForm.kode_surat);
-    }
-
-    // Replace dynamic {{variables}}
-    if (dynamicFields.value.length > 0) {
-        dynamicFields.value.forEach(field => {
-            const regex = new RegExp(`{{${field}}}`, 'g');
-            const replacement = letterForm.data_json[field] 
-                ? `<span class="fw-bold text-primary">${letterForm.data_json[field]}</span>` 
-                : `<span class="bg-warning text-dark opacity-50 px-1">{{${field}}}</span>`;
-            content = content.replace(regex, replacement);
-        });
-    }
-    previewContent.value = content;
-};
-
-// Watch for ALL changes in letterForm to update text real-time
-watch(() => letterForm, () => {
-    updatePreview();
+// Watch Flash Messages
+watch(() => page.props.flash, (flash) => {
+    if (flash?.success) showToast('success', 'Berhasil', flash.success);
+    if (flash?.error) showToast('error', 'Gagal', flash.error);
 }, { deep: true });
 
-// Watch Template Selection Specifics
-watch(() => letterForm.template_id, (newId) => {
-    const template = props.templates.find(t => t.id === newId);
-    if (template) {
-        letterForm.jenis_surat = template.name; // Set name for backend
-        letterForm.isi_surat = template.content;
-        letterForm.use_system_header = Boolean(template.use_system_kop);
-        
-        // Extract Placeholders
-        const matches = template.content.match(/{{(.*?)}}/g);
-        if (matches) {
-            dynamicFields.value = [...new Set(matches.map(m => m.replace(/{{|}}/g, '')))];
-            // Init data_json keys if missing
-            dynamicFields.value.forEach(key => {
-                if (!letterForm.data_json[key]) letterForm.data_json[key] = '';
-            });
-        } else {
-            dynamicFields.value = [];
-        }
-        // Immediate update
-        updatePreview();
-    }
+// ----------------------------------------------------------------------
+// TAB 1: KOP SURAT
+// ----------------------------------------------------------------------
+const kopForm = useForm({
+    logo_kiri: null,
+    logo_kanan: null,
+    // Default Fallbacks if Kop data is empty
+    kop_baris1: props.lembaga?.kop_baris1 || 'YAYASAN PENDIDIKAN / DINAS PENDIDIKAN',
+    kop_baris2: props.lembaga?.kop_baris2 || (props.lembaga?.nama_sekolah ? props.lembaga.nama_sekolah.toUpperCase() : ''),
+    kop_baris3: props.lembaga?.kop_baris3 || props.lembaga?.alamat || '',
+    kop_baris4: props.lembaga?.kop_baris4 || [
+        props.lembaga?.telepon ? `Telp: ${props.lembaga.telepon}` : '',
+        props.lembaga?.email ? `Email: ${props.lembaga.email}` : ''
+    ].filter(Boolean).join(' | '),
+    kop_baris5: props.lembaga?.kop_baris5 || '',
 });
 
-const saveLetter = () => {
-    letterForm.post('/admin/surat', {
+// Previews
+// Helper to fix path if needed
+const getLogoPath = (path) => path ? (path.startsWith('http') ? path : '/storage/' + path) : null;
+
+const previewLogoKiri = ref(getLogoPath(props.lembaga?.logo_kiri));
+const previewLogoKanan = ref(getLogoPath(props.lembaga?.logo_kanan));
+
+const handleFile = (e, field) => {
+    const file = e.target.files[0];
+    if (file) {
+        if (file.size > 2 * 1024 * 1024) {
+            showToast('warning', 'File Terlalu Besar', 'Maksimal 2MB! Silakan pilih file lain.');
+            e.target.value = '';
+            return;
+        }
+        kopForm[field] = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            if (field === 'logo_kiri') previewLogoKiri.value = e.target.result;
+            if (field === 'logo_kanan') previewLogoKanan.value = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
+const saveKop = () => {
+    const url = '/admin/pengaturan-surat/kop';
+    
+    kopForm.post(url, {
+        forceFormData: true,
+        preserveScroll: true,
         onSuccess: () => {
-            activeTab.value = 'archive';
-            toast.value?.showSuccessToast('Berhasil', 'Surat berhasil dibuat dan diarsipkan.');
-            letterForm.reset();
+           // Toast handled by watcher
+        },
+        onError: (errors) => {
+            console.error('Save Kop Error:', errors);
+            showToast('error', 'Gagal Simpan', 'Terjadi kesalahan validasi. Cek ukuran file (max 2MB).');
         }
     });
 };
 
+
+
 // ----------------------------------------------------------------------
-// TAB 3: MASTER TEMPLATE (Designer)
+// TAB 2: TEMPLATES
 // ----------------------------------------------------------------------
 const isEditingTemplate = ref(false);
-const showSource = ref(false); // Toggle raw HTML
-const editorRef = ref(null); // Reference to Quill Instance
-
 const templateForm = useForm({
     id: null,
     name: '',
-    content: '', // Will be synced with Editor
+    content: '',
     use_system_kop: true,
+    paper_size: 'A4',
 });
 
-const headersTemplate = [
-    { text: "Nama Template", value: "name" },
-    { text: "Header Default?", value: "use_system_kop" },
-    { text: "Aksi", value: "actions", width: 150 },
-];
+
 
 const createTemplate = () => {
     templateForm.reset();
+    templateForm.content = '<p>Ketik draf surat di sini...</p>'; // Default content
+    templateForm.use_system_kop = true;
+    templateForm.paper_size = 'A4';
     isEditingTemplate.value = true;
 };
-const editTemplate = async (item) => {
+
+const editTemplate = (item) => {
     templateForm.id = item.id;
     templateForm.name = item.name;
-    templateForm.content = item.content; // Normal bind
+    templateForm.content = item.content;
     templateForm.use_system_kop = Boolean(item.use_system_kop);
-    showSource.value = false; 
-    
+    templateForm.paper_size = item.paper_size || 'A4';
     isEditingTemplate.value = true;
-    
-    // MANUAL INJECTION FIX: Force Quill to accept the HTML
-    await nextTick();
-    if (editorRef.value && item.content) {
-        editorRef.value.setHTML(item.content);
-    }
 };
+
 const cancelTemplateEdit = () => {
     isEditingTemplate.value = false;
     templateForm.reset();
 };
+
 const saveTemplate = () => {
-    const url = templateForm.id ? `/admin/letter-templates/${templateForm.id}` : '/admin/letter-templates';
+    if (!templateForm.name) return showToast('error', 'Error', 'Nama template harus diisi.');
+    
+    const url = templateForm.id 
+        ? `/admin/letter-templates/${templateForm.id}` 
+        : '/admin/letter-templates';
+        
     const method = templateForm.id ? 'put' : 'post';
     
     templateForm[method](url, {
         onSuccess: () => {
             isEditingTemplate.value = false;
-            toast.value?.showSuccessToast('Berhasil', 'Template disimpan');
+            // Toast handled by watcher
+        },
+        onError: (errors) => {
+            showToast('error', 'Gagal', 'Gagal menyimpan template. Periksa isian.');
         }
     });
 };
+
 const deleteTemplate = (id) => {
-    if(confirm('Hapus template ini?')) router.delete(`/admin/letter-templates/${id}`);
+    confirmDelete('Hapus Template?', 'Template yang dihapus tidak dapat dikembalikan!').then((result) => {
+        if (result.isConfirmed) {
+            router.delete(`/admin/letter-templates/${id}`, {
+                onSuccess: () => showToast('success', 'Terhapus', 'Template berhasil dihapus.')
+            });
+        }
+    });
 };
 
-// Watch for Flash
-watch(() => page.props.flash, (flash) => {
-    if (flash?.success) toast.value?.showSuccessToast('Sukses', flash.success);
-}, { deep: true });
+// Computed: Editor size based on paper size
+// Height = kertas + toolbar (45px) + kop jika aktif (~100px)
+const editorStyle = computed(() => {
+    const widths = {
+        'A4': '210mm',
+        'F4': '215mm', 
+        'Legal': '216mm'
+    };
+    const heights = {
+        'A4': '297mm',
+        'F4': '330mm',
+        'Legal': '356mm'
+    };
+    
+    const baseHeight = heights[templateForm.paper_size] || heights['A4'];
+    
+    return {
+        width: widths[templateForm.paper_size] || widths['A4'],
+        minHeight: baseHeight,
+        position: 'relative'
+    };
+});
+
+// Page boundary position (for visual marker)
+const paperBoundaryStyle = computed(() => {
+    // Adjusted to line 40 (user requested)
+    const heights = {
+        'A4': '305mm',  // ~40 lines
+        'F4': '345mm',
+        'Legal': '370mm'
+    };
+    return {
+        top: heights[templateForm.paper_size] || heights['A4']
+    };
+});
+
+
+
 </script>
 
 <template>
     <AdminLayout>
         <Head title="Pengaturan Surat" />
         
-        <div class="content container-fluid">
-            <!-- Header -->
-            <div class="page-header mb-4">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h3 class="page-title">Manajemen Persuratan</h3>
-                        <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Surat</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MAIN CONTENT SWITCHER -->
-            
-            <!-- VIEW 1: ARSIP SURAT (LIST, DEFAULT) -->
-            <div v-if="activeTab === 'archive'" class="animate__animated animate__fadeIn">
-                
-                <!-- Action Buttons & Info -->
-                <div class="row mb-4">
-                    <div class="col-md-8">
-                        <div class="alert alert-light border shadow-sm">
-                            <h5 class="fw-bold"><i class="fas fa-info-circle text-primary me-2"></i> Sistem Manajemen Surat</h5>
-                            <p class="mb-0 text-muted small">Kelola arsip surat sekolah, buat surat baru dari template, atau atur master template surat.</p>
+        <div class="content container-fluid pb-5">
+            <!-- Radiant Header Card -->
+            <div class="card border-0 shadow-lg rounded-4 mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);">
+                <div class="card-body p-4 p-lg-5 position-relative z-1">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <div class="icon-box bg-white rounded-3 text-primary p-2">
+                                    <i class="fas fa-envelopes-bulk fs-3"></i>
+                                </div>
+                                <h2 class="fw-bold text-white mb-0 ls-tight">Pengaturan Surat</h2>
+                            </div>
+                            <p class="text-white-50 mb-0 fs-5">Kelola Kop Surat, Template, dan Format Dokumen Sekolah.</p>
                         </div>
                     </div>
-                    <div class="col-md-4 d-flex flex-column gap-2">
-                        <button class="btn btn-primary py-2 fw-bold shadow-sm" @click="activeTab = 'create'">
-                            <i class="fas fa-plus-circle me-2"></i> BUAT SURAT BARU
-                        </button>
-                        <button class="btn btn-outline-secondary py-2 fw-bold" @click="activeTab = 'templates'">
-                            <i class="fas fa-pencil-ruler me-2"></i> KELOLA MASTER TEMPLATE
-                        </button>
-                    </div>
                 </div>
-
-                <!-- The Table -->
-                <div class="card modern-table-card">
-                    <div class="card-header bg-white border-bottom py-3">
-                        <h5 class="m-0 fw-bold text-secondary">Arsip Surat Keluar</h5>
-                    </div>
-                    <div class="card-body p-0">
-                        <VueEasyDataTable :headers="headersArchive" :items="computedSurats" table-class-name="modern-data-table" border-cell alternating>
-                            <template #item-no="{ no }">
-                                <span class="fw-bold text-secondary">{{ no }}</span>
-                            </template>
-                            <template #item-created_at="item">{{ new Date(item.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric'}) }}</template>
-                            <template #item-actions="item">
-                                <div class="action-buttons">
-                                    <button class="btn btn-action btn-edit bg-info text-white me-2" @click="printSurat(item.id)" title="Cetak/PDF"><i class="fas fa-print"></i></button>
-                                    
-                                    <!-- Show Archive Button only for Drafts -->
-                                    <button v-if="item.status !== 'archived'" class="btn btn-action btn-success text-white me-2" @click="archiveSurat(item.id)" title="Arsipkan"><i class="fas fa-archive"></i></button>
-                                    <button class="btn btn-action btn-delete" @click="deleteSurat(item.id)" title="Hapus"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </template>
-                        </VueEasyDataTable>
-                    </div>
+                <!-- Decorative Background -->
+                <div class="position-absolute bottom-0 end-0 opacity-10 me-n5 mb-n5">
+                    <i class="fas fa-file-contract" style="font-size: 10rem; color: white;"></i>
                 </div>
             </div>
 
-            <!-- VIEW 2: GENERATOR (BUAT SURAT) -->
-            <div v-if="activeTab === 'create'" class="animate__animated animate__fadeIn">
-                <!-- Back Button -->
-                <div class="mb-3">
-                    <button class="btn btn-secondary px-4" @click="activeTab = 'archive'">
-                        <i class="fas fa-arrow-left me-2"></i> Kembali ke Arsip
+            <!-- Custom Tabs -->
+            <div class="d-flex justify-content-center mb-4">
+                <div class="bg-white p-1 rounded-pill shadow-sm d-inline-flex">
+                    <button 
+                        class="btn rounded-pill px-4 fw-bold transition-all"
+                        :class="activeTab === 'kop' ? 'btn-primary shadow' : 'btn-light bg-transparent text-muted'"
+                        @click="activeTab = 'kop'"
+                    >
+                        <i class="fas fa-heading me-2"></i> Kop Surat
+                    </button>
+                    <button 
+                        class="btn rounded-pill px-4 fw-bold transition-all ms-2"
+                        :class="activeTab === 'templates' ? 'btn-primary shadow' : 'btn-light bg-transparent text-muted'"
+                        @click="activeTab = 'templates'"
+                    >
+                        <i class="fas fa-layer-group me-2"></i> Template Surat
                     </button>
                 </div>
+            </div>
 
-                <div class="row">
-                    <!-- Config Sidebar -->
-                    <div class="col-lg-4 mb-4">
-                        <div class="card h-100 border-primary border-top border-3">
-                            <div class="card-body">
-                                <h5 class="fw-bold mb-3"><i class="fas fa-cog me-2"></i> 1. Konfigurasi Surat</h5>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Pilih Template</label>
-                                    <select class="form-select" v-model="letterForm.template_id">
-                                        <option value="" disabled>-- Pilih Jenis Surat --</option>
-                                        <option v-for="t in props.templates" :key="t.id" :value="t.id">{{ t.name }}</option>
-                                    </select>
+            <!-- TAB 1: KOP SURAT -->
+            <Transition name="fade" mode="out-in">
+                <div v-if="activeTab === 'kop'" key="kop">
+                    <div class="row g-4">
+                        <!-- EDITOR KIRI -->
+                        <div class="col-lg-4">
+                            <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
+                                <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                                    <h5 class="fw-bold mb-1 text-primary">Editor Data</h5>
+                                    <p class="text-muted small">Atur logo dan teks kop di sini.</p>
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Nomor Surat</label>
-                                    <input type="text" class="form-control" v-model="letterForm.kode_surat" placeholder="No. 123/SK/2024">
-                                </div>
-
-                                <div v-if="letterForm.template_id" class="mt-4 animate__animated animate__fadeInUp">
-                                    <h5 class="fw-bold mb-3"><i class="fas fa-pencil-alt me-2"></i> 2. Isi Data</h5>
-                                    <div class="alert alert-info small" v-if="dynamicFields.length === 0">
-                                        Template ini tidak memiliki variabel dinamis/placeholder.
-                                    </div>
-                                    <div v-for="field in dynamicFields" :key="field" class="mb-3">
-                                        <label class="form-label text-capitalize small">{{ field.replace(/_/g, ' ') }}</label>
-                                        <input type="text" class="form-control" v-model="letterForm.data_json[field]" :placeholder="'Isi ' + field">
-                                    </div>
-                                    </div>
-                                
-                                <!-- EDIT KOP SURAT (ACCORDION) -->
-                                <div class="accordion mt-3" id="accordionKop">
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header" id="headingKop">
-                                            <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseKop" aria-expanded="false" aria-controls="collapseKop">
-                                                <i class="fas fa-heading me-2"></i> Edit Kop Surat
-                                            </button>
-                                        </h2>
-                                        <div id="collapseKop" class="accordion-collapse collapse" aria-labelledby="headingKop">
-                                            <div class="accordion-body p-2 small">
-                                                <div class="mb-2">
-                                                    <label class="form-label mb-0 fw-bold">Baris 1 (Pemerintah/Yayasan)</label>
-                                                    <input type="text" class="form-control form-control-sm" v-model="letterForm.kop_baris1">
+                                <div class="card-body p-4">
+                                    
+                                    <!-- Upload Logos -->
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold text-dark small text-uppercase">Logo Instansi</label>
+                                        <div class="d-flex gap-3">
+                                            <div class="w-50">
+                                                <div class="logo-uploader border rounded p-2 text-center bg-light cursor-pointer position-relative mb-2">
+                                                    <img v-if="previewLogoKiri" :src="previewLogoKiri" class="object-fit-contain" style="height: 50px;">
+                                                    <i v-else class="fas fa-image text-muted fs-2 opacity-50"></i>
+                                                    <input type="file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept="image/*" @change="e => handleFile(e, 'logo_kiri')">
                                                 </div>
-                                                <div class="mb-2">
-                                                    <label class="form-label mb-0 fw-bold">Baris 2 (Nama Sekolah)</label>
-                                                    <input type="text" class="form-control form-control-sm" v-model="letterForm.kop_baris2">
+                                                <div class="text-center small text-muted">Kiri</div>
+                                            </div>
+                                            <div class="w-50">
+                                                <div class="logo-uploader border rounded p-2 text-center bg-light cursor-pointer position-relative mb-2">
+                                                    <img v-if="previewLogoKanan" :src="previewLogoKanan" class="object-fit-contain" style="height: 50px;">
+                                                    <i v-else class="fas fa-image text-muted fs-2 opacity-50"></i>
+                                                    <input type="file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept="image/*" @change="e => handleFile(e, 'logo_kanan')">
                                                 </div>
-                                                <div class="mb-2">
-                                                    <label class="form-label mb-0 fw-bold">Baris 3 (Alamat)</label>
-                                                    <input type="text" class="form-control form-control-sm" v-model="letterForm.kop_baris3">
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label class="form-label mb-0 fw-bold">Baris 4 (Kontak)</label>
-                                                    <input type="text" class="form-control form-control-sm" v-model="letterForm.kop_baris4">
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label class="form-label mb-0 fw-bold">Baris 5 (Opsional: Website/Lainnya)</label>
-                                                    <input type="text" class="form-control form-control-sm" v-model="letterForm.kop_baris5" placeholder="Contoh: Website: www.sekolah.sch.id">
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label class="form-label mb-0 fw-bold">Baris 6 (Opsional)</label>
-                                                    <input type="text" class="form-control form-control-sm" v-model="letterForm.kop_baris6" placeholder="Tambahan informasi...">
-                                                </div>
+                                                <div class="text-center small text-muted">Kanan</div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="d-grid mt-4">
-                                    <button class="btn btn-primary btn-lg" @click="saveLetter" :disabled="!letterForm.template_id || letterForm.processing">
-                                        <i class="fas fa-save me-2"></i> SIMPAN DRAFT
+                                    <hr class="border-dashed my-4 opacity-50">
+
+                                    <!-- Text Inputs -->
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small text-muted">Baris 1 (Header Utama)</label>
+                                        <input type="text" class="form-control" v-model="kopForm.kop_baris1" placeholder="PEMERINTAH KABUPATEN...">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small text-muted">Baris 2 (Nama Instansi)</label>
+                                        <input type="text" class="form-control fw-bold" v-model="kopForm.kop_baris2" placeholder="DINAS PENDIDIKAN...">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small text-muted">Baris 3 (Sub Header/Alamat)</label>
+                                        <input type="text" class="form-control" v-model="kopForm.kop_baris3">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small text-muted">Baris 4 (Detail Kontak)</label>
+                                        <textarea class="form-control" v-model="kopForm.kop_baris4" rows="2"></textarea>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold small text-muted">Baris 5 (Lainnya)</label>
+                                        <input type="text" class="form-control" v-model="kopForm.kop_baris5">
+                                    </div>
+
+                                    <button type="button" class="btn btn-primary w-100 py-3 rounded-3 fw-bold shadow-sm hover-up" @click="saveKop" :disabled="kopForm.processing">
+                                        <span v-if="kopForm.processing"><i class="fas fa-spinner fa-spin me-2"></i> Menyimpan...</span>
+                                        <span v-else><i class="fas fa-check-circle me-2"></i> SIMPAN PERUBAHAN</span>
                                     </button>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Live Preview -->
-                    <div class="col-lg-8">
-                        <div class="card h-100 bg-secondary bg-opacity-10 border-0">
-                            <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
-                                <h5 class="card-title fw-bold m-0"><i class="fas fa-eye me-2"></i> Preview Hasil</h5>
-                                <span class="badge bg-warning text-dark">A4 Preview</span>
-                            </div>
-                            
-                            <!-- DEBUG LEMBAGA -->
-                            <div class="px-3" v-if="!props.lembaga">
-                                <div class="alert alert-danger mb-0">
-                                    <strong>ERROR:</strong> Data Lembaga tidak ditemukan (NULL). Silakan isi data di menu Data Lembaga.
+                        <!-- LIVE PREVIEW KANAN -->
+                        <div class="col-lg-8">
+                            <div class="card border-0 shadow-sm h-100 rounded-4 bg-light">
+                                <div class="card-header bg-transparent border-0 pt-4 px-4 text-center">
+                                    <h5 class="fw-bold mb-1 text-secondary">Live Preview</h5>
+                                    <p class="text-muted small">Tampilan Kop Surat akan terlihat seperti ini di kertas A4.</p>
                                 </div>
-                            </div>
-                            <!-- END DEBUG -->
+                                <div class="card-body d-flex justify-content-center align-items-center p-0 pb-5">
+                                    
+                                    <!-- A4 PAPER SIMULATION -->
+                                    <div class="paper-a4 bg-white shadow p-5 animate__animated animate__zoomIn">
+                                        <div class="preview-kop d-flex align-items-center border-bottom border-dark border-3 py-3 px-4 position-relative" style="border-bottom-style: double !important;">
+                                            
+                                            <!-- Logo Kiri -->
+                                            <div class="logo-slot text-center" style="width: 70px;">
+                                                <img v-if="previewLogoKiri" :src="previewLogoKiri" class="object-fit-contain" style="max-height: 70px; max-width: 100%;">
+                                            </div>
 
-                            <div class="card-body d-flex justify-content-center bg-light">
-                                <div class="a4-paper shadow">
-                                    <!-- HEADER SYSTEM -->
-                                    <div class="kop-surat d-flex align-items-center border-bottom pb-3 mb-4" 
-                                         style="border-bottom: 3px double black !important;"
-                                         v-if="letterForm.use_system_header">
-                                        <div class="logo-section me-3" v-if="props.lembaga?.logo">
-                                            <!-- Fix Image Path: Ensure /storage/ prefix is only added if needed -->
-                                            <img :src="props.lembaga.logo.startsWith('http') ? props.lembaga.logo : `/storage/${props.lembaga.logo}`" alt="Logo" style="height: 100px; width: auto; object-fit: contain;">
+                                            <!-- Teks Tengah -->
+                                            <div class="flex-grow-1 text-center px-2">
+                                                <h5 class="fw-bold mb-0 text-uppercase font-serif" style="font-size: 12pt; letter-spacing: 0.5px; color: #000;" v-if="kopForm.kop_baris1">{{ kopForm.kop_baris1 }}</h5>
+                                                <h4 class="fw-bold mb-0 text-uppercase font-serif" style="font-size: 14pt; letter-spacing: 1px; color: #000;" v-if="kopForm.kop_baris2">{{ kopForm.kop_baris2 }}</h4>
+                                                <p class="fw-bold mb-0 font-serif" style="font-size: 12pt; color: #000;" v-if="kopForm.kop_baris3">{{ kopForm.kop_baris3 }}</p>
+                                                <p class="mb-0 font-serif small" style="font-size: 10pt; color: #000;" v-if="kopForm.kop_baris4">{{ kopForm.kop_baris4 }}</p>
+                                                <p class="mb-0 font-serif fst-italic small" style="font-size: 10pt; color: #000;" v-if="kopForm.kop_baris5">{{ kopForm.kop_baris5 }}</p>
+                                            </div>
+
+                                            <!-- Logo Kanan -->
+                                            <div class="logo-slot text-center" style="width: 70px;">
+                                                <img v-if="previewLogoKanan" :src="previewLogoKanan" class="object-fit-contain" style="max-height: 70px; max-width: 100%;">
+                                            </div>
+
                                         </div>
-                                        <div class="text-center w-100">
-                                            <h5 class="mb-0 text-uppercase fw-bold">{{ letterForm.kop_baris1 }}</h5>
-                                            <h4 class="mb-0 text-uppercase fw-bold">{{ letterForm.kop_baris2 }}</h4>
-                                            <p class="mb-0 small">{{ letterForm.kop_baris3 }}</p>
-                                            <p class="mb-0 small">{{ letterForm.kop_baris4 }}</p>
-                                            <p class="mb-0 small">{{ letterForm.kop_baris5 }}</p>
-                                            <p class="mb-0 small">{{ letterForm.kop_baris6 }}</p>
+
+                                        <!-- Dummy Content Lines -->
+                                        <div class="mt-5 opacity-25">
+                                            <div class="bg-dark rounded mb-3" style="height: 10px; width: 30%;"></div>
+                                            <div class="bg-dark rounded mb-2" style="height: 8px; width: 100%;"></div>
+                                            <div class="bg-dark rounded mb-2" style="height: 8px; width: 95%;"></div>
+                                            <div class="bg-dark rounded mb-2" style="height: 8px; width: 90%;"></div>
+                                            <div class="bg-dark rounded mb-2" style="height: 8px; width: 98%;"></div>
+                                        </div>
+                                    </div>
+                                    <!-- End Paper -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Transition>
+
+            <!-- TAB 2: TEMPLATES -->
+            <Transition name="fade" mode="out-in">
+                <div v-if="activeTab === 'templates'" key="templates">
+                    
+                    <!-- View Mode -->
+                    <div v-if="!isEditingTemplate" class="row">
+                        <div class="col-12">
+                            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                                <div class="card-header bg-white border-0 py-4 px-4 d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="fw-bold mb-1 text-dark">Daftar Template</h5>
+                                        <p class="text-muted small mb-0">Kelola format surat yang sering digunakan.</p>
+                                    </div>
+                                    <button class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm hover-up" @click="createTemplate">
+                                        <i class="fas fa-plus me-2"></i> Buat Template
+                                    </button>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle mb-0">
+                                            <thead class="bg-light">
+                                                <tr>
+                                                    <th class="ps-4" style="width: 50px;">No</th>
+                                                    <th>Nama Template</th>
+                                                    <th class="text-center" style="width: 150px;">Status Kop</th>
+                                                    <th class="text-center" style="width: 150px;">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-if="!templates || templates.length === 0">
+                                                    <td colspan="4" class="text-center py-5">
+                                                        <div class="empty-state">
+                                                            <i class="fas fa-file-alt fa-3x text-muted opacity-50 mb-3"></i>
+                                                            <h6 class="text-muted">Belum ada template surat</h6>
+                                                            <p class="text-muted small">Klik tombol "Buat Template" untuk membuat template baru</p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr v-for="(item, index) in templates" :key="item.id">
+                                                    <td class="ps-4 text-muted fw-medium">{{ index + 1 }}</td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="template-icon me-3">
+                                                                <i class="fas fa-file-alt"></i>
+                                                            </div>
+                                                            <div class="fw-semibold">{{ item.name }}</div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span 
+                                                            class="status-badge" 
+                                                            :class="item.use_system_kop ? 'status-success' : 'status-secondary'"
+                                                        >
+                                                            <i class="fas me-1" :class="item.use_system_kop ? 'fa-check-circle' : 'fa-times-circle'"></i>
+                                                            {{ item.use_system_kop ? 'Pakai Kop' : 'Tanpa Kop' }}
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div class="d-flex gap-2 justify-content-center">
+                                                            <button 
+                                                                class="btn-icon-modern btn-icon-edit" 
+                                                                @click="editTemplate(item)" 
+                                                                title="Edit Template"
+                                                            >
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button 
+                                                                class="btn-icon-modern btn-icon-delete" 
+                                                                @click="deleteTemplate(item.id)" 
+                                                                title="Hapus Template"
+                                                            >
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Editor Mode -->
+                    <div v-else class="row justify-content-center">
+                        <div class="col-lg-10">
+                            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                                <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+                                    <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-edit me-2 text-primary"></i> Editor Template</h5>
+                                    <div>
+                                        <button class="btn btn-primary fw-bold btn-sm me-2 rounded-pill px-4 shadow-sm" @click="saveTemplate">
+                                            <i class="fas fa-save me-1"></i> Simpan
+                                        </button>
+                                        <button class="btn btn-light text-muted btn-sm rounded-pill px-3 border" @click="cancelTemplateEdit">
+                                            <i class="fas fa-times me-1"></i> Tutup
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body p-4 bg-white">
+                                    <div class="row g-3 mb-4">
+                                        <div class="col-md-5">
+                                            <label class="form-label fw-bold small text-muted">Nama Template</label>
+                                            <input type="text" class="form-control form-control-lg border bg-light" v-model="templateForm.name" placeholder="Contoh: Surat Keterangan Lulus">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label fw-bold small text-muted">Ukuran Kertas</label>
+                                            <select class="form-select form-select-lg" v-model="templateForm.paper_size">
+                                                <option value="A4">A4 (210 x 297 mm)</option>
+                                                <option value="F4">F4/Folio (215 x 330 mm)</option>
+                                                <option value="Legal">Legal (216 x 356 mm)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-bold small text-muted">Opsi Kop</label>
+                                            <div class="bg-white p-2 rounded shadow-sm border-0 d-flex align-items-center" style="height: 48px;">
+                                                <div class="form-check form-switch ms-2">
+                                                    <input class="form-check-input" type="checkbox" id="useKop" v-model="templateForm.use_system_kop">
+                                                    <label class="form-check-label small fw-bold" for="useKop">Gunakan Kop Sistem</label>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <!-- CONTENT -->
-                                    <div class="surat-content ql-editor p-0" v-html="previewContent"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VIEW 3: TEMPLATES (MASTER) -->
-            <div v-if="activeTab === 'templates'" class="animate__animated animate__fadeIn">
-                <!-- Back Button -->
-                <div class="mb-3 d-flex justify-content-between align-items-center">
-                    <button class="btn btn-secondary px-4" @click="activeTab = 'archive'">
-                        <i class="fas fa-arrow-left me-2"></i> Kembali ke Arsip
-                    </button>
-                    <!-- Show 'Add' button only in list mode of templates -->
-                    <button v-if="!isEditingTemplate" class="btn btn-primary" @click="createTemplate">
-                        <i class="fas fa-plus me-2"></i> Tambah Template
-                    </button>
-                </div>
-
-                <!-- List Mode -->
-                <div v-if="!isEditingTemplate">
-                    <div class="card modern-table-card">
-                        <div class="card-header bg-white py-3">
-                            <h5 class="m-0 fw-bold text-primary">Daftar Template Surat ({{ props.templates ? props.templates.length : 0 }})</h5>
-                        </div>
-                        <div class="card-body p-0">
-                            <VueEasyDataTable :headers="headersTemplate" :items="props.templates" table-class-name="modern-data-table" border-cell alternating>
-                                <template #item-use_system_kop="item">
-                                    <span class="badge" :class="item.use_system_kop ? 'bg-success' : 'bg-secondary'">{{ item.use_system_kop ? 'Ya' : 'Tidak' }}</span>
-                                </template>
-                                <template #item-actions="item">
-                                    <div class="action-buttons">
-                                        <button class="btn btn-action btn-edit bg-primary text-white me-2" @click="editTemplate(item)"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-action btn-delete" @click="deleteTemplate(item.id)"><i class="fas fa-trash"></i></button>
+                                    <!-- Tips -->
+                                    <div class="mb-3 p-3 bg-blue-50 text-primary rounded-3 small">
+                                        <i class="fas fa-lightbulb me-2 text-warning"></i> <strong>Tips:</strong> Gunakan tanda kurung kurawal ganda <code>&#123;&#123; nama_variabel &#125;&#125;</code> untuk menyisipkan data dinamis (Contoh: <code>&#123;&#123; nama_siswa &#125;&#125;</code>).
                                     </div>
-                                </template>
-                            </VueEasyDataTable>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Edit Mode -->
-                <div v-else>
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-                            <h5 class="fw-bold m-0"><i class="fas fa-edit me-2"></i> Editor Template</h5>
-                            <div>
-                                <button class="btn btn-light border me-2" @click="cancelTemplateEdit">Batal</button>
-                                <button class="btn btn-primary" @click="saveTemplate"><i class="fas fa-save me-1"></i> Simpan Template</button>
-                            </div>
-                        </div>
-                        <div class="card-body bg-light">
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Nama Template</label>
-                                    <input type="text" class="form-control" v-model="templateForm.name" placeholder="Misal: Surat Keterangan Lulus">
-                                </div>
-                                <div class="col-md-6 d-flex align-items-end">
-                                    <div class="form-check form-switch mb-2">
-                                        <input class="form-check-input" type="checkbox" id="tmplSysHeader" v-model="templateForm.use_system_kop">
-                                        <label class="form-check-label fw-bold" for="tmplSysHeader">Gunakan Header Sistem (Kop Sekolah)</label>
+                                    <!-- Editor Container - Ukuran kertas + toolbar + kop -->
+                                    <div class="editor-paper-container bg-light p-4 d-flex justify-content-center">
+                                        <div class="bg-white shadow-sm" :class="{'has-kop': templateForm.use_system_kop}" :style="editorStyle">
+                                            <!-- PAGE BOUNDARY MARKER (Batas Halaman) -->
+                                            <div class="page-boundary" :style="paperBoundaryStyle">
+                                                <span>BATAS HALAMAN 1</span>
+                                            </div>
+                                            
+                                            <!-- KOP SURAT PREVIEW (jika use_system_kop aktif) -->
+                                            <div v-if="templateForm.use_system_kop && lembaga" class="kop-surat-preview">
+                                                <table class="kop-table">
+                                                    <tr>
+                                                        <td class="logo-cell">
+                                                            <img v-if="lembaga.logo_kiri" :src="getLogoPath(lembaga.logo_kiri)" class="logo-img">
+                                                        </td>
+                                                        <td class="text-cell">
+                                                            <h3 v-if="lembaga.kop_baris1" class="kop-header1">{{ lembaga.kop_baris1 }}</h3>
+                                                            <h2 v-if="lembaga.kop_baris2 || lembaga.nama_sekolah" class="kop-header2">{{ lembaga.kop_baris2 || lembaga.nama_sekolah }}</h2>
+                                                            <h3 v-if="lembaga.kop_baris3 || lembaga.alamat" class="kop-header3">{{ lembaga.kop_baris3 || lembaga.alamat }}</h3>
+                                                            <p v-if="lembaga.kop_baris4" class="kop-text">{{ lembaga.kop_baris4 }}</p>
+                                                            <p v-if="lembaga.kop_baris5" class="kop-text">{{ lembaga.kop_baris5 }}</p>
+                                                        </td>
+                                                        <td class="logo-cell">
+                                                            <img v-if="lembaga.logo_kanan" :src="getLogoPath(lembaga.logo_kanan)" class="logo-img">
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            
+                                            <!-- Quill Editor dengan toolbar -->
+                                            <QuillEditor 
+                                                theme="snow" 
+                                                v-model:content="templateForm.content" 
+                                                contentType="html" 
+                                                toolbar="full"
+                                                style="flex: 1;"
+                                                placeholder="Mulai desain surat di sini... Gunakan {{ variabel }} untuk data dinamis." 
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Wide Editor (Visual) -->
-                            <!-- Dynamic Height Class based on KOP usage -->
-                            <div class="bg-white p-4 justify-content-center d-flex shadow-sm rounded">
-                                <div class="a4-paper vector-page" :class="{ 'reduced-height': templateForm.use_system_kop }">
-                                    <!-- NO VISUAL KOP HERE (As requested) -->
-                                    <QuillEditor ref="editorRef" theme="snow" v-model:content="templateForm.content" :key="templateForm.id" contentType="html" toolbar="essential" placeholder="Desain format surat di sini..." />
+
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
+                </div>
+            </Transition>
         </div>
-        <ToastNotification ref="toast" />
     </AdminLayout>
 </template>
 
 <style scoped>
-.a4-paper {
+.transition-all { transition: all 0.3s ease; }
+.hover-up:hover { transform: translateY(-2px); }
+
+.paper-a4 {
     width: 210mm;
-    height: 297mm; /* Default Full A4 */
-    display: flex;
-    flex-direction: column;
+    min-height: 297mm;
     background: white;
-    padding: 1cm 2cm; 
-    color: black;
+    transform: scale(0.7); /* Scale down for preview */
+    transform-origin: top center;
+    margin-bottom: -80px; /* Counteract empty space due to scaling */
+}
+
+/* Kop Surat Preview in Editor - MATCHES PDF */
+.kop-surat-preview {
+    width: 100%;
+    border-bottom: 3px double #000;
+    margin-bottom: 15px;
+    width: 100%;
+    border-bottom: 3px double #000;
+    margin-bottom: 15px;
+    padding: 15mm 15mm 8px 15mm;
+    box-sizing: border-box;
+    box-sizing: border-box;
     font-family: 'Times New Roman', serif;
-    font-size: 12pt;
-    line-height: 1.35; 
-    margin-bottom: 3rem; 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
-    overflow: hidden; /* Hide overflow to show LIMIT */
-    transition: height 0.3s ease; 
-    flex-shrink: 0; 
+}
+.kop-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.kop-table td {
+    vertical-align: middle;
+}
+.logo-cell {
+    width: 15%;
+    text-align: center;
+}
+.logo-img {
+    max-height: 70px;
+    width: auto;
+}
+.text-cell {
+    width: 70%;
+    text-align: center;
+}
+.kop-header1 {
+    font-size: 13pt; /* Increased from 12pt */
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 0;
+}
+.kop-header2 {
+    font-size: 16pt; /* Increased from 14pt - Nama Sekolah */
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 0;
+}
+.kop-header3 {
+    font-size: 13pt; /* Increased from 12pt */
+    font-weight: bold;
+    margin: 0;
+}
+.kop-text {
+    font-size: 11pt; /* Increased from 10pt */
+    margin: 0;
 }
 
-/* Reduced Height when Kop is active (Simulating 80cm of 100cm) */
-.a4-paper.reduced-height {
-    height: 267mm; /* 297mm - 30mm (Relaxed Limit) */
-    border-top: 4px solid #ddd; 
-}
-
-/* Copy visual style to indicate "Top is reserved"? Maybe not needed. User wants "80cm doang" */
-
-
-/* Ensure Kop doesn't shrink */
-.kop-surat {
-    flex-shrink: 0;
-}
-
-/* Quill Overrides */
+/* Quill Editor Styling - MATCHES PDF OUTPUT */
 :deep(.ql-container) {
-    flex: 1; /* occupy remaining space */
-    display: flex;
-    flex-direction: column;
-    font-family: inherit;
-    font-size: inherit; 
-    border: none !important;
-    overflow: visible; 
+    height: calc(100% - 45px) !important; /* Fixed height minus toolbar */
+    overflow: auto !important;
 }
 :deep(.ql-editor) {
-    flex: 1;
-    overflow-y: visible; 
-    padding: 0;
+    font-family: 'Times New Roman', serif;
+    font-size: 11pt;
+    line-height: 1.15;
+    letter-spacing: 1.5px; /* Calibrated to match mPDF character width (~414 chars per line) */
+    padding: 15mm 15mm !important;
+    min-height: 100%;
+    overflow-y: visible !important;
 }
-/* Revert specific P margin to default or remove if originally standard */
+/* If Kop is present, remove top padding from Editor because Kop already adds 20mm top spacing */
+.has-kop :deep(.ql-editor) {
+    padding-top: 0 !important;
+}
 :deep(.ql-editor p) {
-    margin-bottom: 0.5rem; /* Standard spacing */
+    margin: 0 0 10px 0; /* Proper spacing for letters */
 }
-:deep(.ql-indent-1) { padding-left: 1.25cm; }
-:deep(.ql-indent-2) { padding-left: 2.50cm; }
-:deep(.ql-indent-3) { padding-left: 3.75cm; }
-:deep(.ql-indent-4) { padding-left: 5.00cm; }
-:deep(.ql-indent-5) { padding-left: 6.25cm; }
-:deep(.ql-indent-6) { padding-left: 7.50cm; }
-:deep(.ql-indent-7) { padding-left: 8.75cm; }
-:deep(.ql-indent-8) { padding-left: 10.00cm; }
-:deep(.ql-indent-9) { padding-left: 11.25cm; }
-
 :deep(.ql-toolbar) {
     border: none !important;
-    border-bottom: 1px solid #ddd !important;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background: white;
+    border-bottom: 1px solid #eee !important;
+    background: #f8f9fa;
+}
+:deep(.ql-container) {
+    border: none !important;
+}
+
+/* Quill Alignment Classes - MUST MATCH PDF */
+:deep(.ql-align-right) {
+    text-align: right;
+}
+:deep(.ql-align-center) {
+    text-align: center;
+}
+:deep(.ql-align-justify) {
+    text-align: justify;
+}
+
+/* Quill Indentation Classes - MUST MATCH PDF */
+:deep(.ql-indent-1) { padding-left: 3em; }
+:deep(.ql-indent-2) { padding-left: 6em; }
+:deep(.ql-indent-3) { padding-left: 9em; }
+:deep(.ql-indent-4) { padding-left: 12em; }
+:deep(.ql-indent-5) { padding-left: 15em; }
+:deep(.ql-indent-6) { padding-left: 18em; }
+:deep(.ql-indent-7) { padding-left: 21em; }
+:deep(.ql-indent-8) { padding-left: 24em; }
+
+/* Page Boundary Marker (Garis Pembatas Halaman) */
+.page-boundary {
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-top: 3px dashed #dc3545; /* Garis merah putus-putus */
+    pointer-events: none;
+    z-index: 100;
+}
+.page-boundary span {
+    position: absolute;
+    right: 10px;
+    top: -22px;
+    background: #dc3545;
+    color: white;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+/* Transitions */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.font-serif {
+    font-family: 'Times New Roman', Times, serif;
+}
+
+/* Template Table Styles */
+.template-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+}
+
+/* Action Buttons - Modern Style */
+.btn-icon-modern {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background-color: #f3f4f6;
+    color: #6b7280;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-icon-modern:hover {
+    transform: translateY(-2px);
+    color: white;
+}
+
+.btn-icon-edit:hover {
+    background-color: #f59e0b;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.btn-icon-delete:hover {
+    background-color: #ef4444;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.empty-state {
+    padding: 2rem;
+}
+
+/* Status Badge */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-success {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.status-secondary {
+    background-color: #e5e7eb;
+    color: #4b5563;
+    color: #4b5563;
+}
+
+/* Page Boundary Line */
+.page-boundary {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    border-bottom: 2px dashed #ef4444; /* Red Dashed Line */
+    pointer-events: none; /* Ignore clicks */
+    z-index: 10;
+}
+.page-boundary span {
+    position: absolute;
+    right: 0;
+    top: -20px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px 0 0 0;
+    font-weight: bold;
 }
 </style>

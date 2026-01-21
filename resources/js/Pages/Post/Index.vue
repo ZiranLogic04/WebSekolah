@@ -31,7 +31,7 @@
                                 <div class="blog-item-meta">
                                     <ul>
                                         <li><a href="#"><i class="far fa-user-circle"></i> {{ post.author?.name || 'Admin' }}</a></li>
-                                        <li><a href="#"><i class="far fa-eye"></i> {{ post.views || 0 }} Views</a></li>
+                                        <!-- <li><a href="#"><i class="far fa-eye"></i> {{ post.views || 0 }} Views</a></li> -->
                                     </ul>
                                 </div>
                                 <h4 class="blog-title">

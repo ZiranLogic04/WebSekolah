@@ -3,55 +3,15 @@
     <div class="col-xl-9 ms-auto">
       <div class="highlight-wrapper">
         <div class="row g-4">
-          <!-- Item 1 -->
-          <div class="col-md-6 col-lg-3">
+          <div v-for="(feature, index) in displayFeatures" :key="feature.id || index" class="col-md-6 col-lg-3">
             <div class="highlight-item">
-              <span class="count">01</span>
+              <span class="count">0{{ index + 1 }}</span>
               <div class="highlight-icon">
-                <i class="fas fa-book"></i>
+                <img :src="`/assets/img/icon/${feature.icon}`" alt="">
               </div>
               <div class="highlight-content">
-                <h4 class="highlight-title">Pendidikan Bermutu</h4>
-                <p>Kualitas pembelajaran unggul dengan pendekatan islami dan lingkungan belajar yang inspiratif.</p>
-              </div>
-            </div>
-          </div>
-          <!-- Item 2 -->
-          <div class="col-md-6 col-lg-3">
-            <div class="highlight-item">
-              <span class="count">02</span>
-              <div class="highlight-icon">
-                <i class="fas fa-chalkboard-teacher"></i>
-              </div>
-              <div class="highlight-content">
-                <h4 class="highlight-title">Guru</h4>
-                <p>Tenaga pendidik kompeten, berdedikasi, dan menjadi teladan dalam ilmu serta akhlak.</p>
-              </div>
-            </div>
-          </div>
-          <!-- Item 3 -->
-          <div class="col-md-6 col-lg-3">
-            <div class="highlight-item">
-              <span class="count">03</span>
-              <div class="highlight-icon">
-                <i class="fas fa-book-reader"></i>
-              </div>
-              <div class="highlight-content">
-                <h4 class="highlight-title">Kurikulum Terpadu</h4>
-                <p>Mengintegrasikan ilmu umum dan agama untuk membentuk siswa cerdas, beriman, dan berkarakter.</p>
-              </div>
-            </div>
-          </div>
-          <!-- Item 4 -->
-          <div class="col-md-6 col-lg-3">
-            <div class="highlight-item">
-              <span class="count">04</span>
-              <div class="highlight-icon">
-                <i class="fas fa-building"></i>
-              </div>
-              <div class="highlight-content">
-                <h4 class="highlight-title">Fasilitas dan Kegiatan</h4>
-                <p>Sarana lengkap dan kegiatan edukatif yang menumbuhkan potensi akademik, sosial, dan spiritual siswa.</p>
+                <h4 class="highlight-title">{{ feature.title }}</h4>
+                <p>{{ feature.description }}</p>
               </div>
             </div>
           </div>
@@ -62,12 +22,24 @@
 </template>
 
 <script setup>
-// Static component - no props needed
-</script>
+import { computed } from 'vue';
 
-<style>
-.highlight-icon i {
-    font-size: 40px;
-    color: #ffffff; /* var(--color-white) - Matching template design */
-}
-</style>
+const props = defineProps({
+  features: {
+    type: Array,
+    default: () => []
+  }
+});
+
+// Default features jika data kosong
+const defaultFeatures = [
+  { icon: 'book.svg', title: 'Pendidikan Bermutu', description: 'Kualitas pembelajaran unggul dengan pendekatan islami dan lingkungan belajar yang inspiratif.' },
+  { icon: 'teacher.svg', title: 'Guru', description: 'Tenaga pendidik kompeten, berdedikasi, dan menjadi teladan dalam ilmu serta akhlak.' },
+  { icon: 'library.svg', title: 'Kurikulum Terpadu', description: 'Mengintegrasikan ilmu umum dan agama untuk membentuk siswa cerdas, beriman, dan berkarakter.' },
+  { icon: 'building-2.svg', title: 'Fasilitas dan Kegiatan', description: 'Sarana lengkap dan kegiatan edukatif yang menumbuhkan potensi akademik, sosial, dan spiritual siswa.' },
+];
+
+const displayFeatures = computed(() => {
+  return props.features && props.features.length > 0 ? props.features : defaultFeatures;
+});
+</script>

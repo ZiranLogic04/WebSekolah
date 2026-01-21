@@ -8,15 +8,25 @@ use Inertia\Inertia;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::published()
+        $query = Post::published()
             ->with('author')
-            ->latest('published_at')
-            ->paginate(9);
+            ->latest('published_at');
+
+        if ($request->has('q')) {
+            $search = $request->q;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('content', 'like', "%{$search}%");
+            });
+        }
+
+        $posts = $query->paginate(9)->withQueryString();
             
         return Inertia::render('Post/Index', [
-            'posts' => $posts
+            'posts' => $posts,
+            'filters' => $request->only(['q']) // Optional: pass back to view
         ]);
     }
 

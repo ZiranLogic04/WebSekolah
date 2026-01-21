@@ -16,7 +16,9 @@ class TagihanBatch extends Model
         'target_gender',
         'jumlah',
         'tenggat_waktu',
-        'keterangan'
+        'keterangan',
+        'tahun_ajaran_id',
+        'total_siswa',
     ];
 
     public function jenisTagihan()

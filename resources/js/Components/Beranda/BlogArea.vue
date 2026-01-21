@@ -11,18 +11,23 @@
         </div>
       </div>
 
-      <div class="row" v-if="posts && posts.length > 0">
-        <div class="col-md-6 col-lg-4" v-for="post in posts" :key="post.id">
-          <div class="blog-item wow fadeInUp" data-wow-delay=".25s">
+      <div class="row">
+        <div v-if="posts.length === 0" class="col-12 text-center text-muted">
+            <p>Belum ada berita terbaru.</p>
+        </div>
+
+        <!-- Dynamic Posts -->
+        <div v-else class="col-md-6 col-lg-4" v-for="(post, index) in posts" :key="post.id">
+          <div class="blog-item wow fadeInUp" :data-wow-delay="0.25 * (index + 1) + 's'">
             <div class="blog-date"><i class="fa fa-calendar-alt"></i> {{ formatDate(post.published_at) }}</div>
             <div class="blog-item-img">
-              <img :src="post.image ? `/storage/${post.image}` : '/assets/img/hope/literasi.jpg'" :alt="post.title">
+              <img :src="post.image ? '/storage/' + post.image : '/assets/img/blog/default.jpg'" :alt="post.title" style="height: 250px; object-fit: cover;">
             </div>
             <div class="blog-item-info">
               <div class="blog-item-meta">
                 <ul>
-                  <li><a href="#"><i class="far fa-user-circle"></i> {{ post.author?.name || 'Admin' }}</a></li>
-                  <li><a href="#"><i class="far fa-comments"></i> 0 Komentar</a></li>
+                  <li><a href="#"><i class="far fa-user-circle"></i> By {{ post.author?.name || 'Admin' }}</a></li>
+                  <!-- <li><a href="#"><i class="far fa-comments"></i> 0 Komentar</a></li> -->
                 </ul>
               </div>
               <h4 class="blog-title">
@@ -33,29 +38,23 @@
           </div>
         </div>
       </div>
-      <div class="row" v-else>
-          <div class="col-12 text-center">
-              <p>Belum ada berita terbaru.</p>
-          </div>
-      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { Link } from '@inertiajs/vue3'
+import { Link } from '@inertiajs/vue3';
 
 defineProps({
-    posts: Array
-});
+    posts: {
+        type: Array,
+        default: () => []
+    }
+})
 
 const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    return date.toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
-    });
-};
+    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+}
 </script>

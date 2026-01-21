@@ -1,26 +1,35 @@
 <template>
     <AdminLayout>
         <div class="content container-fluid">
-            <div class="page-header">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h3 class="page-title">Transaksi Pemasukan</h3>
-                        <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><Link href="/dashboard">Dashboard</Link></li>
-                            <li class="breadcrumb-item active">Transaksi</li>
-                        </ul>
+            <!-- Radiant Header Card -->
+            <div class="card border-0 shadow-lg rounded-4 mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);">
+                <div class="card-body p-4 p-lg-5 position-relative z-1">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <div class="icon-box bg-white rounded-3 text-primary p-2">
+                                    <i class="fas fa-cash-register fs-3"></i>
+                                </div>
+                                <h2 class="fw-bold text-white mb-0 ls-tight">Transaksi Pemasukan</h2>
+                            </div>
+                            <p class="text-white-50 mb-0 fs-5">Kelola pembayaran tagihan siswa dengan mudah dan cepat.</p>
+                        </div>
                     </div>
+                </div>
+                <!-- Decorative Background -->
+                <div class="position-absolute bottom-0 end-0 opacity-10 me-n5 mb-n5">
+                    <i class="fas fa-cash-register" style="font-size: 10rem; color: white;"></i>
                 </div>
             </div>
 
             <div class="row">
                 <!-- Student Search Section -->
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title mb-3">Cari Siswa</h5>
+                <div class="col-lg-4 mb-4">
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4">
+                            <h5 class="card-title mb-3 fw-bold"><i class="fas fa-search me-2 text-primary"></i>Cari Siswa</h5>
                             <div class="form-group relative">
-                                <input type="text" class="form-control" placeholder="Ketik Nama / NIS..." v-model="searchQuery" @focus="showDropdown = true">
+                                <input type="text" class="form-control rounded-pill ps-4" placeholder="Ketik Nama / NIS..." v-model="searchQuery" @focus="showDropdown = true">
                                 <i class="fas fa-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
                                 
                                 <!-- Dropdown Results -->
@@ -140,7 +149,7 @@
                              <div class="card">
                                 <div class="card-body">
                                     <div v-if="!selectedStudent">
-                                        <div v-if="latestTransactions.length === 0" class="text-center py-5 text-muted">
+                                        <div v-if="latestTransactions.data.length === 0" class="text-center py-5 text-muted">
                                             <p>Belum ada riwayat transaksi terbaru.</p>
                                         </div>
                                         <div v-else>
@@ -153,12 +162,13 @@
                                                             <th>Siswa</th>
                                                             <th>Tagihan</th>
                                                             <th>Jumlah Bayar</th>
+                                                            <th>Metode</th>
                                                             <th>Tanggal</th>
                                                             <th class="text-end">Aksi</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="trx in latestTransactions" :key="trx.id">
+                                                        <tr v-for="trx in latestTransactions.data" :key="trx.id">
                                                             <td>{{ trx.kode_transaksi }}</td>
                                                             <td>
                                                                 <div class="fw-bold">{{ trx.tagihan?.siswa?.nama || 'Siswa Dihapus' }}</div>
@@ -166,6 +176,11 @@
                                                             </td>
                                                             <td>{{ trx.tagihan?.nama_tagihan || '-' }}</td>
                                                             <td class="text-success fw-bold">{{ formatRupiah(trx.jumlah_bayar) }}</td>
+                                                            <td>
+                                                                <span class="badge" :class="trx.metode_pembayaran === 'Transfer' ? 'bg-info' : 'bg-success'">
+                                                                    {{ trx.metode_pembayaran || 'Cash' }}
+                                                                </span>
+                                                            </td>
                                                             <td>{{ new Date(trx.tanggal_bayar).toLocaleDateString('id-ID') }}</td>
                                                             <td class="text-end">
                                                                 <button class="btn btn-outline-secondary btn-sm" @click="reprintReceipt(trx)">
@@ -175,6 +190,9 @@
                                                         </tr>
                                                     </tbody>
                                                 </table>
+                                            </div>
+                                            <div class="mt-4 d-flex justify-content-end">
+                                                <Pagination :links="latestTransactions.links" />
                                             </div>
                                         </div>
                                     </div>
@@ -193,6 +211,7 @@
                                                     <th>Kode</th>
                                                     <th>Tagihan</th>
                                                     <th>Jumlah Bayar</th>
+                                                    <th>Metode</th>
                                                     <th>Tanggal</th>
                                                     <th class="text-end">Aksi</th>
                                                 </tr>
@@ -202,6 +221,11 @@
                                                     <td>{{ trx.kode_transaksi }}</td>
                                                     <td>{{ trx.tagihan?.nama_tagihan || '-' }}</td>
                                                     <td class="text-success fw-bold">{{ formatRupiah(trx.jumlah_bayar) }}</td>
+                                                    <td>
+                                                        <span class="badge" :class="trx.metode_pembayaran === 'Transfer' ? 'bg-info' : 'bg-success'">
+                                                            {{ trx.metode_pembayaran || 'Cash' }}
+                                                        </span>
+                                                    </td>
                                                     <td>{{ new Date(trx.tanggal_bayar).toLocaleDateString('id-ID') }}</td>
                                                     <td class="text-end">
                                                         <button class="btn btn-outline-secondary btn-sm" @click="reprintReceipt(trx)">
@@ -222,40 +246,66 @@
             <!-- Payment Modal -->
             <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header bg-primary text-white">
-                            <h5 class="modal-title">Konfirmasi Pembayaran</h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-content border-0 shadow-lg payment-modal">
+                        <div class="modal-header border-0 pb-0">
+                            <h5 class="modal-title fw-bold">
+                                <i class="fas fa-wallet text-primary me-2"></i>Konfirmasi Pembayaran
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body" v-if="selectedBill">
-                            <div class="text-center mb-4">
-                                <h6 class="text-muted mb-1">{{ selectedBill.nama_tagihan }}</h6>
-                                <h3 class="fw-bold text-primary">{{ formatRupiah(selectedBill.sisa) }}</h3>
-                                <small class="text-muted">Sisa Tagihan</small>
+                        <div class="modal-body p-4" v-if="selectedBill">
+                            <!-- Bill Info Card -->
+                            <div class="bill-info-card bg-light p-3 rounded-3 mb-4 text-center">
+                                <span class="d-block text-muted small mb-1">Pembayaran Tagihan</span>
+                                <h6 class="fw-bold mb-2 text-dark">{{ selectedBill.nama_tagihan }}</h6>
+                                <div class="amount-display text-primary fw-bold display-6">
+                                    {{ formatRupiah(selectedBill.sisa) }}
+                                </div>
+                                <span class="badge bg-warning text-dark mt-2">Sisa Tagihan</span>
                             </div>
 
                             <form @submit.prevent="submitPayment">
-                                <div class="form-group mb-3">
-                                    <label class="form-label">Jumlah Bayar</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">Rp</span>
-                                        <input type="text" class="form-control form-control-lg fw-bold" v-model="displayAmount" @input="formatInputAmount" required placeholder="0">
+
+                                <div class="form-group mb-4">
+                                    <label class="form-label fw-semibold">Nominal Pembayaran</label>
+                                    <div class="input-group input-group-lg payment-input-group">
+                                        <span class="input-group-text bg-white text-muted border-end-0 pe-2">Rp</span>
+                                        <input type="text" class="form-control border-start-0 ps-1 fw-bold text-dark fs-4" v-model="displayAmount" @input="formatInputAmount" required placeholder="0">
                                     </div>
-                                    <small class="text-muted">Maksimal: {{ formatRupiah(selectedBill.sisa) }}</small>
+                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                        <small class="text-muted">Maksimal: {{ formatRupiah(selectedBill.sisa) }}</small>
+                                        <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" @click="setFullAmount">
+                                            Bayar Full
+                                        </button>
+                                    </div>
                                 </div>
                                 
                                 <div class="form-group mb-4">
-                                    <label class="form-label">Metode Pembayaran</label>
-                                    <select class="form-select" v-model="form.metode_pembayaran">
-                                        <option value="Cash">Tunai (Cash)</option>
-                                        <option value="Transfer">Transfer Bank</option>
-                                    </select>
+                                    <label class="form-label fw-semibold mb-2">Metode Pembayaran</label>
+                                    <div class="d-flex gap-3">
+                                        <label class="payment-method-radio flex-fill">
+                                            <input type="radio" v-model="form.metode_pembayaran" value="Cash" class="visually-hidden">
+                                            <div class="payment-card p-3 rounded-3 border text-center cursor-pointer h-100 d-flex flex-column align-items-center justify-content-center" :class="{ 'active': form.metode_pembayaran === 'Cash' }">
+                                                <i class="fas fa-money-bill-wave d-block mb-2 fa-2x"></i>
+                                                <span class="fw-medium">Tunai</span>
+                                            </div>
+                                        </label>
+                                        <label class="payment-method-radio flex-fill">
+                                            <input type="radio" v-model="form.metode_pembayaran" value="Transfer" class="visually-hidden">
+                                            <div class="payment-card p-3 rounded-3 border text-center cursor-pointer h-100 d-flex flex-column align-items-center justify-content-center" :class="{ 'active': form.metode_pembayaran === 'Transfer' }">
+                                                <i class="fas fa-university d-block mb-2 fa-2x"></i>
+                                                <span class="fw-medium">Transfer</span>
+                                            </div>
+                                        </label>
+                                    </div>
                                 </div>
 
-                                <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary btn-lg" :disabled="form.processing">
-                                        <i class="fas fa-check-circle me-2"></i> Proses Pembayaran
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg btn-process shadow-sm" :disabled="form.processing">
+                                        <span v-if="form.processing"><i class="fas fa-spinner fa-spin me-2"></i>Memproses...</span>
+                                        <span v-else><i class="fas fa-check-circle me-2"></i>Bayar Sekarang</span>
                                     </button>
+                                    <button type="button" class="btn btn-light btn-lg text-muted" data-bs-dismiss="modal">Batal</button>
                                 </div>
                             </form>
                         </div>
@@ -272,11 +322,14 @@ import { Link, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import Pagination from '@/Components/Pagination.vue';
 
 const props = defineProps({
     students: Array,
     sekolah: Object,
-    latestTransactions: Array
+    students: Array,
+    sekolah: Object,
+    latestTransactions: Object
 });
 
 const searchQuery = ref('');
@@ -324,6 +377,25 @@ onMounted(() => {
     const modalEl = document.getElementById('paymentModal');
     if (window.bootstrap) {
         paymentModal.value = new window.bootstrap.Modal(modalEl);
+    }
+
+    // Check URL params for page, if exists switch to history tab
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('page')) {
+        const historyTabBtn = document.getElementById('history-tab');
+        if (historyTabBtn) {
+            const tab = new window.bootstrap.Tab(historyTabBtn);
+            tab.show();
+        }
+    }
+
+    // Check for student_id to auto-select student
+    if (urlParams.has('student_id')) {
+        const studentId = parseInt(urlParams.get('student_id'));
+        const student = props.students.find(s => s.id === studentId);
+        if (student) {
+            selectStudent(student);
+        }
     }
 
     // Close dropdown when clicking outside
@@ -374,6 +446,12 @@ const openPaymentModal = (bill) => {
     form.jumlah_bayar = bill.sisa; // Default to full amount
     displayAmount.value = new Intl.NumberFormat('id-ID').format(bill.sisa);
     paymentModal.value.show();
+};
+
+const setFullAmount = () => {
+    if (!selectedBill.value) return;
+    form.jumlah_bayar = selectedBill.value.sisa;
+    displayAmount.value = formatRupiah(selectedBill.value.sisa).replace('Rp', '').trim();
 };
 
 const submitPayment = () => {
@@ -449,65 +527,145 @@ const reprintReceipt = (trx) => {
     printReceipt(printData);
 };
 
-const printReceipt = (data) => {
-    // Generate simple receipt HTML
-    const printWindow = window.open('', '_blank', 'width=400,height=600');
+    const printReceipt = (data) => {
+    // Generate receipt HTML
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    
+    // Sekolah Info (Fallback)
+    const sekolahNama = data.sekolah?.nama_sekolah || 'SEKOLAH INDONESIA';
+
     printWindow.document.write(`
         <html>
         <head>
-            <title>Struk Pembayaran - Web Sekolah</title>
+            <title>Struk Pembayaran - ${sekolahNama}</title>
             <style>
-                body { font-family: 'Courier New', Courier, monospace; font-size: 12px; padding: 20px; }
-                .text-center { text-align: center; }
-                .divider { border-top: 1px dashed #000; margin: 10px 0; }
-                .bold { font-weight: bold; }
-                .flex-between { display: flex; justify-content: space-between; }
-                .mt-2 { margin-top: 10px; }
+                @page { size: auto; margin: 0mm; }
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; margin: 20px; color: #333; }
+                .receipt-container { max-width: 400px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+                .header { text-align: center; margin-bottom: 20px; }
+                .header h3 { margin: 0; color: #3d5ee1; font-size: 18px; text-transform: uppercase; }
+                .header p { margin: 5px 0 0; color: #666; font-size: 12px; }
+                .divider { border-top: 2px dashed #eee; margin: 15px 0; }
+                .info-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+                .label { color: #666; font-size: 13px; }
+                .value { font-weight: 600; text-align: right; }
+                .total-section { background: #f8f9fa; padding: 10px; border-radius: 8px; margin-top: 15px; }
+                .total-row { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 16px; color: #3d5ee1; }
+                .footer { text-align: center; margin-top: 25px; font-size: 11px; color: #999; }
+                
+                /* Print specific styles */
+                @media print {
+                    .receipt-container { border: none; box-shadow: none; padding: 0; }
+                    body { margin: 0; padding: 10px; }
+                }
             </style>
         </head>
         <body>
-            <div class="text-center">
-                <h3 style="margin:0;">${data.sekolah?.nama_sekolah || 'WEB SEKOLAH'}</h3>
-                <p style="margin:0;">Bukti Pembayaran</p>
+            <div class="receipt-container">
+                <div class="header">
+                    <h3>${sekolahNama}</h3>
+                    <p>BUKTI PEMBAYARAN TAGIHAN</p>
+                    <p style="font-size: 11px; margin-top: 2px;">${new Date(data.transaksi.tanggal_bayar).toLocaleString('id-ID')}</p>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <div class="info-row">
+                    <span class="label">No. Transaksi</span>
+                    <span class="value">${data.transaksi.kode_transaksi}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Siswa</span>
+                    <span class="value">${data.siswa.nama}<br><span style="font-weight:normal; font-size:12px">Kelas ${data.siswa.kelas}</span></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Pembayaran</span>
+                    <span class="value">${data.tagihan.nama_tagihan}</span>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <div class="info-row">
+                    <span class="label">Total Tagihan</span>
+                    <span class="value">${formatRupiah(data.tagihan.jumlah)}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Sisa Sebelumnya</span>
+                    <span class="value">${formatRupiah(data.tagihan.sisa + data.transaksi.jumlah_bayar)}</span>
+                </div>
+                
+                <div class="total-section">
+                    <div class="total-row">
+                        <span>DIBAYAR</span>
+                        <span>${formatRupiah(data.transaksi.jumlah_bayar)}</span>
+                    </div>
+                    <div class="info-row mt-2" style="margin-bottom:0">
+                        <span class="label">Metode</span>
+                        <span class="value">${data.transaksi.metode_pembayaran || 'Cash'}</span>
+                    </div>
+                    <div class="info-row mt-2" style="margin-bottom:0">
+                        <span class="label">Terbilang</span>
+                        <span class="value" style="font-style:italic; font-size:12px; font-weight:normal; text-transform:capitalize">${terbilang(data.transaksi.jumlah_bayar)} Rupiah</span>
+                    </div>
+                </div>
+
+                <div class="info-row mt-2" style="justify-content: flex-end; color: #dc3545; font-weight: bold;">
+                    <span style="margin-right: 10px">Sisa Tagihan:</span>
+                    <span>${formatRupiah(data.tagihan.sisa)}</span>
+                </div>
+                
+                <div class="footer">
+                    <p>Terima Kasih atas pembayaran Anda.</p>
+                </div>
             </div>
-            <div class="divider"></div>
-            <div>
-                <p>No. Transaksi : ${data.transaksi.kode_transaksi}</p>
-                <p>Tanggal : ${new Date(data.transaksi.tanggal_bayar).toLocaleString('id-ID')}</p>
-                <p>Siswa : ${data.siswa.nama} (${data.siswa.kelas})</p>
-                <p>Pembayaran : ${data.tagihan.nama_tagihan}</p>
-            </div>
-            <div class="divider"></div>
-            <div class="flex-between">
-                <span>Total Tagihan:</span>
-                <span>${formatRupiah(data.tagihan.jumlah)}</span>
-            </div>
-            <div class="flex-between">
-                <span>Pembayaran Ini:</span>
-                <span>${formatRupiah(data.transaksi.jumlah_bayar)}</span>
-            </div>
-             <div class="flex-between mt-2">
-                <span>Sisa Tagihan:</span>
-                <span>${formatRupiah(data.tagihan.sisa)}</span>
-            </div>
-            <div class="divider"></div>
-            <div class="flex-between bold">
-                <span>TOTAL BAYAR</span>
-                <span>${formatRupiah(data.transaksi.jumlah_bayar)}</span>
-            </div>
-            <div class="divider"></div>
-            <div class="text-center mt-2">
-                <p>Terima Kasih</p>
-                <p>Simpan struk ini sebagai bukti pembayaran yang sah.</p>
-            </div>
-            <script>
-                window.print();
-                window.onafterprint = function() { window.close(); }
-            <\/script>
         </body>
         </html>
     `);
+
+    printWindow.onload = function() {
+        setTimeout(() => {
+            printWindow.print();
+        }, 500);
+    };
     printWindow.document.close();
+};
+
+/* Helper untuk terbilang (Sederhana) */
+const terbilang = (angka) => {
+    const bil = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
+    let terbilang = "";
+    if (angka < 12) {
+        terbilang = " " + bil[angka];
+    } else if (angka < 20) {
+        terbilang = terbilangCalc(angka - 10) + " belas";
+    } else if (angka < 100) {
+        terbilang = terbilangCalc(Math.floor(angka / 10)) + " puluh" + terbilangCalc(angka % 10);
+    } else if (angka < 200) {
+        terbilang = " seratus" + terbilangCalc(angka - 100);
+    } else if (angka < 1000) {
+        terbilang = terbilangCalc(Math.floor(angka / 100)) + " ratus" + terbilangCalc(angka % 100);
+    } else if (angka < 2000) {
+        terbilang = " seribu" + terbilangCalc(angka - 1000);
+    } else if (angka < 1000000) {
+        terbilang = terbilangCalc(Math.floor(angka / 1000)) + " ribu" + terbilangCalc(angka % 1000);
+    } else if (angka < 1000000000) {
+        terbilang = terbilangCalc(Math.floor(angka / 1000000)) + " juta" + terbilangCalc(angka % 1000000);
+    }
+    return terbilang;
+};
+
+// Recursive helper for terbilang to avoid defining var inside
+const terbilangCalc = (angka) => {
+    const bil = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
+    if (angka < 12) return " " + bil[angka];
+    if (angka < 20) return terbilangCalc(angka - 10) + " belas";
+    if (angka < 100) return terbilangCalc(Math.floor(angka / 10)) + " puluh" + terbilangCalc(angka % 10);
+    if (angka < 200) return " seratus" + terbilangCalc(angka - 100);
+    if (angka < 1000) return terbilangCalc(Math.floor(angka / 100)) + " ratus" + terbilangCalc(angka % 100);
+    if (angka < 2000) return " seribu" + terbilangCalc(angka - 1000);
+    if (angka < 1000000) return terbilangCalc(Math.floor(angka / 1000)) + " ribu" + terbilangCalc(angka % 1000);
+    if (angka < 1000000000) return terbilangCalc(Math.floor(angka / 1000000)) + " juta" + terbilangCalc(angka % 1000000);
+    return "";
 };
 
 const formatRupiah = (value) => {
@@ -545,5 +703,37 @@ const isOverdue = (dateString) => {
     justify-content: center;
     font-weight: bold;
     font-size: 1.2rem;
+    transform: translateX(5px);
+}
+
+/* Payment Modal Styles */
+.payment-modal {
+    border-radius: 16px;
+    overflow: hidden;
+}
+.bill-info-card {
+    border: 1px solid #eef2f7;
+}
+.payment-method-radio input:checked + .payment-card {
+    background-color: #f0f7ff;
+    border-color: #3d5ee1 !important;
+    color: #3d5ee1;
+}
+.payment-card {
+    transition: all 0.2s ease;
+    border: 1px solid #eef2f7;
+}
+.payment-card:hover {
+    border-color: #3d5ee1;
+    background-color: #f8f9fa;
+}
+.btn-process {
+    background: linear-gradient(135deg, #3d5ee1 0%, #5b7df5 100%);
+    border: none;
+    transition: all 0.3s ease;
+}
+.btn-process:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(61, 94, 225, 0.3);
 }
 </style>

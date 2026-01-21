@@ -26,6 +26,12 @@ class Guru extends Model
         'status_aktif',
         'pendidikan_terakhir',
         'tanggal_mulai_bekerja',
+        'foto',
+        'jabatan',
+        'facebook',
+        'instagram',
+        'twitter',
+        'linkedin',
     ];
 
     protected $casts = [

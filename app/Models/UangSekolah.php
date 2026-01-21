@@ -18,7 +18,8 @@ class UangSekolah extends Model
         'tipe',
         'tanggal',
         'keterangan',
-        'is_manual'
+        'is_manual',
+        'tahun_ajaran_id',
     ];
 
     public function transaksi()
@@ -26,7 +27,7 @@ class UangSekolah extends Model
         return $this->belongsTo(Transaksi::class);
     }
     
-    public function kategori()
+    public function jenisKategori()
     {
         return $this->belongsTo(JenisTagihan::class, 'kategori_id');
     }

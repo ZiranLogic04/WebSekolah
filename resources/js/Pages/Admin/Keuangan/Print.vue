@@ -8,21 +8,21 @@
         </div>
 
         <!-- A. KOP LAPORAN -->
-        <div class="header-section mb-0">
-            <div class="row align-items-center mb-2">
-                <div class="col-2 text-center">
-                    <img :src="logoSrc" @error="handleImageError" alt="Logo" style="width: 80px; height: auto;">
-                </div>
-                <div class="col-8 text-center">
-                    <h5 class="mb-0 text-uppercase fw-bold">YAYASAN PENDIDIKAN / DINAS PENDIDIKAN</h5>
-                    <h3 class="fw-bold text-uppercase mb-1">{{ lembaga?.nama_sekolah || 'NAMA SEKOLAH' }}</h3>
-                    <p class="mb-0 small">{{ lembaga?.alamat || 'Alamat Sekolah Belum Diisi' }}</p>
-                    <p class="mb-0 small">Telp: {{ lembaga?.telepon || '-' }}</p>
-                </div>
-                <!-- Empty col to balance center if needed, or just col-10? Usually col-2 logo, col-10 text. Let's try col-2 and col-10 for better width usage -->
-            </div>
-            <div class="border-top border-dark border-3 mb-1"></div>
-            <div class="border-top border-dark border-1 mb-4"></div>
+        <div class="kop-surat">
+            <table class="kop-table">
+                <tr>
+                    <td class="logo-cell">
+                        <img :src="logoSrc" @error="handleImageError" alt="Logo" class="logo-img">
+                    </td>
+                    <td class="text-cell">
+                        <p class="kop-header1">{{ lembaga?.yayasan || 'YAYASAN PENDIDIKAN' }}</p>
+                        <p class="kop-header2">{{ lembaga?.nama_sekolah || 'NAMA SEKOLAH' }}</p>
+                        <p class="kop-text">{{ lembaga?.alamat || 'Alamat Sekolah' }}</p>
+                        <p class="kop-text">Telp: {{ lembaga?.telepon || '-' }} | Email: {{ lembaga?.email || '-' }}</p>
+                    </td>
+                    <td class="logo-cell"></td>
+                </tr>
+            </table>
         </div>
 
         <!-- B. JUDUL LAPORAN -->
@@ -252,18 +252,53 @@ body {
     width: 210mm;
     min-height: 297mm;
     margin: 20px auto;
-    padding: 2cm; /* Margin 2-3cm */
+    padding: 2cm;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
     position: relative;
-    font-size: 11pt; /* Isi tabel 11-12pt */
+    font-size: 11pt;
 }
 
-h3, h4, h5 {
-    color: #000 !important;
+/* KOP SURAT */
+.kop-surat {
+    width: 100%;
+    border-bottom: 3px double #000;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
 }
-
-table {
-    border-color: #000 !important;
+.kop-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.kop-table td {
+    vertical-align: middle;
+}
+.logo-cell {
+    width: 15%;
+    text-align: center;
+}
+.logo-img {
+    max-height: 70px;
+    width: auto;
+}
+.text-cell {
+    width: 70%;
+    text-align: center;
+}
+.kop-header1 {
+    font-size: 11pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 0;
+}
+.kop-header2 {
+    font-size: 16pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 3px 0;
+}
+.kop-text {
+    font-size: 10pt;
+    margin: 2px 0;
 }
 
 @media print {

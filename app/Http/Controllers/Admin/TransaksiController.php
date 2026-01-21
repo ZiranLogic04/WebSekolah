@@ -23,8 +23,7 @@ class TransaksiController extends Controller
         // Latest global transactions for initial view
         $latestTransactions = Transaksi::with(['tagihan.siswa'])
             ->latest()
-            ->limit(10)
-            ->get();
+            ->paginate(10);
 
         return inertia('Admin/Transaksi/Index', [
             'students' => $students,
@@ -67,7 +66,8 @@ class TransaksiController extends Controller
         ]);
 
         return DB::transaction(function () use ($request) {
-            $tagihan = Tagihan::lockForUpdate()->find($request->tagihan_id);
+            $tagihan = Tagihan::lockForUpdate()
+                ->find($request->tagihan_id);
 
             if ($tagihan->status === 'Lunas' || $tagihan->sisa <= 0) {
                 return redirect()->back()->withErrors(['message' => 'Tagihan ini sudah lunas.']);
@@ -100,6 +100,7 @@ class TransaksiController extends Controller
             // 3. Catat Pemasukan Sekolah (UangSekolah)
             UangSekolah::create([
                 'transaksi_id' => $transaksi->id,
+                'kategori_id' => $tagihan->jenis_tagihan_id, // Ambil dari jenis tagihan
                 'sumber' => "Pembayaran " . $tagihan->nama_tagihan . " - " . $tagihan->siswa->nama,
                 'jumlah' => $request->jumlah_bayar,
                 'tipe' => 'Masuk',

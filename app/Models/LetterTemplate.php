@@ -12,7 +12,8 @@ class LetterTemplate extends Model
     protected $fillable = [
         'name',
         'content',
-        'use_system_kop'
+        'use_system_kop',
+        'paper_size'
     ];
 
     protected $casts = [

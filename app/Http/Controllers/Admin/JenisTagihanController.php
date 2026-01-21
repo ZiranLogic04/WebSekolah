@@ -29,29 +29,40 @@ class JenisTagihanController extends Controller
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
-            'tipe' => 'required|in:Pemasukan,Pengeluaran',
             'kode' => 'nullable|string|max:50',
             'keterangan' => 'nullable|string',
+        ], [
+            'nama.required' => 'Nama jenis tagihan wajib diisi.',
+            'nama.max' => 'Nama maksimal 255 karakter.',
         ]);
+        
+        // Force tipe to Pemasukan as per user request (Pengeluaran is manual now)
+        $validated['tipe'] = 'Pemasukan';
 
         JenisTagihan::create($validated);
 
-        return redirect()->back()->with('success', 'Kategori transaksi berhasil ditambahkan.');
+        return redirect()->back()->with('success', 'Jenis tagihan berhasil ditambahkan.');
     }
 
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
-            'tipe' => 'required|in:Pemasukan,Pengeluaran',
             'kode' => 'nullable|string|max:50',
             'keterangan' => 'nullable|string',
+        ], [
+            'nama.required' => 'Nama jenis tagihan wajib diisi.',
+            'nama.max' => 'Nama maksimal 255 karakter.',
         ]);
+        
+        // Ensure we don't accidentally change old data's type if we just want to edit name
+        // But if user wants UNIFORMITY, we should probably ignore tipe update or force it.
+        // Let's just update other fields.
 
         $jenisTagihan = JenisTagihan::findOrFail($id);
         $jenisTagihan->update($validated);
 
-        return redirect()->back()->with('success', 'Kategori transaksi berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Jenis tagihan berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -68,7 +79,7 @@ class JenisTagihanController extends Controller
         
         $jenisTagihan->delete();
 
-        return redirect()->back()->with('success', 'Kategori transaksi berhasil dihapus.');
+        return redirect()->back()->with('success', 'Jenis tagihan berhasil dihapus.');
     }
     
     /**

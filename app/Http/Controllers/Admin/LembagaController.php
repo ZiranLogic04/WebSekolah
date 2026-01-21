@@ -13,12 +13,11 @@ class LembagaController extends Controller
     public function index()
     {
         $lembaga = Lembaga::first();
-        
-        // If not exists, create a default empty one or just pass null to be handled by frontend
-        // But for easier handling, let's pass null and handle in Store/Update
+        $tahunAjarans = \App\Models\TahunAjaran::orderBy('tahun', 'desc')->get();
         
         return Inertia::render('Admin/DataLembaga', [
-            'lembaga' => $lembaga
+            'lembaga' => $lembaga,
+            'tahunAjarans' => $tahunAjarans
         ]);
     }
 
@@ -34,7 +33,19 @@ class LembagaController extends Controller
             'status' => 'required|in:Negeri,Swasta',
             'tahun_berdiri' => 'nullable|integer|digits:4|min:1900|max:' . (date('Y') + 1),
             'kepala_sekolah' => 'nullable|string|max:255',
+            'tahun_ajaran_aktif_id' => 'nullable|exists:tahun_ajarans,id',
+            'semester_aktif' => 'required|in:Ganjil,Genap',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ], [
+            'nama_sekolah.required' => 'Nama sekolah wajib diisi.',
+            'status.required' => 'Status sekolah wajib dipilih.',
+            'semester_aktif.required' => 'Semester aktif wajib dipilih.',
+            'email.email' => 'Format email tidak valid.',
+            'tahun_berdiri.digits' => 'Tahun berdiri harus 4 digit.',
+            'tahun_berdiri.min' => 'Tahun berdiri tidak valid (min 1900).',
+            'tahun_berdiri.max' => 'Tahun berdiri tidak boleh lebih dari tahun depan.',
+            'logo.image' => 'File logo harus berupa gambar.',
+            'logo.max' => 'Ukuran logo maksimal 2MB.',
         ]);
 
         $lembaga = Lembaga::first();
@@ -59,6 +70,12 @@ class LembagaController extends Controller
         } else {
             $lembaga->fill($data);
             $lembaga->save();
+        }
+
+        // Sync Tahun Ajaran Status
+        if ($request->has('tahun_ajaran_aktif_id') && $request->tahun_ajaran_aktif_id) {
+            \App\Models\TahunAjaran::query()->update(['is_active' => false]);
+            \App\Models\TahunAjaran::where('id', $request->tahun_ajaran_aktif_id)->update(['is_active' => true]);
         }
 
         return redirect()->back()->with('success', 'Data lembaga berhasil diperbarui.');

@@ -19,7 +19,9 @@ class Surat extends Model
         'use_system_header',
         'template_id', 
         'data_json',
-        'status'
+        'status',
+        'ukuran_kertas',
+        'orientation'
     ];
 
     protected $casts = [

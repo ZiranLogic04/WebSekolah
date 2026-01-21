@@ -1,0 +1,131 @@
+/**
+ * SURAT UNIFIED STYLES
+ * Digunakan di: Editor Template, Preview Surat, dan PDF
+ * JANGAN UBAH tanpa menyinkronkan semua tempat!
+ */
+
+/* ============================
+   PAPER SIZES (Fixed dimensions)
+   ============================ */
+.paper-a4 {
+    width: 210mm;
+    height: 297mm;
+}
+.paper-f4 {
+    width: 215mm;
+    height: 330mm;
+}
+.paper-legal {
+    width: 216mm;
+    height: 356mm;
+}
+
+/* ============================
+   PAPER CONTENT AREA
+   Margin sama dengan mPDF: top=10mm, bottom=10mm, left=15mm, right=15mm
+   ============================ */
+.paper-content {
+    padding: 10mm 15mm;
+    box-sizing: border-box;
+    height: 100%;
+}
+
+/* ============================
+   TYPOGRAPHY (Match mPDF rendering)
+   ============================ */
+.surat-body {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 12pt;
+    line-height: 1.3;
+    color: #000;
+}
+
+.surat-body p {
+    margin: 0 0 0.3em 0;
+}
+
+/* ============================
+   KOP SURAT
+   ============================ */
+.kop-surat {
+    width: 100%;
+    border-bottom: 3px double #000;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+}
+
+.kop-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.kop-table td {
+    vertical-align: middle;
+}
+
+.logo-cell {
+    width: 15%;
+    text-align: center;
+}
+
+.logo-img {
+    max-height: 70px;
+    width: auto;
+}
+
+.text-cell {
+    width: 70%;
+    text-align: center;
+}
+
+.kop-header1 {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 12pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.kop-header2 {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 14pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.kop-header3 {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 12pt;
+    font-weight: bold;
+    margin: 0;
+}
+
+.kop-text {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 10pt;
+    margin: 0;
+}
+
+/* ============================
+   CONTENT AREA
+   ============================ */
+.surat-content {
+    text-align: justify;
+}
+
+/* ============================
+   QUILL EDITOR CLASSES
+   ============================ */
+.ql-align-center { text-align: center; }
+.ql-align-right { text-align: right; }
+.ql-align-justify { text-align: justify; }
+
+.ql-indent-1 { padding-left: 3em; }
+.ql-indent-2 { padding-left: 6em; }
+.ql-indent-3 { padding-left: 9em; }
+.ql-indent-4 { padding-left: 12em; }
+.ql-indent-5 { padding-left: 15em; }
+.ql-indent-6 { padding-left: 18em; }
+.ql-indent-7 { padding-left: 21em; }
+.ql-indent-8 { padding-left: 24em; }

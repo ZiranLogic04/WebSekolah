@@ -2050,8 +2050,9 @@ label {
 
 .program-slider .owl-nav {
     width: 100%;
-    opacity: 0;
-    visibility: hidden;
+    opacity: 1;
+    /* Selalu terlihat */
+    visibility: visible;
     transition: var(--transition);
     margin: 0;
 }

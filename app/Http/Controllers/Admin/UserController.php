@@ -28,9 +28,22 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:'.User::class,
+            'email' => 'required|string|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => 'required|string|in:admin,guru,siswa,staf_keuangan,staf_administrasi',
+        ], [
+            'name.required' => 'Nama wajib diisi.',
+            'name.string' => 'Nama harus berupa teks.',
+            'name.max' => 'Nama maksimal 255 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.string' => 'Email harus berupa teks.',
+            'email.email' => 'Format email tidak valid (contoh: user@domain.com).',
+            'email.max' => 'Email maksimal 255 karakter.',
+            'email.unique' => 'Email sudah terdaftar, gunakan email lain.',
+            'password.required' => 'Password wajib diisi.',
+            'password.confirmed' => 'Konfirmasi password tidak sesuai.',
+            'role.required' => 'Peran (Role) wajib dipilih.',
+            'role.in' => 'Pilihan peran tidak valid.',
         ]);
 
         User::create([
@@ -50,9 +63,21 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:'.User::class.',email,'.$user->id,
+            'email' => 'required|string|email|max:255|unique:' . User::class . ',email,' . $user->id,
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
             'role' => 'required|string|in:admin,guru,siswa,staf_keuangan,staf_administrasi',
+        ], [
+            'name.required' => 'Nama wajib diisi.',
+            'name.string' => 'Nama harus berupa teks.',
+            'name.max' => 'Nama maksimal 255 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.string' => 'Email harus berupa teks.',
+            'email.email' => 'Format email tidak valid (contoh: user@domain.com).',
+            'email.max' => 'Email maksimal 255 karakter.',
+            'email.unique' => 'Email sudah terdaftar, gunakan email lain.',
+            'password.confirmed' => 'Konfirmasi password tidak sesuai.',
+            'role.required' => 'Peran (Role) wajib dipilih.',
+            'role.in' => 'Pilihan peran tidak valid.',
         ]);
 
         $user->name = $request->name;

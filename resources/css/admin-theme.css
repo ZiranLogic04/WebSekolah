@@ -870,6 +870,52 @@
     background-color: #f8fafc;
 }
 
+/* Modern Icon Actions - Premium Style (Global) */
+.btn-icon-modern {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background-color: #f3f4f6;
+    color: #6b7280;
+    font-size: 1rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.btn-icon-modern:hover {
+    transform: translateY(-2px);
+    color: white;
+}
+
+/* View: Info Blue */
+.btn-icon-view:hover {
+    background-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Edit: Amber */
+.btn-icon-edit:hover {
+    background-color: #f59e0b;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+/* Warning/Status: Orange */
+.btn-icon-warning:hover {
+    background-color: #f97316;
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+/* Delete: Red */
+.btn-icon-delete:hover {
+    background-color: #ef4444;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
 /* Print styles */
 @media print {
 
@@ -888,4 +934,80 @@
     .modal {
         display: none !important;
     }
+}
+
+/* Modern Table Styles (Global) */
+.modern-table-card {
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    border: none;
+    background: #fff;
+}
+
+.table-modern {
+    margin: 0;
+    width: 100%;
+}
+
+.table-modern thead th {
+    background-color: #3d5ee1 !important;
+    font-weight: 600;
+    color: #ffffff !important;
+    padding: 12px 15px;
+    border-bottom: 2px solid #3351c7;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+}
+
+.table-modern tbody td {
+    padding: 12px 15px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f3f5;
+    text-align: left;
+    /* Default content to left */
+}
+
+/* Fix Utility Class Specificity inside Table */
+.table-modern .text-center {
+    text-align: center !important;
+}
+
+.table-modern .text-start {
+    text-align: left !important;
+}
+
+.table-modern .text-end {
+    text-align: right !important;
+}
+
+.table-modern tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.empty-state {
+    padding: 2rem;
+    text-align: center;
+}
+
+.empty-icon {
+    opacity: 0.5;
+}
+
+/* Sidebar Z-Index Fix */
+.sidebar {
+    z-index: 999 !important; /* Ensure it is below Bootstrap Modal (1055) */
+}
+.sidebar-overlay {
+    z-index: 998 !important;
+}
+
+/* Fix Modal Backdrop */
+.modal-backdrop {
+    z-index: 1050 !important;
+}
+.modal {
+    z-index: 1055 !important;
 }

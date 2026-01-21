@@ -1,101 +1,62 @@
 <template>
-    <div class="login-page">
-        <div class="login-container">
-            <!-- Left Side - Branding -->
-            <div class="login-branding">
-                <div class="branding-content">
-                    <img src="/assets/img/hope/header_logo1.png" alt="Logo Sekolah" class="logo">
-                    <h1>MI AL-HIKMAH</h1>
-                    <p>Sistem Informasi Madrasah</p>
-                    <div class="features">
-                        <div class="feature-item">
-                            <i class="fas fa-shield-alt"></i>
-                            <span>Aman & Terenkripsi</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-clock"></i>
-                            <span>Akses 24/7</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-mobile-alt"></i>
-                            <span>Responsive</span>
-                        </div>
+    <div class="main-wrapper login-body">
+        <div class="login-wrapper">
+            <div class="container">
+                <div class="loginbox">
+                    <div class="login-left">
+                        <img class="img-fluid" src="/assets/img/logingambar.png" alt="Ilustrasi Login">
                     </div>
-                </div>
-            </div>
+                    <div class="login-right">
+                        <div class="login-right-wrap">
+                            <h1>Selamat Datang !</h1>
+                            <p class="account-subtitle">Silakan masuk untuk menggunakan aplikasi</p>
+                            <h2>Sign in</h2>
 
-            <!-- Right Side - Login Form -->
-            <div class="login-form-section">
-                <div class="login-form-wrapper">
-                    <div class="form-header">
-                        <h2>Selamat Datang!</h2>
-                        <p>Silakan masuk untuk mengakses dashboard</p>
-                    </div>
-
-                    <div v-if="$page.props.errors.email" class="alert alert-danger">
-                        <i class="fas fa-exclamation-circle"></i>
-                        {{ $page.props.errors.email }}
-                    </div>
-
-                    <form @submit.prevent="submit">
-                        <div class="form-group">
-                            <label for="email">
-                                <i class="fas fa-envelope"></i>
-                                Email
-                            </label>
-                            <input 
-                                id="email"
-                                type="email" 
-                                v-model="form.email" 
-                                class="form-control" 
-                                placeholder="Masukkan email anda"
-                                required 
-                                autofocus
-                            >
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password">
-                                <i class="fas fa-lock"></i>
-                                Password
-                            </label>
-                            <div class="password-wrapper">
-                                <input 
-                                    id="password"
-                                    :type="showPassword ? 'text' : 'password'" 
-                                    v-model="form.password" 
-                                    class="form-control" 
-                                    placeholder="Masukkan password"
-                                    required
-                                >
-                                <button type="button" class="toggle-password" @click="showPassword = !showPassword">
-                                    <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
-                                </button>
+                            <div v-if="$page.props.errors?.email" class="alert alert-danger py-2">
+                                {{ $page.props.errors.email }}
                             </div>
+
+                            <form @submit.prevent="submit">
+                                <div class="form-group">
+                                    <label>Username atau Email <span class="login-danger">*</span></label>
+                                    <input 
+                                        class="form-control" 
+                                        type="text" 
+                                        v-model="form.email"
+                                        required 
+                                        autofocus
+                                    >
+                                    <span class="profile-views"><i class="fas fa-user-circle"></i></span>
+                                </div>
+                                <div class="form-group">
+                                    <label>Password <span class="login-danger">*</span></label>
+                                    <input 
+                                        class="form-control pass-input" 
+                                        :type="showPassword ? 'text' : 'password'" 
+                                        v-model="form.password"
+                                        required
+                                    >
+                                    <span class="profile-views feather-eye toggle-password" @click="showPassword = !showPassword"></span>
+                                </div>
+                                <div class="forgotpass">
+                                    <div class="remember-me">
+                                        <label class="custom_check mr-2 mb-0 d-inline-flex remember-me"> Ingat saya
+                                            <input type="checkbox" v-model="form.remember">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-primary btn-block" type="submit" :disabled="form.processing">
+                                        <span v-if="form.processing"><i class="fas fa-spinner fa-spin"></i> Loading...</span>
+                                        <span v-else>Login</span>
+                                    </button>
+                                </div>
+                                <label class="mr-2 mb-0 d-inline-flex text-end"> Belum Punya Akun ?</label>
+                                <a href="/">Kembali ke Beranda</a>
+                            </form>
+
                         </div>
-
-                        <div class="form-options">
-                            <label class="remember-checkbox">
-                                <input type="checkbox" v-model="form.remember">
-                                <span class="checkmark"></span>
-                                Ingat saya
-                            </label>
-                        </div>
-
-                        <button type="submit" class="btn-login" :disabled="form.processing">
-                            <span v-if="form.processing">
-                                <i class="fas fa-spinner fa-spin"></i> Memproses...
-                            </span>
-                            <span v-else>
-                                <i class="fas fa-sign-in-alt"></i> Masuk
-                            </span>
-                        </button>
-                    </form>
-
-                    <div class="back-home">
-                        <a href="/">
-                            <i class="fas fa-arrow-left"></i> Kembali ke Beranda
-                        </a>
                     </div>
                 </div>
             </div>
@@ -105,7 +66,7 @@
 
 <script setup>
 import { useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const form = useForm({
     email: '',
@@ -118,344 +79,279 @@ const showPassword = ref(false);
 const submit = () => {
     form.post('/login');
 };
+
+onMounted(() => {
+    // Initialize feather icons if available
+    if (window.feather) {
+        window.feather.replace();
+    }
+});
 </script>
 
-<style scoped>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-.login-page {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #116E63 0%, #0a4a42 100%);
-    padding: 20px;
+html, body {
+    height: 100%;
+    font-family: 'Roboto', sans-serif;
 }
 
-.login-container {
-    display: flex;
+.main-wrapper {
     width: 100%;
-    max-width: 1000px;
-    background: #fff;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    height: 100vh;
+    min-height: 100vh;
 }
 
-/* Left Branding */
-.login-branding {
-    flex: 1;
-    background: linear-gradient(135deg, #116E63 0%, #0d5249 100%);
-    padding: 60px 40px;
+.login-body {
+    display: table;
+    height: 100vh;
+    min-height: 100vh;
+    background-color: #f7f7fa;
+}
+
+.login-wrapper {
+    width: 100%;
+    height: 100%;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.login-wrapper .loginbox {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: flex;
+    margin: 1.875rem auto;
+    max-width: 900px;
+    min-height: 550px;
+    width: 100%;
+}
+
+.login-wrapper .loginbox .login-left {
     align-items: center;
+    background: linear-gradient(135deg, #18aefa 0%, #3d5ee1 100%);
+    flex-direction: column;
     justify-content: center;
+    width: 450px;
+    display: flex;
+    border-radius: 8px 0 0 8px;
     position: relative;
     overflow: hidden;
+    padding: 0;
 }
 
-.login-branding::before {
-    content: '';
+.login-wrapper .loginbox .login-left img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
-    animation: pulse 15s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); opacity: 0.5; }
-    50% { transform: scale(1.1); opacity: 0.3; }
-}
-
-.branding-content {
-    text-align: center;
-    color: #fff;
-    position: relative;
+    top: 0;
+    left: 0;
     z-index: 1;
 }
 
-.branding-content .logo {
-    width: 100px;
-    height: 100px;
-    object-fit: contain;
-    background: #fff;
-    border-radius: 20px;
-    padding: 10px;
-    margin-bottom: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-.branding-content h1 {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    letter-spacing: 2px;
-}
-
-.branding-content > p {
-    font-size: 14px;
-    opacity: 0.9;
-    margin-bottom: 40px;
-}
-
-.features {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.feature-item {
-    display: flex;
+.login-wrapper .loginbox .login-right {
     align-items: center;
-    gap: 12px;
-    font-size: 14px;
-    opacity: 0.9;
-}
-
-.feature-item i {
-    width: 36px;
-    height: 36px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 10px;
     display: flex;
-    align-items: center;
     justify-content: center;
+    padding: 40px;
+    width: 400px;
 }
 
-/* Right Form */
-.login-form-section {
-    flex: 1;
-    padding: 60px 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.login-wrapper .loginbox .login-right .login-right-wrap {
+    max-width: 100%;
+    flex: 0 0 100%;
 }
 
-.login-form-wrapper {
-    width: 100%;
-    max-width: 360px;
+.login-wrapper .loginbox .login-right h1 {
+    font-size: 25px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    text-align: left;
+    color: #000;
 }
 
-.form-header {
-    margin-bottom: 35px;
+.account-subtitle {
+    color: #aaa;
+    font-size: 16px;
+    margin-bottom: 1.875rem;
+    text-align: left;
 }
 
-.form-header h2 {
-    font-size: 28px;
-    font-weight: 700;
-    color: #1a1a2e;
-    margin-bottom: 8px;
-}
-
-.form-header p {
-    color: #666;
-    font-size: 14px;
-}
-
-.alert {
-    padding: 12px 16px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-}
-
-.alert-danger {
-    background: #fee2e2;
-    color: #dc2626;
-    border: 1px solid #fecaca;
+.login-wrapper .loginbox .login-right h2 {
+    font-size: 23px;
+    font-weight: 500;
+    color: #000;
+    margin-bottom: 28px;
 }
 
 .form-group {
-    margin-bottom: 24px;
-}
-
-.form-group label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.form-group label i {
-    color: #116E63;
-}
-
-.form-control {
-    width: 100%;
-    padding: 14px 16px;
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    font-size: 15px;
-    transition: all 0.3s ease;
-    background: #f9fafb;
-}
-
-.form-control:focus {
-    outline: none;
-    border-color: #116E63;
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(17, 110, 99, 0.1);
-}
-
-.password-wrapper {
+    margin-bottom: 1.25rem;
     position: relative;
 }
 
-.password-wrapper .form-control {
-    padding-right: 50px;
+.form-group label {
+    font-size: 13px;
+    color: #ababab;
+    font-weight: 500;
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background: #fff;
+    margin-bottom: 0;
+    padding: 0 5px;
+    z-index: 1;
 }
 
-.toggle-password {
+.login-danger {
+    color: red;
+}
+
+.form-control {
+    border: 1px solid #ddd;
+    box-shadow: none;
+    color: #333;
+    font-size: 15px;
+    height: 45px;
+    width: 100%;
+    padding: 10px 40px 10px 15px;
+    border-radius: 4px;
+}
+
+.form-control:focus {
+    border-color: #18aefa;
+    box-shadow: 0 0 0 3px rgba(24, 174, 250, 0.1);
+    outline: none;
+}
+
+.profile-views {
     position: absolute;
-    right: 16px;
+    right: 17px;
     top: 50%;
     transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: #666;
+    color: #aaa;
     cursor: pointer;
-    padding: 5px;
 }
 
 .toggle-password:hover {
-    color: #116E63;
+    color: #18aefa;
 }
 
-.form-options {
-    margin-bottom: 24px;
-}
-
-.remember-checkbox {
+.forgotpass {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.remember-me .custom_check {
+    color: #878787;
     font-size: 14px;
-    color: #555;
-}
-
-.remember-checkbox input {
-    display: none;
-}
-
-.remember-checkbox .checkmark {
-    width: 20px;
-    height: 20px;
-    border: 2px solid #d1d5db;
-    border-radius: 6px;
+    font-weight: 400;
     display: flex;
     align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
+    gap: 8px;
+    cursor: pointer;
 }
 
-.remember-checkbox input:checked + .checkmark {
-    background: #116E63;
-    border-color: #116E63;
+.remember-me .custom_check input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
 }
 
-.remember-checkbox input:checked + .checkmark::after {
-    content: '✓';
+.btn-primary {
+    background-color: #18aefa;
+    border-color: #18aefa;
     color: #fff;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.btn-login {
-    width: 100%;
-    padding: 16px;
-    background: linear-gradient(135deg, #116E63 0%, #0d5249 100%);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 500;
+    padding: 12px 20px;
+    border-radius: 4px;
     cursor: pointer;
     transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
 }
 
-.btn-login:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(17, 110, 99, 0.35);
+.btn-block {
+    display: block;
+    width: 100%;
 }
 
-.btn-login:disabled {
+.btn-primary:hover {
+    background-color: #3d5ee1;
+    border-color: #3d5ee1;
+}
+
+.btn-primary:disabled {
     opacity: 0.7;
     cursor: not-allowed;
 }
 
-.back-home {
-    text-align: center;
-    margin-top: 30px;
+.alert {
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 20px;
 }
 
-.back-home a {
+.alert-danger {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.text-end {
     color: #666;
-    text-decoration: none;
-    font-size: 14px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: color 0.2s ease;
 }
 
-.back-home a:hover {
-    color: #116E63;
+.text-end + a {
+    color: #18aefa;
+    text-decoration: none;
+}
+
+.text-end + a:hover {
+    text-decoration: underline;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .login-container {
+    .login-wrapper .loginbox {
         flex-direction: column;
+        max-width: 400px;
+        min-height: auto;
     }
 
-    .login-branding {
-        padding: 40px 30px;
+    .login-wrapper .loginbox .login-left {
+        width: 100%;
+        min-height: 250px;
+        border-radius: 8px 8px 0 0;
+        position: relative;
     }
 
-    .branding-content .logo {
-        width: 80px;
-        height: 80px;
+    .login-wrapper .loginbox .login-left img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
     }
 
-    .branding-content h1 {
-        font-size: 22px;
+    .login-wrapper .loginbox .login-right {
+        width: 100%;
+        padding: 30px;
     }
 
-    .features {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 12px;
+    .login-wrapper .loginbox .login-right h1 {
+        font-size: 20px;
     }
 
-    .feature-item {
-        font-size: 12px;
-    }
-
-    .feature-item span {
-        display: none;
-    }
-
-    .login-form-section {
-        padding: 40px 30px;
+    .login-wrapper .loginbox .login-right h2 {
+        font-size: 18px;
     }
 }
 </style>

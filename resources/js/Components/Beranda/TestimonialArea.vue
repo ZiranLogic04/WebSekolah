@@ -4,109 +4,28 @@
       <div class="row">
         <div class="col-lg-6 mx-auto">
           <div class="site-heading text-center">
-            <span class="site-title-tagline"><i class="fa fa-book-open"></i> Testimoni</span>
-            <h2 class="site-title text-white">Apa Kata <span>Mereka</span></h2>
-            <p class="text-white">Cerita singkat dari orang tua, siswa, dan alumni tentang pengalaman belajar di MI Al-Hikmah.</p>
+            <span class="site-title-tagline"><i class="fa fa-book-open"></i> {{ content.tagline || 'Testimoni' }}</span>
+            <h2 class="site-title text-white" v-html="content.title || 'Apa Kata <span>Mereka</span>'"></h2>
+            <p class="text-white">{{ content.subtitle || 'Cerita singkat dari orang tua, siswa, dan alumni tentang pengalaman belajar di MI Al-Hikmah.' }}</p>
           </div>
         </div>
       </div>
 
       <div class="testimonial-slider owl-carousel owl-theme">
-        <!-- 1. Orang Tua -->
-        <div class="testimonial-item">
+        <div v-for="(item, index) in items" :key="index" class="testimonial-item">
           <div class="testimonial-rate">
-            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            <i v-for="star in item.rating" :key="'star-'+star" class="fas fa-star"></i>
           </div>
           <div class="testimonial-quote">
-            <p>Guru-gurunya sangat peduli. Anak saya jadi semangat belajar, bacaan Qur'annya juga jauh lebih baik.</p>
+            <p>{{ item.quote }}</p>
           </div>
           <div class="testimonial-content">
             <div class="testimonial-author-img">
-              <img src="/assets/img/testimonial/01.jpg" alt="Orang Tua/Wali Murid">
+              <img :src="item.image || '/assets/img/testimonial/default.jpg'" :alt="item.name">
             </div>
             <div class="testimonial-author-info">
-              <h4>Ibu Rina</h4>
-              <p>Orang Tua/Wali</p>
-            </div>
-          </div>
-          <span class="testimonial-quote-icon"><i class="fa fa-quote-right"></i></span>
-        </div>
-
-        <!-- 2. Siswa -->
-        <div class="testimonial-item">
-          <div class="testimonial-rate">
-            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-          </div>
-          <div class="testimonial-quote">
-            <p>Belajarnya seru, ada literasi 15 menit tiap pagi dan banyak kegiatan pramuka serta olahraga.</p>
-          </div>
-          <div class="testimonial-content">
-            <div class="testimonial-author-img">
-              <img src="/assets/img/testimonial/02.jpg" alt="Siswa MI Al-Hikmah">
-            </div>
-            <div class="testimonial-author-info">
-              <h4>Rafi</h4>
-              <p>Siswa</p>
-            </div>
-          </div>
-          <span class="testimonial-quote-icon"><i class="fa fa-quote-right"></i></span>
-        </div>
-
-        <!-- 3. Alumni -->
-        <div class="testimonial-item">
-          <div class="testimonial-rate">
-            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-          </div>
-          <div class="testimonial-quote">
-            <p>Dasar literasi dan numerasi yang kuat di MI Al-Hikmah membantu saya cepat beradaptasi di SMP.</p>
-          </div>
-          <div class="testimonial-content">
-            <div class="testimonial-author-img">
-              <img src="/assets/img/testimonial/03.jpg" alt="Alumni MI Al-Hikmah">
-            </div>
-            <div class="testimonial-author-info">
-              <h4>Naila</h4>
-              <p>Alumni</p>
-            </div>
-          </div>
-          <span class="testimonial-quote-icon"><i class="fa fa-quote-right"></i></span>
-        </div>
-
-        <!-- 4. Komite Sekolah -->
-        <div class="testimonial-item">
-          <div class="testimonial-rate">
-            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-          </div>
-          <div class="testimonial-quote">
-            <p>Komunikasi sekolah–orang tua sangat baik. Program tahfiz dan pembiasaan ibadah berjalan konsisten.</p>
-          </div>
-          <div class="testimonial-content">
-            <div class="testimonial-author-img">
-              <img src="/assets/img/testimonial/04.jpg" alt="Perwakilan Komite Sekolah">
-            </div>
-            <div class="testimonial-author-info">
-              <h4>Pak Hendra</h4>
-              <p>Komite Sekolah</p>
-            </div>
-          </div>
-          <span class="testimonial-quote-icon"><i class="fa fa-quote-right"></i></span>
-        </div>
-
-        <!-- 5. Orang Tua (UKS & Ramah Anak) -->
-        <div class="testimonial-item">
-          <div class="testimonial-rate">
-            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-          </div>
-          <div class="testimonial-quote">
-            <p>Sekolahnya ramah anak, ada UKS dan satgas anti-bullying. Kami merasa tenang menitipkan putra kami.</p>
-          </div>
-          <div class="testimonial-content">
-            <div class="testimonial-author-img">
-              <img src="/assets/img/testimonial/05.jpg" alt="Orang Tua/Wali Murid">
-            </div>
-            <div class="testimonial-author-info">
-              <h4>Ibu Desti</h4>
-              <p>Orang Tua/Wali</p>
+              <h4>{{ item.name }}</h4>
+              <p>{{ item.role }}</p>
             </div>
           </div>
           <span class="testimonial-quote-icon"><i class="fa fa-quote-right"></i></span>
@@ -117,33 +36,35 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
+
+const props = defineProps({
+  section: {
+    type: Object,
+    default: () => ({})
+  }
+});
+
+const content = computed(() => props.section?.content || {});
+const items = computed(() => content.value.items || []);
 
 onMounted(() => {
   if (window.$ && window.$.fn && window.$.fn.owlCarousel) {
-    $('.testimonial-slider').owlCarousel({
-      items: 3,
-      loop: true,
-      nav: true,
-      dots: false,
-      autoplay: true,
-      autoplayTimeout: 4000,
-      margin: 30,
-      responsive: {
-        0: { items: 1 },
-        768: { items: 2 },
-        992: { items: 3 }
-      }
-    })
+    setTimeout(() => {
+      $('.testimonial-slider').owlCarousel({
+        items: 3,
+        loop: true,
+        nav: true,
+        dots: true,
+        autoplay: true,
+        autoplayTimeout: 5000,
+        responsive: {
+          0: { items: 1 },
+          768: { items: 2 },
+          992: { items: 3 }
+        }
+      })
+    }, 100);
   }
 })
 </script>
-
-<style scoped>
-.pt-80 {
-  padding-top: 80px;
-}
-.pb-80 {
-  padding-bottom: 80px;
-}
-</style>

@@ -6,7 +6,6 @@
                     <div class="col">
                         <h3 class="page-title">Transaksi Pengeluaran</h3>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><Link href="/admin/dashboard">Dashboard</Link></li>
                             <li class="breadcrumb-item"><Link href="/admin/uang-sekolah">Keuangan</Link></li>
                             <li class="breadcrumb-item active">Transaksi Pengeluaran</li>
                         </ul>

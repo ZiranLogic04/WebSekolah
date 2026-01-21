@@ -2,11 +2,14 @@
     <div class="main-wrapper">
         <div class="header">
             <div class="header-left">
-                <Link href="/" class="logo">
-                    <img src="/assets/img/logo.png" alt="Logo" />
+                <Link href="/" class="logo text-decoration-none">
+                    <span class="logo-lg d-flex align-items-center gap-2">
+                        <i class="fas fa-layer-group text-primary fa-lg"></i>
+                        <span class="fw-bold text-dark" style="font-size: 1.35rem; letter-spacing: -0.5px;">Admin Panel</span>
+                    </span>
                 </Link>
-                <Link href="/" class="logo logo-small">
-                    <img src="/assets/img/logo-small.png" alt="Logo" width="30" height="30" />
+                <Link href="/" class="logo logo-small text-decoration-none">
+                     <i class="fas fa-layer-group text-primary fa-2x"></i>
                 </Link>
             </div>
             
@@ -16,11 +19,13 @@
                 </a>
             </div>
             
+            <!-- Greeting Text Replacement -->
             <div class="top-nav-search">
-                <form @submit.prevent>
-                    <input type="text" class="form-control" placeholder="Search here" />
-                    <button class="btn" type="submit"><i class="fas fa-search"></i></button>
-                </form>
+                <div class="d-flex align-items-center h-100 py-3">
+                    <h4 class="mb-0 text-dark fw-bold d-none d-md-block" style="font-size: 1.2rem;">
+                        <span class="text-muted fw-normal">Selamat Datang,</span> {{ page.props.auth?.user?.name || 'Admin' }} 👋
+                    </h4>
+                </div>
             </div>
             <a class="mobile_btn" id="mobile_btn" @click="toggleMobileSidebar">
                 <i class="fas fa-bars"></i>
@@ -43,7 +48,7 @@
                                 <p class="text-muted mb-0">{{ roleLabel }}</p>
                             </div>
                         </div>
-                        <Link class="dropdown-item" href="/admin/profile">Profil Saya</Link>
+
                         <Link class="dropdown-item" href="/logout" method="post" as="button">Logout</Link>
                     </div>
                 </li>
@@ -77,18 +82,22 @@
                             </Link>
                         </li>
 
-                        <!-- Halaman - Admin only -->
-                        <li v-if="isAdmin" :class="{ active: isUrlActive('/admin/pages') }">
-                            <Link href="/admin/pages">
-                                <i class="fas fa-file-alt"></i>
+
+
+                        <!-- Menu Navbar -->
+                        <li v-if="isAdmin" :class="{ active: isUrlActive(['/admin/halaman', '/admin/pages', '/admin/visi-misi', '/admin/sejarah', '/admin/organisasi', '/admin/slider', '/admin/features', '/admin/about', '/admin/counter', '/admin/program', '/admin/video', '/admin/team', '/admin/choose', '/admin/portfolio', '/admin/event', '/admin/testimonial', '/admin/partner', '/admin/footer-links']) }">
+                            <Link href="/admin/halaman">
+                                <i class="feather-layout"></i>
                                 <span>Halaman</span>
                             </Link>
                         </li>
 
 
 
+
+
                         <!-- Master Induk - Admin only -->
-                        <li v-if="isAdmin" class="submenu" :class="{ active: isUrlActive(['/admin/siswa', '/admin/guru', '/admin/lembaga']) }">
+                        <li v-if="isAdmin" class="submenu" :class="{ active: isUrlActive(['/admin/siswa', '/admin/guru', '/admin/lembaga', '/admin/kelas', '/admin/pengaturan-surat', '/admin/akun', '/admin/kenaikan-kelas', '/admin/alumni']) }">
                             <a href="#" @click.prevent="toggleSubmenu('master')" :class="{ subdrop: openSubmenu === 'master' }">
                                 <i class="fas fa-database"></i>
                                 <span>Master Induk</span>
@@ -97,16 +106,21 @@
                             <transition @enter="enter" @after-enter="afterEnter" @leave="leave">
                                 <ul v-show="openSubmenu === 'master'">
                                     <li><Link href="/admin/siswa" :class="{ active: isUrlActive('/admin/siswa') }">Data Siswa</Link></li>
+                                    <li><Link href="/admin/kelas" :class="{ active: isUrlActive('/admin/kelas') }">Data Kelas</Link></li>
                                     <li><Link href="/admin/guru" :class="{ active: isUrlActive('/admin/guru') }">Data Guru</Link></li>
                                     <li><Link href="/admin/lembaga" :class="{ active: isUrlActive('/admin/lembaga') }">Data Lembaga</Link></li>
-                                    <li><Link href="/admin/surat" :class="{ active: isUrlActive('/admin/surat') }">Pengaturan Surat</Link></li>
+                                    <li><Link href="/admin/pengaturan-surat" :class="{ active: isUrlActive('/admin/pengaturan-surat') }">Pengaturan Surat</Link></li>
                                     <li><Link href="/admin/akun" :class="{ active: isUrlActive('/admin/akun') }">Pengaturan Akun</Link></li>
+                                    <li><Link href="/admin/kenaikan-kelas" :class="{ active: isUrlActive('/admin/kenaikan-kelas') }">Kenaikan Kelas</Link></li>
+                                    <li><Link href="/admin/alumni" :class="{ active: isUrlActive('/admin/alumni') }">Data Alumni</Link></li>
                                 </ul>
                             </transition>
                         </li>
 
+
+
                         <!-- Surat-Surat - Admin & Staf Administrasi -->
-                        <li v-if="canAccessSurat" class="submenu" :class="{ active: isUrlActive(['/admin/surat-masuk', '/admin/surat-keluar', '/admin/rekap-surat']) }">
+                        <li v-if="canAccessSurat" class="submenu" :class="{ active: isUrlActive(['/admin/surat', '/admin/surat-masuk', '/admin/surat-keluar', '/admin/rekap-surat']) }">
                             <a href="#" @click.prevent="toggleSubmenu('letters')" :class="{ subdrop: openSubmenu === 'letters' }">
                                 <i class="fas fa-envelope"></i>
                                 <span>Surat-Surat</span>
@@ -114,15 +128,16 @@
                             </a>
                             <transition @enter="enter" @after-enter="afterEnter" @leave="leave">
                                 <ul v-show="openSubmenu === 'letters'">
-                                    <li><Link href="/admin/surat-masuk" :class="{ active: isUrlActive('/admin/surat-masuk') }">Surat Masuk</Link></li>
-                                    <li><Link href="/admin/surat-keluar" :class="{ active: isUrlActive('/admin/surat-keluar') }">Surat Keluar</Link></li>
-                                    <li><Link href="/admin/rekap-surat" :class="{ active: isUrlActive('/admin/rekap-surat') }">Rekap Surat</Link></li>
+                                    <li><Link href="/admin/surat/create" :class="{ active: $page.url.includes('/admin/surat/create') || ($page.url.includes('/admin/surat/') && !$page.url.includes('surat-')) }">Buat Surat</Link></li>
+                                    <li><Link href="/admin/surat-masuk" :class="{ active: $page.url.includes('/admin/surat-masuk') }">Surat Masuk</Link></li>
+                                    <li><Link href="/admin/surat-keluar" :class="{ active: $page.url.includes('/admin/surat-keluar') }">Surat Keluar</Link></li>
+                                    <li><Link href="/admin/rekap-surat" :class="{ active: $page.url.includes('/admin/rekap-surat') }">Rekap Surat</Link></li>
                                 </ul>
                             </transition>
                         </li>
 
                         <!-- Keuangan - Admin & Staf Keuangan -->
-                        <li v-if="canAccessKeuangan" class="submenu" :class="{ active: isUrlActive(['/admin/transaksi', '/admin/tagihan', '/admin/jenis-tagihan', '/admin/uang-sekolah', '/admin/pengeluaran', '/admin/transaksi-manual']) }">
+                        <li v-if="canAccessKeuangan" class="submenu" :class="{ active: isUrlActive(['/admin/transaksi', '/admin/tagihan', '/admin/jenis-tagihan', '/admin/uang-sekolah', '/admin/pengeluaran', '/admin/transaksi-manual', '/admin/piutang']) }">
                             <a href="#" @click.prevent="toggleSubmenu('finance')" :class="{ subdrop: openSubmenu === 'finance' }">
                                 <i class="fas fa-wallet"></i>
                                 <span>Keuangan</span>
@@ -130,24 +145,24 @@
                             </a>
                             <transition @enter="enter" @after-enter="afterEnter" @leave="leave">
                                 <ul v-show="openSubmenu === 'finance'">
-                                    <li><Link href="/admin/jenis-tagihan" :class="{ active: isUrlActive('/admin/jenis-tagihan') }">Daftar Jenis Tagihan</Link></li>
                                     <li><Link href="/admin/transaksi-manual" :class="{ active: isUrlActive('/admin/transaksi-manual') }">Transaksi Manual</Link></li>
-                                    <li><Link href="/admin/tagihan" :class="{ active: isUrlActive('/admin/tagihan') && !$page.url.includes('status=Belum') }">Daftar Tagihan</Link></li>
+                                    <li><Link href="/admin/tagihan" :class="{ active: isUrlActive('/admin/tagihan') || isUrlActive('/admin/jenis-tagihan') }">Daftar Tagihan</Link></li>
                                     <li><Link href="/admin/transaksi" :class="{ active: isUrlActive('/admin/transaksi') && !$page.url.includes('manual') }">Transaksi Pemasukan</Link></li>
-                                    <li><Link href="/admin/pengeluaran" :class="{ active: isUrlActive('/admin/pengeluaran') }">Transaksi Pengeluaran</Link></li>
                                     <li><Link href="/admin/piutang" :class="{ active: isUrlActive('/admin/piutang') }">Daftar Piutang</Link></li>
                                     <li><Link href="/admin/uang-sekolah" :class="{ active: isUrlActive('/admin/uang-sekolah') && !$page.url.includes('action=create') }">Rekap Keuangan</Link></li>
                                 </ul>
                             </transition>
                         </li>
 
-                        <!-- Gallery - Admin only -->
+                        <!-- Gallery -->
                         <li v-if="isAdmin" :class="{ active: isUrlActive('/admin/gallery') }">
                             <Link href="/admin/gallery">
-                                <i class="fas fa-images"></i>
+                                <i class="fas fa-photo-video"></i>
                                 <span>Gallery</span>
                             </Link>
                         </li>
+
+
                         
                     </ul>
                 </div>
@@ -264,9 +279,9 @@ onMounted(() => {
 
     // Auto-open submenu berdasarkan URL
     if (isUrlActive(['/posts', '/drafts', '/posts/create', '/admin/posts'])) openSubmenu.value = 'posts';
-    else if (isUrlActive(['/admin/siswa', '/admin/guru', '/admin/lembaga', '/admin/surat', '/admin/akun'])) openSubmenu.value = 'master';
-    else if (isUrlActive(['/admin/surat-masuk', '/admin/surat-keluar', '/admin/rekap-surat'])) openSubmenu.value = 'letters';
-    else if (isUrlActive(['/admin/transaksi', '/admin/tagihan', '/admin/hutang', '/admin/rekap-keuangan', '/admin/pengeluaran', '/admin/transaksi-manual', '/admin/jenis-tagihan', '/admin/uang-sekolah'])) openSubmenu.value = 'finance';
+    else if (isUrlActive(['/admin/siswa', '/admin/guru', '/admin/lembaga', '/admin/kelas', '/admin/pengaturan-surat', '/admin/akun', '/admin/kenaikan-kelas', '/admin/alumni'])) openSubmenu.value = 'master';
+    else if (isUrlActive(['/admin/surat', '/admin/surat-masuk', '/admin/surat-keluar', '/admin/rekap-surat'])) openSubmenu.value = 'letters';
+    else if (isUrlActive(['/admin/transaksi', '/admin/tagihan', '/admin/hutang', '/admin/rekap-keuangan', '/admin/pengeluaran', '/admin/transaksi-manual', '/admin/jenis-tagihan', '/admin/uang-sekolah', '/admin/piutang'])) openSubmenu.value = 'finance';
 });
 
 onBeforeUnmount(() => {

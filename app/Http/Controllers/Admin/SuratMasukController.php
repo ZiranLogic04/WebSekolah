@@ -35,10 +35,20 @@ class SuratMasukController extends Controller
             'tgl_diterima'=> 'required|date',
             'file_scan'   => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'keterangan'  => 'nullable|string'
+        ], [
+            'nomor_surat.required' => 'Nomor surat wajib diisi.',
+            'pengirim.required' => 'Nama pengirim wajib diisi.',
+            'perihal.required' => 'Perihal surat wajib diisi.',
+            'tgl_surat.required' => 'Tanggal surat wajib diisi.',
+            'tgl_diterima.required' => 'Tanggal diterima wajib diisi.',
+            'file_scan.mimes' => 'File harus berformat PDF, JPG, atau PNG.',
+            'file_scan.max' => 'Ukuran file maksimal 2MB.',
         ]);
 
         if ($request->hasFile('file_scan')) {
-            $path = $request->file('file_scan')->store('surat-masuk', 'public');
+            $file = $request->file('file_scan');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('surat-masuk', $filename, 'public');
             $validated['file_path'] = $path;
         }
 
@@ -61,6 +71,14 @@ class SuratMasukController extends Controller
             'tgl_diterima'=> 'required|date',
             'file_scan'   => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'keterangan'  => 'nullable|string'
+        ], [
+            'nomor_surat.required' => 'Nomor surat wajib diisi.',
+            'pengirim.required' => 'Nama pengirim wajib diisi.',
+            'perihal.required' => 'Perihal surat wajib diisi.',
+            'tgl_surat.required' => 'Tanggal surat wajib diisi.',
+            'tgl_diterima.required' => 'Tanggal diterima wajib diisi.',
+            'file_scan.mimes' => 'File harus berformat PDF, JPG, atau PNG.',
+            'file_scan.max' => 'Ukuran file maksimal 2MB.',
         ]);
 
         if ($request->hasFile('file_scan')) {
@@ -68,7 +86,9 @@ class SuratMasukController extends Controller
             if ($suratMasuk->file_path && Storage::disk('public')->exists($suratMasuk->file_path)) {
                 Storage::disk('public')->delete($suratMasuk->file_path);
             }
-            $path = $request->file('file_scan')->store('surat-masuk', 'public');
+            $file = $request->file('file_scan');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('surat-masuk', $filename, 'public');
             $validated['file_path'] = $path;
         }
 
@@ -87,5 +107,24 @@ class SuratMasukController extends Controller
         }
         $suratMasuk->delete();
         return redirect()->route('surat-masuk.index')->with('success', 'Surat Masuk dihapus.');
+    }
+
+    /**
+     * View/Preview document in browser (inline, not download)
+     */
+    public function viewDocument(SuratMasuk $suratMasuk)
+    {
+        if (!$suratMasuk->file_path) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        $path = Storage::disk('public')->path($suratMasuk->file_path);
+
+        if (!file_exists($path)) {
+            abort(404, 'File fisik tidak ditemukan di server.');
+        }
+
+        // Return response using file helper which handles headers correctly for preview
+        return response()->file($path);
     }
 }
