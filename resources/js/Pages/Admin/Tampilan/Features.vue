@@ -15,6 +15,7 @@ const form = useForm({
         icon: f.icon,
         title: f.title,
         description: f.description,
+        order: f.order,
         is_active: f.is_active,
     })),
 });
@@ -159,6 +160,16 @@ const submit = () => {
                                 <div v-if="form.errors[`features.${index}.title`]" class="invalid-feedback d-block fw-bold mt-1">{{ form.errors[`features.${index}.title`] }}</div>
                             </div>
                             
+                            <!-- Order Input -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-dark">Urutan Tampil</label>
+                                <div class="input-group shadow-sm rounded-4 overflow-hidden">
+                                     <span class="input-group-text bg-white border-0 ps-3 text-secondary"><i class="fas fa-sort-numeric-down"></i></span>
+                                    <input type="number" class="form-control border-0 bg-white" :class="{'is-invalid': form.errors[`features.${index}.order`]}" v-model="feature.order" placeholder="Urutan">
+                                </div>
+                                <div v-if="form.errors[`features.${index}.order`]" class="invalid-feedback d-block fw-bold mt-1">{{ form.errors[`features.${index}.order`] }}</div>
+                            </div>
+
                             <!-- Description Input (Group + Icon) -->
                             <div>
                                 <label class="form-label fw-bold text-dark">Deskripsi Singkat</label>

@@ -64,24 +64,28 @@ class ProfessionalDemoSeeder extends Seeder
                 'icon' => 'book-open.svg',
                 'title' => 'Kurikulum Merdeka',
                 'description' => 'Pembelajaran berbasis proyek dan karakter islami',
+                'order' => 1,
                 'is_active' => true,
             ],
             [
                 'icon' => 'user-check.svg',
                 'title' => 'Guru Profesional',
                 'description' => '90% tenaga pengajar bersertifikasi & berpengalaman',
+                'order' => 2,
                 'is_active' => true,
             ],
             [
                 'icon' => 'layers.svg',
                 'title' => 'Fasilitas Lengkap',
                 'description' => 'Laboratorium, perpustakaan digital, dan masjid',
+                'order' => 3,
                 'is_active' => true,
             ],
             [
                 'icon' => 'award.svg',
                 'title' => 'Prestasi Unggul',
                 'description' => 'Juara olimpiade tingkat nasional & internasional',
+                'order' => 4,
                 'is_active' => true,
             ],
         ];
@@ -225,10 +229,59 @@ class ProfessionalDemoSeeder extends Seeder
                 'tagline' => 'AGENDA',
                 'title' => 'Kegiatan <span>Terbaru</span>',
                 'items' => [
-                    ['location' => 'Aula Sekolah', 'date' => '15 Feb 2025', 'time' => '08.00 - 12.00', 'title' => 'Sosialisasi PPDB', 'description' => 'Pemaparan info pendaftaran siswa baru.', 'link' => '/ppdb', 'image' => '/assets/img/event/01.jpg'],
-                    ['location' => 'Lapangan', 'date' => '17 Feb 2025', 'time' => '07.00 - 10.00', 'title' => 'Upacara HUT RI', 'description' => 'Peringatan hari kemerdekaan.', 'link' => '#', 'image' => '/assets/img/event/02.jpg'],
-                    ['location' => 'Masjid', 'date' => '20 Feb 2025', 'time' => '08.00 - 11.00', 'title' => 'Wisuda Tahfidz', 'description' => 'Pelulusan penghafal Al-Quran.', 'link' => '#', 'image' => '/assets/img/event/03.jpg'],
+                    ['location' => 'Aula Sekolah', 'date' => '15 Feb 2025', 'time_start' => '08.00', 'time_end' => '12.00', 'title' => 'Sosialisasi PPDB', 'description' => 'Pemaparan info pendaftaran siswa baru.', 'link' => '/ppdb', 'image' => '/assets/img/event/01.jpg'],
+                    ['location' => 'Lapangan', 'date' => '17 Feb 2025', 'time_start' => '07.00', 'time_end' => '10.00', 'title' => 'Upacara HUT RI', 'description' => 'Peringatan hari kemerdekaan.', 'link' => '#', 'image' => '/assets/img/event/02.jpg'],
+                    ['location' => 'Masjid', 'date' => '20 Feb 2025', 'time_start' => '08.00', 'time_end' => '11.00', 'title' => 'Wisuda Tahfidz', 'description' => 'Pelulusan penghafal Al-Quran.', 'link' => '#', 'image' => '/assets/img/event/03.jpg'],
                 ],
+            ],
+        ]);
+
+        // TESTIMONIAL SECTION
+        Section::create([
+            'key' => 'testimonial',
+            'title' => 'Testimonial',
+            'content' => [
+                'tagline' => 'Testimoni',
+                'title' => 'Apa Kata <span>Mereka?</span>',
+                'subtitle' => 'Kesan dan pesan dari orang tua siswa dan alumni.',
+                'items' => [
+                    [
+                        'name' => 'Budi Santoso',
+                        'role' => 'Wali Murid Kelas 4',
+                        'quote' => 'Alhamdulillah, anak saya jadi lebih rajin sholat dan hafalannya bertambah pesat sejak sekolah di sini.',
+                        'rating' => 5,
+                        'image' => '/assets/img/hope/122.jpg',
+                    ],
+                    [
+                        'name' => 'Siti Rahmawati',
+                        'role' => 'Alumni Angkatan 2020',
+                        'quote' => 'Guru-gurunya sangat perhatian dan sabar. Fasilitas sekolah juga sangat mendukung pembelajaran.',
+                        'rating' => 5,
+                        'image' => '/assets/img/hope/123.jpg',
+                    ],
+                    [
+                        'name' => 'H. Abdullah',
+                        'role' => 'Tokoh Masyarakat',
+                        'quote' => 'Sekolah ini menjadi kebanggaan warga sekitar karena prestasinya yang terus meningkat.',
+                        'rating' => 5,
+                        'image' => '/assets/img/hope/DUD.jpg',
+                    ],
+                ]
+            ],
+        ]);
+
+        // PARTNER SECTION
+        Section::create([
+            'key' => 'partner',
+            'title' => 'Partner Kami',
+            'content' => [
+                'items' => [
+                    ['name' => 'Kemdikbud', 'image' => '/assets/img/hope/122.jpg'],
+                    ['name' => 'Kemenag', 'image' => '/assets/img/hope/123.jpg'],
+                    ['name' => 'Ruang Guru', 'image' => '/assets/img/hope/DUD.jpg'],
+                    ['name' => 'Google for Education', 'image' => '/assets/img/hope/43.jpg'],
+                    ['name' => 'Microsoft', 'image' => '/assets/img/hope/15.jpg'],
+                ]
             ],
         ]);
 

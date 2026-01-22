@@ -42,44 +42,7 @@ const props = defineProps({
 });
 
 const content = computed(() => props.portfolio || {});
-const tagline = computed(() => content.value.tagline || 'Kehidupan di MI');
-const title = computed(() => content.value.title || 'Kegiatan di <span>MI Al-Hikmah</span>');
-const items = computed(() => content.value.items || [
-        {
-            category: 'Literasi',
-            title: 'Budaya Literasi 15 Menit',
-            url: '#',
-            image: '/assets/img/hope/stRe.jpg'
-        },
-        {
-            category: 'Keagamaan',
-            title: 'Tahfiz & BTQ',
-            url: '#',
-            image: '/assets/img/hope/aka465.jpg'
-        },
-        {
-            category: 'Ekskul',
-            title: 'Olahraga & Pramuka',
-            url: '#',
-            image: '/assets/img/hope/r456.jpg'
-        },
-        {
-            category: 'Ramah Anak',
-            title: 'Sekolah Ramah Anak',
-            url: '#',
-            image: '/assets/img/hope/ra123k.jpg'
-        },
-        {
-            category: 'Keagamaan',
-            title: 'Pembiasaan Ibadah Harian',
-            url: '#',
-            image: '/assets/img/hope/REMISE UEA (29).jpg'
-        },
-        {
-            category: 'Sarpras',
-            title: 'Fasilitas Sekolah',
-            url: '#',
-            image: '/assets/img/hope/IMG_1135 -BG (1).jpg'
-        },
-]);
+const tagline = computed(() => content.value.tagline || '');
+const title = computed(() => content.value.title || '');
+const items = computed(() => content.value.items || []);
 </script>

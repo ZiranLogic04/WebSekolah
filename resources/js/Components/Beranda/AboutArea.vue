@@ -101,27 +101,8 @@ const page = usePage();
 const lembaga = computed(() => page.props.lembaga || {});
 
 // Default values
-const defaultAbout = {
-  tagline: 'Tentang Kami',
-  title: 'Sistem Pendidikan Madrasah Memberdayakan Potensi Sejak Dini',
-  highlight_word: 'Madrasah',
-  description: 'MI Al-Hikmah berkomitmen menghadirkan pendidikan dasar berkualitas yang menumbuhkan akhlak mulia, serta menguatkan literasi dan numerasi sejak dini.',
-  image_1: '/assets/img/hope/_U9A7700.jpg',
-  image_2: '/assets/img/hope/_U9A8033.jpg',
-  image_3: '/assets/img/hope/259A2654 copy.JPG',
-  item_1_icon: 'open-book.svg',
-  item_1_title: 'Tahfiz & BTQ Terstruktur',
-  item_1_desc: 'Tahsin bacaan, target juz 30 bertahap, setoran rutin, dan pendampingan harian.',
-  item_2_icon: 'global-education.svg',
-  item_2_title: 'Literasi & Klinik Numerasi',
-  item_2_desc: 'Membaca 15 menit setiap pagi dan pendampingan berhitung untuk fondasi akademik kuat.',
-  quote: 'Kami membangun lingkungan belajar yang aman, hangat, dan mendorong kemandirian serta rasa ingin tahu anak.',
-  button_text: 'Selengkapnya',
-  button_url: '/profil',
-};
-
 const aboutData = computed(() => {
-  return { ...defaultAbout, ...props.about };
+  return props.about || {};
 });
 
 const formattedTitle = computed(() => {
@@ -134,7 +115,7 @@ const formattedTitle = computed(() => {
 });
 
 const lamaBerdiri = computed(() => {
-    if (!lembaga.value.tahun_berdiri) return '17'; // Fallback
+    if (!lembaga.value.tahun_berdiri) return '0'; // Fallback 0
     const currentYear = new Date().getFullYear();
     const startYear = parseInt(lembaga.value.tahun_berdiri);
     return currentYear - startYear;

@@ -31,15 +31,7 @@ const props = defineProps({
   }
 });
 
-// Default features jika data kosong
-const defaultFeatures = [
-  { icon: 'book.svg', title: 'Pendidikan Bermutu', description: 'Kualitas pembelajaran unggul dengan pendekatan islami dan lingkungan belajar yang inspiratif.' },
-  { icon: 'teacher.svg', title: 'Guru', description: 'Tenaga pendidik kompeten, berdedikasi, dan menjadi teladan dalam ilmu serta akhlak.' },
-  { icon: 'library.svg', title: 'Kurikulum Terpadu', description: 'Mengintegrasikan ilmu umum dan agama untuk membentuk siswa cerdas, beriman, dan berkarakter.' },
-  { icon: 'building-2.svg', title: 'Fasilitas dan Kegiatan', description: 'Sarana lengkap dan kegiatan edukatif yang menumbuhkan potensi akademik, sosial, dan spiritual siswa.' },
-];
-
 const displayFeatures = computed(() => {
-  return props.features && props.features.length > 0 ? props.features : defaultFeatures;
+  return props.features || [];
 });
 </script>

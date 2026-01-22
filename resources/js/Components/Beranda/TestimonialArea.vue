@@ -4,9 +4,9 @@
       <div class="row">
         <div class="col-lg-6 mx-auto">
           <div class="site-heading text-center">
-            <span class="site-title-tagline"><i class="fa fa-book-open"></i> {{ content.tagline || 'Testimoni' }}</span>
-            <h2 class="site-title text-white" v-html="content.title || 'Apa Kata <span>Mereka</span>'"></h2>
-            <p class="text-white">{{ content.subtitle || 'Cerita singkat dari orang tua, siswa, dan alumni tentang pengalaman belajar di MI Al-Hikmah.' }}</p>
+            <span class="site-title-tagline"><i class="fa fa-book-open"></i> {{ content.tagline || '' }}</span>
+            <h2 class="site-title text-white" v-html="content.title || ''"></h2>
+            <p class="text-white">{{ content.subtitle || '' }}</p>
           </div>
         </div>
       </div>

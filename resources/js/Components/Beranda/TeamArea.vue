@@ -50,30 +50,14 @@ const props = defineProps({
     }
 });
 
-// Default values
-const defaultHeader = {
-    tagline: 'Guru & Tendik',
-    title: 'Kenali Tim <span>Pengajar & Tendik</span>',
-    description: 'Guru yang peduli dan tenaga kependidikan yang sigap—bersama menghadirkan pembelajaran yang aman, nyaman, dan bermakna.',
-};
-
-const defaultItems = [
-    { nama: 'Nama Guru 1', jabatan: 'Kepala Sekolah', foto: '/assets/img/team/01.jpg' },
-    { nama: 'Nama Guru 2', jabatan: 'Wakil Kepala Sekolah', foto: '/assets/img/team/01.jpg' },
-    { nama: 'Nama Guru 3', jabatan: 'Guru Kelas 1', foto: '/assets/img/team/01.jpg' },
-    { nama: 'Nama Guru 4', jabatan: 'Guru Kelas 2', foto: '/assets/img/team/01.jpg' },
-];
-
 const teamData = computed(() => ({
-    tagline: props.team?.tagline || defaultHeader.tagline,
-    title: props.team?.title || defaultHeader.title,
-    description: props.team?.description || defaultHeader.description,
+    tagline: props.team?.tagline || '',
+    title: props.team?.title || '',
+    description: props.team?.description || '',
 }));
 
 const teamItems = computed(() => {
-    return (props.team?.items && props.team.items.length > 0) 
-        ? props.team.items 
-        : defaultItems;
+    return props.team?.items || [];
 });
 </script>
 

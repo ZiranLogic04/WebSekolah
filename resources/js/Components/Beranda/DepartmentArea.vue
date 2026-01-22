@@ -41,33 +41,14 @@ const props = defineProps({
   }
 });
 
-// Default header values
-const defaultHeader = {
-  tagline: 'Program MI',
-  title: 'Jelajahi <span>Program & Layanan</span> Kami',
-  description: 'Program pembelajaran dan layanan siswa di MI Al-Hikmah yang menumbuhkan iman, ilmu, karakter, literasi, dan numerasi dalam lingkungan yang ramah anak.',
-};
-
-// Default items
-const defaultItems = [
-  { icon: 'monitor.svg', title: 'Kurikulum & Pembelajaran', desc: 'Kurikulum Merdeka/K13, jadwal pelajaran, penilaian, pengayaan & remedial.', url: '/akademik/kurikulum' },
-  { icon: 'art.svg', title: 'Tahfiz & BTQ', desc: 'Tahsin bacaan, target juz 30, setoran berkala, dan pembiasaan ibadah harian.', url: '/program/tahfiz' },
-  { icon: 'data.svg', title: 'Literasi 15 Menit & Perpustakaan', desc: 'Membaca harian, pojok baca kelas, peminjaman buku, dan lomba literasi.', url: '/program/literasi' },
-  { icon: 'monitor.svg', title: 'Klinik Numerasi & Sains Dasar', desc: 'Pendampingan berhitung, permainan numerasi, dan percobaan sains sederhana.', url: '/program/numerasi' },
-  { icon: 'teacher-2.svg', title: 'Kesiswaan & Ekstrakurikuler', desc: 'Pramuka, olahraga, seni, MTQ, drumband, dan kegiatan penguatan karakter.', url: '/kesiswaan/ekskul' },
-  { icon: 'health.svg', title: 'Layanan Siswa (UKS & Anti-Bullying)', desc: 'UKS, edukasi PHBS, Satgas Anti-Bullying, dan alur pengaduan yang aman.', url: '/layanan/anak' },
-];
-
 const headerData = computed(() => ({
-  tagline: props.program?.tagline || defaultHeader.tagline,
-  title: props.program?.title || defaultHeader.title,
-  description: props.program?.description || defaultHeader.description,
+  tagline: props.program?.tagline || '',
+  title: props.program?.title || '',
+  description: props.program?.description || '',
 }));
 
 const programItems = computed(() => {
-  return (props.program?.items && props.program.items.length > 0) 
-    ? props.program.items 
-    : defaultItems;
+  return props.program?.items || [];
 });
 
 const initOwl = () => {

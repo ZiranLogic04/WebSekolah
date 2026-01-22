@@ -44,23 +44,13 @@ const props = defineProps({
 });
 
 // Default values
-const defaultData = {
-  tagline: 'Video',
-  title: 'Profil <span>MI Al-Hikmah</span>',
-  description: 'Sekilas tentang MI Al-Hikmah: suasana belajar, pembiasaan ibadah, literasi & numerasi, serta fasilitas sekolah.',
-  button_text: 'Profil Madrasah',
-  button_url: '/profil',
-  poster_image: '/assets/img/hope/poster-profil.jpg',
-  youtube_url: 'https://www.youtube.com/watch?v=VIDEO_ID_PROFIL',
-};
-
 const videoData = computed(() => ({
-  tagline: props.video?.tagline || defaultData.tagline,
-  title: props.video?.title || defaultData.title,
-  description: props.video?.description || defaultData.description,
-  button_text: props.video?.button_text || defaultData.button_text,
-  button_url: props.video?.button_url || defaultData.button_url,
-  poster_image: props.video?.poster_image || defaultData.poster_image,
-  youtube_url: props.video?.youtube_url || defaultData.youtube_url,
+  tagline: props.video?.tagline || '',
+  title: props.video?.title || '',
+  description: props.video?.description || '',
+  button_text: props.video?.button_text || '',
+  button_url: props.video?.button_url || '#',
+  poster_image: props.video?.poster_image || '',
+  youtube_url: props.video?.youtube_url || '#',
 }));
 </script>

@@ -55,36 +55,21 @@ const props = defineProps({
     }
 });
 
-const defaultContent = {
-    tagline: 'Mengapa Memilih Kami',
-    title: 'Pendidikan Dasar Berkualitas & <span>Ramah Anak</span>',
-    description: 'MI Al-Hikmah berkomitmen menghadirkan pembelajaran yang menumbuhkan iman, ilmu, dan karakter. Program terstruktur, guru kompeten, serta lingkungan aman–nyaman mendukung tumbuh kembang siswa setiap hari.',
-    image: '/assets/img/hope/_U9A7765.jpg',
-    items: [
-        { title: 'Guru Peduli & Kompeten', desc: 'Pembelajaran aktif, pendampingan personal.', icon: 'teacher-2.svg' },
-        { title: 'Tahfiz & BTQ Terstruktur', desc: 'Tahsin bacaan, target juz 30 bertahap.', icon: 'course-material.svg' },
-        { title: 'Literasi & Klinik Numerasi', desc: 'Membaca 15 menit setiap hari.', icon: 'online-course.svg' },
-        { title: 'Sekolah Ramah Anak', desc: 'Satgas Anti-Bullying, UKS, dan komunikasi.', icon: 'health.svg' },
-    ]
-};
-
 const getIconUrl = (iconStr) => {
-    if (!iconStr) return '/assets/img/icon/teacher-2.svg';
-    if (iconStr.includes('/')) return iconStr; // Handle full path legacy
-    return '/assets/img/icon/' + iconStr; // Handle filename only
+    if (!iconStr) return '';
+    if (iconStr.includes('/')) return iconStr;
+    return '/assets/img/icon/' + iconStr;
 };
 
 const chooseData = computed(() => ({
-    tagline: props.choose?.tagline || defaultContent.tagline,
-    title: props.choose?.title || defaultContent.title,
-    description: props.choose?.description || defaultContent.description,
-    image: props.choose?.image || defaultContent.image,
+    tagline: props.choose?.tagline || '',
+    title: props.choose?.title || '',
+    description: props.choose?.description || '',
+    image: props.choose?.image || '',
 }));
 
 const chooseItems = computed(() => {
-    return (props.choose?.items && props.choose.items.length > 0)
-        ? props.choose.items
-        : defaultContent.items;
+    return props.choose?.items || [];
 });
 </script>
 
